@@ -1,0 +1,225 @@
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
+intents:
+- greet
+- goodbye
+- affirm
+- confirm
+- deny
+- bot_challenge
+- mood_curr
+- start_session1
+- state_answer
+slots:
+  mood:
+    type: text
+    influence_conversation: false
+  quadrant:
+    type: text
+    influence_conversation: false
+  activity_formulation:
+    type: text
+    influence_conversation: false
+  state_1:
+    type: text
+    influence_conversation: false
+  state_2:
+    type: text
+    influence_conversation: false
+responses:
+  utter_greet_first_time:
+  - text: Hey there, I'm Sam. It's nice to meet you!
+  - text: Hi, I'm Sam. It's great to meet you!
+  - text: Hello there, I'm Sam. I'm happy to meet you!
+  utter_purpose:
+  - text: I'm here to help you to prepare to quit smoking.
+  utter_expertise:
+  - buttons:
+    - payload: /confirm
+      title: I see
+    - payload: /confirm
+      title: Very cool!
+    text: "The knowledge I have allows me to target my support to the situation that people are in. It helps me to suggest useful activities, and to aid people in doing them. Cool right?"
+  utter_prompt_usage:
+  - text: Before we start, let me explain how you can communicate with me. 
+  utter_explain_usage:
+  - buttons:
+    - payload: /confirm
+      title: Yes, that's clear
+    - payload: /confirm
+      title: Nice, that sounds easy enough!
+    text: Most of the time, you can just click on one of the blue buttons like you already did. If no buttons appear, just make use of the text field below. Sounds good?
+  utter_prompt_session_overview:
+  - text: Now, let me tell you how this session works.
+  utter_explain_session_overview_1:
+  - text: First, I'll use the information I have about you and other people who want to, or already have, quit smoking to suggest an activity. This activity is designed to help you to quit smoking.
+  utter_explain_session_overview_2:
+  - text: Next, I'll ask you some questions about your thoughts about doing this activity. This will allow me to learn to better support you and other people like you.
+  utter_explain_session_overview_3:
+  - text: In the end, I might help you to plan when, where and how to do your suggested activity.
+  utter_explain_session_overview_4:
+  - text: And don't worry, I will also send you your activity to your Prolific email as a reminder.
+  utter_explain_session_final:
+  - buttons:
+    - payload: /confirm
+      title: Yes, let's get started!
+    - payload: /confirm
+      title: Yes!
+    text: I hope this is clear. Ready to begin?
+  utter_greet_not_first:
+  - text: Hi, it's great to see you again!
+  - text: Hello there, welcome back!
+  - text: Hey there, it's great to see you again!
+  - text: Hi there, welcome back!
+  - text: Hey there, welcome to your next session!
+  - text: Hi, I'm happy to see you again!
+  utter_ask_for_mood:
+  - buttons:
+    - payload: /mood_curr{{"mood":"satisfied"}}
+      title: Satisfied
+    - payload: /mood_curr{{"mood":"pleased"}}
+      title: Pleased
+    - payload: /mood_curr{{"mood":"delighted"}}
+      title: Delighted
+    - payload: /mood_curr{{"mood":"happy"}}
+      title: Happy
+    - payload: /mood_curr{{"mood":"glad"}}
+      title: Glad
+    - payload: /mood_curr{{"mood":"excited"}}
+      title: Excited
+    - payload: /mood_curr{{"mood":"aroused"}}
+      title: Aroused
+    - payload: /mood_curr{{"mood":"astonished"}}
+      title: Astonished
+    - payload: /mood_curr{{"mood":"alarmed"}}
+      title: Alarmed
+    - payload: /mood_curr{{"mood":"angry"}}
+      title: Angry
+    - payload: /mood_curr{{"mood":"annoyed"}}
+      title: Annoyed
+    - payload: /mood_curr{{"mood":"distressed"}}
+      title: Distressed
+    - payload: /mood_curr{{"mood":"afraid"}}
+      title: Afraid
+    - payload: /mood_curr{{"mood":"frustrated"}}
+      title: Frustrated
+    - payload: /mood_curr{{"mood":"miserable"}}
+      title: Miserable
+    - payload: /mood_curr{{"mood":"depressed"}}
+      title: Depressed
+    - payload: /mood_curr{{"mood":"gloomy"}}
+      title: Gloomy
+    - payload: /mood_curr{{"mood":"tense"}}
+      title: Tense
+    - payload: /mood_curr{{"mood":"droopy"}}
+      title: Droopy
+    - payload: /mood_curr{{"mood":"sad"}}
+      title: Sad
+    - payload: /mood_curr{{"mood":"tired"}}
+      title: Tired
+    - payload: /mood_curr{{"mood":"bored"}}
+      title: Bored
+    - payload: /mood_curr{{"mood":"sleepy"}}
+      title: Sleepy
+    - payload: /mood_curr{{"mood":"serene"}}
+      title: Serene
+    - payload: /mood_curr{{"mood":"relaxed"}}
+      title: Relaxed
+    - payload: /mood_curr{{"mood":"calm"}}
+      title: Calm
+    - payload: /mood_curr{{"mood":"tranquil"}}
+      title: Tranquil
+    - payload: /mood_curr{{"mood":"content"}}
+      title: Content
+    - payload: /mood_curr{{"mood":"neutral"}}
+      title: Neutral
+    text: How are you feeling today?
+  utter_mood_positive_valence_high_arousal_quadrant:
+  - text: Yay, always good to hear that!
+  - text: Awesome, you must be having a good day!
+  - text: Fantastic, that's very good to hear!
+  - text: Great, I'm happy to hear that!
+  - text: Fantastic, I'm happy to hear that!
+  utter_mood_positive_valence_low_arousal_quadrant:
+  - text: Nice, that's good to hear.
+  - text: Nice, I'm glad to hear that you're feeling {mood}.
+  - text: Nice, I'm glad to hear that.
+  - text: Nice, that's always good to hear.
+  utter_mood_negative_valence_low_arousal_quadrant:
+  - text: I'm sorry to hear that you're feeling {mood}. I hope you feel better soon!
+  - text: Oh I'm sorry to hear this. Hopefully you feel better soon!
+  - text: Oh I'm sorry that you're not having a good day. I hope it gets better soon!
+  - text: I'm sorry that today isn't a good day for you. Hopefully you feel better
+      soon!
+  - text: Oh I'm sorry about that. Feel better soon!
+  utter_mood_negative_valence_high_arousal_quadrant:
+  - text: I'm sorry to hear that you're feeling {mood}. I hope you feel better soon!
+  - text: Oh I'm sorry to hear this. Hopefully you feel less {mood} soon!
+  - text: Oh I'm sorry that you're not having a good day. I hope it gets better soon!
+  - text: I'm sorry that today isn't a good day for you. Hopefully you feel better
+      soon!
+  - text: I'm sorry that today isn't a good day for you. Hopefully you feel less {mood}
+      soon!
+  utter_mood_neutral:
+  - text: I see, I guess that's not too bad.
+  - text: Ah, sounds like you're having an average day.
+  - text: Hm, that's not too bad I guess.
+  utter_prepare_state_asking:
+  - text: "Now, to best support you, I need to ask you some questions about your current situation."
+  utter_prepare_activity_proposal:
+  - text: "Great! Here is the activity that I think would help you to prepare to quit smoking:"
+  utter_activity_formulation:
+  - text: "{activity_formulation}"
+  utter_activity_clear:
+  - buttons:
+    - payload: /confirm
+      title: Yes!
+    - payload: /confirm
+      title: Sure
+    text: Sounds like something you can do between this and the next session?
+  utter_questions_state_intro:
+  - buttons:
+    - payload: /confirm
+      title: Okay!
+    - payload: /confirm
+      title: Go ahead
+    text: Cool! Now, let me ask you a few questions about how you think about this activity. I'll ask you to rate a few statements.
+  utter_question_state_1:
+  - buttons:
+    - payload: /state_answer{{"state_1":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"state_1":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"state_1":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"state_1":"3"}}
+      title: Agree
+    - payload: /state_answer{{"state_1":"4"}}
+      title: Agree strongly
+    text: "Please rate this statement: I know why it is important to do the assigned activity."
+  utter_question_state_2:
+  - buttons:
+    - payload: /state_answer{{"state_2":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"state_2":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"state_2":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"state_2":"3"}}
+      title: Agree
+    - payload: /state_answer{{"state_2":"4"}}
+      title: Agree strongly
+    text: "Thanks! Please also rate this statement: I have sufficien time to do the assigned activity."
+  utter_goodbye_not_last:
+  - text: Bye, until next time!
+  - text: Goodbye, looking forward to seeing you again in the next session!
+  - text: Bye, have a good rest of the day!
+  - text: Goodbye, see you in the next session!
+  utter_goodbye:
+  - text: Goodbye, thanks a lot for your time!
+  utter_iamabot:
+  - text: I'm a bot!
+actions:
+- action_answer_mood
+- action_choose_activity
