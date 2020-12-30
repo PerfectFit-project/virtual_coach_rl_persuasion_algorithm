@@ -14,9 +14,19 @@ from rasa_sdk.forms import FormAction
 import sqlite3
 import pandas as pd
 import random
+import numpy as np
 
 df_act = pd.read_excel("C:/Users/nele2/Documents/PerfectFitt/First Experiment/Activities/Activities.xlsx")
+df_act['Exclusion'] = df_act['Exclusion'].str.strip('()').str.split(',')
+for row in df_act.loc[df_act['Exclusion'].isnull(), 'Exclusion'].index:
+    df_act.at[row, 'Exclusion'] = []
+df_act['Prerequisite'] = df_act['Prerequisite'].str.strip('()').str.split(',')
+for row in df_act.loc[df_act['Prerequisite'].isnull(), 'Prerequisite'].index:
+    df_act.at[row, 'Prerequisite'] = []
 num_act = len(df_act)
+# activity indices per category
+s_ind = [i for i in range(len(df_act)) if df_act.loc[i, 'Category'][0] == 'S']
+pa_ind = [i for i in range(len(df_act)) if df_act.loc[i, 'Category'][0] == 'P']
 
 # Moods, sorted by quadrant w.r.t. valence and arousal
 moods_ha_lv = ["afraid", "alarmed", "annoyed", "distressed", "angry", 
@@ -65,5 +75,47 @@ class chooseActivity(Action):
 
     async def run(self, dispatcher, tracker, domain):
         
-        act_index = random.choice([i for i in range(num_act)])
-        return [SlotSet("activity_formulation", df_act.loc[act_index, 'Formulation'])]
+        curr_act_ind_list = tracker.get_slot('activity_index_list')
+        
+        print(curr_act_ind_list)
+        
+        if curr_act_ind_list is None:
+            curr_act_ind_list = []
+        
+        # Count how many smoking and PA activities have been done and excluded activities
+        num_s = 0
+        num_pa = 0
+        excluded = []
+        for i in curr_act_ind_list:
+            if i in s_ind:
+                num_s += 1
+            else:
+                num_pa += 1
+            excluded += df_act.loc[i, 'Exclusion']
+            
+        remaining_indices = [ i for i in range(num_act) if not i in curr_act_ind_list and not str(i) in excluded]
+            
+        # Check if prerequisites are met
+        for i in remaining_indices:
+            preq = [j for j in df_act.loc[i, 'Prerequisite'] if not str(j) in curr_act_ind_list]
+            if len(preq) > 0:
+                excluded.append(i)
+                
+        remaining_indices = [i for i in remaining_indices if not str(i) in excluded]
+        
+        if num_s == num_pa:
+            # Choose activity randomly among all possible activities
+            act_index = random.choice(remaining_indices)
+        elif num_s > num_pa:
+            # Choose a PA activity
+            act_index = random.choice([i for i in remaining_indices if i in pa_ind])
+        else:
+           # Choose a smoking activity
+            act_index = random.choice([i for i in remaining_indices if i in s_ind])
+            
+        curr_act_ind_list.append(act_index)
+        
+        print(curr_act_ind_list)
+        
+        return [SlotSet("activity_formulation", df_act.loc[act_index, 'Formulation']), 
+                SlotSet("activity_index_list", curr_act_ind_list)]

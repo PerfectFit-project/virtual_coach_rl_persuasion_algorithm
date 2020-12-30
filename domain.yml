@@ -21,10 +21,37 @@ slots:
   activity_formulation:
     type: text
     influence_conversation: false
+  activity_index_list:
+    type: list
+    influence_conversation: false
   state_1:
     type: text
     influence_conversation: false
   state_2:
+    type: text
+    influence_conversation: false
+  state_3:
+    type: text
+    influence_conversation: false
+  state_4:
+    type: text
+    influence_conversation: false
+  state_5:
+    type: text
+    influence_conversation: false
+  state_6:
+    type: text
+    influence_conversation: false
+  state_7:
+    type: text
+    influence_conversation: false
+  state_8:
+    type: text
+    influence_conversation: false
+  state_9:
+    type: text
+    influence_conversation: false
+  state_10:
     type: text
     influence_conversation: false
 responses:
@@ -48,7 +75,7 @@ responses:
     - payload: /confirm
       title: Yes, that's clear
     - payload: /confirm
-      title: Nice, that sounds easy enough!
+      title: Nice, sounds easy enough!
     text: Most of the time, you can just click on one of the blue buttons like you already did. If no buttons appear, just make use of the text field below. Sounds good?
   utter_prompt_session_overview:
   - text: Now, let me tell you how this session works.
@@ -210,12 +237,129 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_2":"4"}}
       title: Agree strongly
-    text: "Thanks! Please also rate this statement: I have sufficien time to do the assigned activity."
+    text: "Thanks! Please also rate this statement: I have sufficient time to do the assigned activity."
+  utter_question_state_3:
+  - buttons:
+    - payload: /state_answer{{"state_3":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"state_3":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"state_3":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"state_3":"3"}}
+      title: Agree
+    - payload: /state_answer{{"state_3":"4"}}
+      title: Agree strongly
+    text: "Alright, here is the next statement that I'd like you to rate: I have triggers that prompt/remind me to do the assigned activity."
+  utter_question_state_4:
+  - buttons:
+    - payload: /state_answer{{"state_4":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"state_4":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"state_4":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"state_4":"3"}}
+      title: Agree
+    - payload: /state_answer{{"state_4":"4"}}
+      title: Agree strongly
+    text: "Cool! Please now rate this statement: I feel like I am part of a group that is doing these kinds of activities."
+  utter_question_state_5:
+  - buttons:
+    - payload: /state_answer{{"state_5":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"state_5":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"state_5":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"state_5":"3"}}
+      title: Agree
+    - payload: /state_answer{{"state_5":"4"}}
+      title: Agree strongly
+    text: "Thank you! Just one more and we are halfway. How would you rate this statement: I feel that I want to do the assigned activity."
+  utter_question_state_6_prep:
+  - buttons:
+    - payload: /confirm
+      title: "Yes, let's go!"
+    - payload: /confirm
+      title: "Sure!"
+    text: "Nice, now we're halfway! Ready for the second half?"
+  utter_question_state_6:
+  - buttons:
+    - payload: /state_answer{{"state_6":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"state_6":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"state_6":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"state_6":"3"}}
+      title: Agree
+    - payload: /state_answer{{"state_6":"4"}}
+      title: Agree strongly
+    text: "Perfect! Here is the next statement that I'd like you to rate: I feel that I need to do the assigned activity."
+  utter_question_state_7:
+  - buttons:
+    - payload: /state_answer{{"state_7":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"state_7":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"state_7":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"state_7":"3"}}
+      title: Agree
+    - payload: /state_answer{{"state_7":"4"}}
+      title: Agree strongly
+    text: "Alright, and here's already the next one. How would you rate: I believe that it would be a good thing to do the assigned activity."
+  utter_question_state_8:
+  - buttons:
+    - payload: /state_answer{{"state_8":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"state_8":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"state_8":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"state_8":"3"}}
+      title: Agree
+    - payload: /state_answer{{"state_8":"4"}}
+      title: Agree strongly
+    text: "Thanks, just 3 more to go! Please rate this statement: I can do the assigned activity."
+  utter_question_state_9:
+  - buttons:
+    - payload: /state_answer{{"state_9":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"state_9":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"state_9":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"state_9":"3"}}
+      title: Agree
+    - payload: /state_answer{{"state_9":"4"}}
+      title: Agree strongly
+    text: "Cool! Now I'd like to ask you to rate this statement: Physical activity is a central factor to my self-concept."
+  utter_question_state_10:
+  - buttons:
+    - payload: /state_answer{{"state_10":"0"}}
+      title: "Smoker"
+    - payload: /state_answer{{"state_10":"1"}}
+      title: "Smoker trying to quit"
+    - payload: /state_answer{{"state_10":"2"}}
+      title: "Smoker who has chosen to no longer smoke"
+    - payload: /state_answer{{"state_10":"3"}}
+      title: "Non-smoker"
+    - payload: /state_answer{{"state_10":"4"}}
+      title: "Ex-smoker"
+    text: "Great! And this is the last question I'd like you to answer:  How would you describe yourself now?"
+  utter_thank_statement_answering:
+  - text: Thank you so much for answering these questions!
+  - text: "Thanks, you're the best for answering these questions!"
+  - text: Awesome, I really appreciate you answering these questions!
+  - text: Thank you, you rock for helping me with these questions!
+  - text: Fantastic, thank you for hanging in there! I know those were quite a few questions.
   utter_goodbye_not_last:
   - text: Bye, until next time!
   - text: Goodbye, looking forward to seeing you again in the next session!
-  - text: Bye, have a good rest of the day!
   - text: Goodbye, see you in the next session!
+  - text: Bye, hope to see you in the next session!
   utter_goodbye:
   - text: Goodbye, thanks a lot for your time!
   utter_iamabot:
