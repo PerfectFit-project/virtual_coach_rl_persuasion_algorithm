@@ -21,8 +21,17 @@ slots:
   activity_formulation:
     type: text
     influence_conversation: false
+  activity_verb: 
+    type: text
+    influence_conversation: false
   activity_index_list:
     type: list
+    influence_conversation: false
+  action_index_list:
+    type: list
+    influence_conversation: false
+  message_formulation:
+    type: text
     influence_conversation: false
   state_1:
     type: text
@@ -60,7 +69,7 @@ responses:
   - text: Hi, I'm Sam. It's great to meet you!
   - text: Hello there, I'm Sam. I'm happy to meet you!
   utter_purpose:
-  - text: I'm here to help you to prepare to quit smoking.
+  - text: "I've mentioned my name, but I haven't yet told you what I do: I'm here to help you to prepare to quit smoking."
   utter_expertise:
   - buttons:
     - payload: /confirm
@@ -166,7 +175,7 @@ responses:
   - text: Yay, always good to hear that!
   - text: Awesome, you must be having a good day!
   - text: Fantastic, that's very good to hear!
-  - text: Great, I'm happy to hear that!
+  - text: Great, I'm happy to hear that that you're feeling {mood}!
   - text: Fantastic, I'm happy to hear that!
   utter_mood_positive_valence_low_arousal_quadrant:
   - text: Nice, that's good to hear.
@@ -174,20 +183,20 @@ responses:
   - text: Nice, I'm glad to hear that.
   - text: Nice, that's always good to hear.
   utter_mood_negative_valence_low_arousal_quadrant:
-  - text: I'm sorry to hear that you're feeling {mood}. I hope you feel better soon!
-  - text: Oh I'm sorry to hear this. Hopefully you feel better soon!
-  - text: Oh I'm sorry that you're not having a good day. I hope it gets better soon!
+  - text: I'm sorry to hear that you're feeling {mood}. I hope you feel better soon! Meanwhile, maybe this session can help to direct your thoughts to something else.
+  - text: Oh I'm sorry to hear this. Hopefully you feel better soon! In the meantime, maybe this session can distract you a little.
+  - text: Oh I'm sorry that you're not having a good day. I hope it gets better soon! In the meantime, maybe talking to me can help to direct your thoughts to something else.
   - text: I'm sorry that today isn't a good day for you. Hopefully you feel better
-      soon!
-  - text: Oh I'm sorry about that. Feel better soon!
+      soon! And maybe this session can help you to think of something else.
+  - text: Oh I'm sorry about that. Feel better soon! And maybe this session can help to distract you a little.
   utter_mood_negative_valence_high_arousal_quadrant:
-  - text: I'm sorry to hear that you're feeling {mood}. I hope you feel better soon!
-  - text: Oh I'm sorry to hear this. Hopefully you feel less {mood} soon!
-  - text: Oh I'm sorry that you're not having a good day. I hope it gets better soon!
+  - text: I'm sorry to hear that you're feeling {mood}. I hope you feel better soon! In the meantime, maybe this session can distract you a little.
+  - text: Oh I'm sorry to hear this. Hopefully you feel less {mood} soon! In the meantime, maybe talking to me can help to direct your thoughts to something else.
+  - text: Oh I'm sorry that you're not having a good day. I hope it gets better soon! Meanwhile, maybe this session can help to direct your thoughts to something else.
   - text: I'm sorry that today isn't a good day for you. Hopefully you feel better
-      soon!
+      soon! And maybe this session can help you to think of something else.
   - text: I'm sorry that today isn't a good day for you. Hopefully you feel less {mood}
-      soon!
+      soon! And maybe this session can help to distract you a little.
   utter_mood_neutral:
   - text: I see, I guess that's not too bad.
   - text: Ah, sounds like you're having an average day.
@@ -355,11 +364,42 @@ responses:
   - text: Awesome, I really appreciate you answering these questions!
   - text: Thank you, you rock for helping me with these questions!
   - text: Fantastic, thank you for hanging in there! I know those were quite a few questions.
+  utter_email_reminder:
+  - text: This is all for this session. Of course, I'll send you a reminder with your assigned activity to your Prolific email.
+  - text: Then that's it for this session. Of course, I'll send you a reminder with your assigned activity to your Prolific email.
+  - text: I've said all that I wanted for this session. Of course, I'll send you a reminder with your assigned activity to your Prolific email.
+  - text: You've made it to the end of this session! Of course, I'll send you a reminder with your assigned activity to your Prolific email.
+  utter_remind_next_session:
+  - buttons:
+    - payload: /confirm
+      title: Sure!
+    - payload: /confirm
+      title: Yes!
+    text: Oh, and besides the activity reminder, keep an eye out for the invitation to your next session with me. Sounds good?
+  utter_goodbye_not_last_prep:
+  - text: Perfect, and thank you for participating!
+  - text: Awesome, and thank you for joining!
+  - text: Cool, and thanks for taking the time to talk to me!
+  - text: Great, and thank you for joining!
+  - text: Perfect, and thanks a lot for participating!
+  utter_message_formulation_prep:
+  - text: Between this and the next session, please remember to {activity_verb}.
+  utter_message_formulation:
+  - text: "{message_formulation}"
+  utter_ok:
+  - buttons:
+    - payload: /confirm
+     text: Yeah!
+    - payload: /confirm:
+     text: Alright!
+    text: Ok?
   utter_goodbye_not_last:
-  - text: Bye, until next time!
-  - text: Goodbye, looking forward to seeing you again in the next session!
-  - text: Goodbye, see you in the next session!
-  - text: Bye, hope to see you in the next session!
+  - buttons:
+    - payload: /confirm
+      title: Bye!
+    - payload: /confirm
+      title: Till next time!
+    text: Bye, see you in the next session!
   utter_goodbye:
   - text: Goodbye, thanks a lot for your time!
   utter_iamabot:
@@ -367,3 +407,4 @@ responses:
 actions:
 - action_answer_mood
 - action_choose_activity
+- action_choose_persuasion_random

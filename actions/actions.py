@@ -16,6 +16,7 @@ import pandas as pd
 import random
 import numpy as np
 
+# Activities
 df_act = pd.read_excel("C:/Users/nele2/Documents/PerfectFitt/First Experiment/Activities/Activities.xlsx")
 df_act['Exclusion'] = df_act['Exclusion'].str.strip('()').str.split(',')
 for row in df_act.loc[df_act['Exclusion'].isnull(), 'Exclusion'].index:
@@ -28,12 +29,17 @@ num_act = len(df_act)
 s_ind = [i for i in range(len(df_act)) if df_act.loc[i, 'Category'][0] == 'S']
 pa_ind = [i for i in range(len(df_act)) if df_act.loc[i, 'Category'][0] == 'P']
 
+# Persuasive Messages
+df_mess = pd.read_csv("C:/Users/nele2/Documents/PerfectFitt/First Experiment/all_messages.csv")
+num_mess_per_type = [6, 4, 4, 3]
+NUM_PERS_TYPES = 4
+
 # Moods, sorted by quadrant w.r.t. valence and arousal
 moods_ha_lv = ["afraid", "alarmed", "annoyed", "distressed", "angry", 
                "frustrated"]
 moods_la_lv = ["miserable", "depressed", "gloomy", "tense", "droopy", "sad", 
-               "tired", "bored"]
-moods_la_hv = ["sleepy", "content", "serene", "calm", "relaxed", "tranquil"]
+               "tired", "bored", "sleepy"] # sleepy actually in different quadrant
+moods_la_hv = ["content", "serene", "calm", "relaxed", "tranquil"]
 moods_ha_hv = ["satisfied", "pleased", "delighted", "happy", "glad", 
                "astonished", "aroused", "excited"]
 
@@ -77,8 +83,6 @@ class chooseActivity(Action):
         
         curr_act_ind_list = tracker.get_slot('activity_index_list')
         
-        print(curr_act_ind_list)
-        
         if curr_act_ind_list is None:
             curr_act_ind_list = []
         
@@ -115,7 +119,36 @@ class chooseActivity(Action):
             
         curr_act_ind_list.append(act_index)
         
-        print(curr_act_ind_list)
-        
         return [SlotSet("activity_formulation", df_act.loc[act_index, 'Formulation']), 
-                SlotSet("activity_index_list", curr_act_ind_list)]
+                SlotSet("activity_index_list", curr_act_ind_list),
+                SlotSet("activity_verb", df_act.loc[act_index, "VerbYou"])]
+    
+class choosePersuasionRandom(Action):
+    def name(self):
+        return "action_choose_persuasion_random"
+
+    async def run(self, dispatcher, tracker, domain):
+        
+        curr_act_ind_list = tracker.get_slot('activity_index_list')
+        curr_action_ind_list = tracker.get_slot('action_index_list')
+        curr_activity = curr_act_ind_list[-1]
+        
+        if curr_action_ind_list is None:
+            curr_action_ind_list = []
+        
+        num_mess_per_activ = len(df_mess)/len(df_act)
+        
+        # Choose persuasion type randomly
+        pers_type = random.choice([i for i in range(NUM_PERS_TYPES)])
+        
+        # Choose message randomly among messages selected the lowest number of times
+        counts = [curr_action_ind_list.count(i) for i in range(sum(num_mess_per_type[0:pers_type]), sum(num_mess_per_type[0:pers_type + 1]))]
+        min_messages = [i for i in range(num_mess_per_type[pers_type]) if counts[i] == min(counts)]
+        message_ind = random.choice(min_messages) + sum(num_mess_per_type[0:pers_type])
+        curr_action_ind_list.append(message_ind)
+        
+        # Determine message
+        message = df_mess.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Message']
+        
+        return [SlotSet("message_formulation", message), 
+                SlotSet("action_index_list", curr_action_ind_list)]
