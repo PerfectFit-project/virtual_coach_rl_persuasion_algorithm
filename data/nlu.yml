@@ -1,0 +1,26 @@
+version: "2.0"
+
+nlu:
+- intent: anything
+  examples: |
+    - I
+    - because
+    - cause
+    - you
+    - tomorrow
+    - today
+    - will
+    - never
+    - when
+    - then
+    - if I do this, then I do that
+    
+- intent: mood_curr
+  examples: |
+    - delighted
+    - satisfied
+    - neutral
+    - calm
+    - serene
+    - tired
+    - sleepy

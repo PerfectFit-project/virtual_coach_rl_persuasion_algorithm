@@ -9,6 +9,7 @@ from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.events import SlotSet
 from rasa_sdk.events import ConversationResumed
+from rasa_sdk.events import UserUtteranceReverted
 from rasa_sdk.events import FollowupAction
 from rasa_sdk.forms import FormAction
 import sqlite3
@@ -123,6 +124,20 @@ class chooseActivity(Action):
                 SlotSet("activity_index_list", curr_act_ind_list),
                 SlotSet("activity_verb", df_act.loc[act_index, "VerbYou"])]
     
+class ActionGetFreetext(FormAction):
+
+    @staticmethod
+    def required_fields():
+        return [
+            FreeTextFormField(action_planning_answer)
+        ]
+
+    def name(self):
+        return 'action_freetext'
+
+    def submit(self, dispatcher, tracker, domain):
+        return []
+    
 class choosePersuasionRandom(Action):
     def name(self):
         return "action_choose_persuasion_random"
@@ -141,6 +156,13 @@ class choosePersuasionRandom(Action):
         # Choose persuasion type randomly
         pers_type = random.choice([i for i in range(NUM_PERS_TYPES)])
         
+        pers_type = 3
+        
+        # Determine whether user input is required for persuasion type
+        require_input = False
+        if pers_type == 3:
+            require_input = True
+        
         # Choose message randomly among messages selected the lowest number of times
         counts = [curr_action_ind_list.count(i) for i in range(sum(num_mess_per_type[0:pers_type]), sum(num_mess_per_type[0:pers_type + 1]))]
         min_messages = [i for i in range(num_mess_per_type[pers_type]) if counts[i] == min(counts)]
@@ -151,4 +173,5 @@ class choosePersuasionRandom(Action):
         message = df_mess.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Message']
         
         return [SlotSet("message_formulation", message), 
-                SlotSet("action_index_list", curr_action_ind_list)]
+                SlotSet("action_index_list", curr_action_ind_list),
+                SlotSet("pers_input", require_input)]

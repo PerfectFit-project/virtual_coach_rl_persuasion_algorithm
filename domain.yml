@@ -2,19 +2,18 @@ session_config:
   session_expiration_time: 60
   carry_over_slots_to_new_session: true
 intents:
-- greet
-- goodbye
-- affirm
 - confirm
-- deny
-- bot_challenge
 - mood_curr
 - start_session1
 - state_answer
+- anything
 slots:
   mood:
     type: text
     influence_conversation: false
+  pers_input: 
+    type: bool
+    influence_conversation: true 
   quadrant:
     type: text
     influence_conversation: false
@@ -31,6 +30,9 @@ slots:
     type: list
     influence_conversation: false
   message_formulation:
+    type: text
+    influence_conversation: false
+  action_planning_answer:
     type: text
     influence_conversation: false
   state_1:
@@ -389,10 +391,13 @@ responses:
   utter_ok:
   - buttons:
     - payload: /confirm
-     text: Yeah!
-    - payload: /confirm:
-     text: Alright!
+      title: Yeah!
+    - payload: /confirm
+      title: Alright!
     text: Ok?
+  utter_thank_you_planning:
+  - text: Cool, sounds good!
+  - text: Nice, sounds like a good plan!
   utter_goodbye_not_last:
   - buttons:
     - payload: /confirm
@@ -404,7 +409,10 @@ responses:
   - text: Goodbye, thanks a lot for your time!
   utter_iamabot:
   - text: I'm a bot!
+  utter_default:
+  - text: I'm sorry, I did not quite understand this. Can you elaborate?
 actions:
 - action_answer_mood
 - action_choose_activity
 - action_choose_persuasion_random
+- action_freetext
