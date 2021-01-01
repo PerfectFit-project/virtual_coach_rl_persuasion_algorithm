@@ -416,3 +416,4 @@ actions:
 - action_choose_activity
 - action_choose_persuasion_random
 - action_freetext
+- action_save_session

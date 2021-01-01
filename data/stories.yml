@@ -9,53 +9,53 @@ stories:
   - action: utter_ask_for_mood
   - intent: mood_curr
   - action: action_answer_mood
-  - action: utter_purpose
-  - action: utter_expertise
-  - intent: confirm
-  - action: utter_prompt_usage
-  - action: utter_explain_usage
-  - intent: confirm
-  - action: utter_prompt_session_overview
-  - action: utter_explain_session_overview_1
-  - action: utter_explain_session_overview_2
-  - action: utter_explain_session_overview_3
-  - action: utter_explain_session_overview_4
-  - action: utter_explain_session_final
-  - intent: confirm
+  #- action: utter_purpose
+  #- action: utter_expertise
+  #- intent: confirm
+  #- action: utter_prompt_usage
+  #- action: utter_explain_usage
+  #- intent: confirm
+  #- action: utter_prompt_session_overview
+  #- action: utter_explain_session_overview_1
+  #- action: utter_explain_session_overview_2
+  #- action: utter_explain_session_overview_3
+  #- action: utter_explain_session_overview_4
+  #- action: utter_explain_session_final
+  #- intent: confirm
   - action: utter_prepare_activity_proposal
   - action: action_choose_activity
   - action: utter_activity_formulation
-  - action: utter_activity_clear
-  - intent: confirm
-  - action: utter_questions_state_intro
-  - intent: confirm
-  - action: utter_question_state_1
-  - intent: state_answer
-  - action: utter_question_state_2
-  - intent: state_answer
-  - action: utter_question_state_3
-  - intent: state_answer
-  - action: utter_question_state_4
-  - intent: state_answer
-  - action: utter_question_state_5
-  - intent: state_answer
-  - action: utter_question_state_6_prep
-  - intent: confirm
-  - action: utter_question_state_6
-  - intent: state_answer
-  - action: utter_question_state_7
-  - intent: state_answer
-  - action: utter_question_state_8
-  - intent: state_answer
-  - action: utter_question_state_9
-  - intent: state_answer
-  - action: utter_question_state_10
-  - intent: state_answer
-  - action: utter_thank_statement_answering
-  - action: utter_email_reminder
-  - action: utter_remind_next_session
-  - intent: confirm
-  - action: utter_goodbye_not_last_prep
+  #- action: utter_activity_clear
+  #- intent: confirm
+  #- action: utter_questions_state_intro
+  #- intent: confirm
+  #- action: utter_question_state_1
+  #- intent: state_answer
+  #- action: utter_question_state_2
+  #- intent: state_answer
+  #- action: utter_question_state_3
+  #- intent: state_answer
+  #- action: utter_question_state_4
+  #- intent: state_answer
+  #- action: utter_question_state_5
+  #- intent: state_answer
+  #- action: utter_question_state_6_prep
+  #- intent: confirm
+  #- action: utter_question_state_6
+  #- intent: state_answer
+  #- action: utter_question_state_7
+  #- intent: state_answer
+  #- action: utter_question_state_8
+  #- intent: state_answer
+  #- action: utter_question_state_9
+  #- intent: state_answer
+  #- action: utter_question_state_10
+  #- intent: state_answer
+  #- action: utter_thank_statement_answering
+  #- action: utter_email_reminder
+  #- action: utter_remind_next_session
+  #- intent: confirm
+  #- action: utter_goodbye_not_last_prep
   - action: utter_message_formulation_prep
   - checkpoint: choose_persuasion
   
@@ -68,7 +68,7 @@ stories:
   - action: utter_message_formulation
   - action: utter_ok
   - intent: confirm
-  - action: utter_goodbye_not_last
+  - action: action_save_session
 
 - story: persuasion_input
   steps:
@@ -79,4 +79,4 @@ stories:
   - action: utter_message_formulation
   - intent: anything
   - action: utter_thank_you_planning
-  - action: utter_goodbye_not_last
+  - action: action_save_session

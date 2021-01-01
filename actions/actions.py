@@ -55,7 +55,7 @@ def extract_metadata_from_tracker(tracker: Tracker):
     return user_events[-1]['metadata']
 
 # answer based on mood
-class AnswerMood(Action):
+class ActionAnswerMood(Action):
     def name(self):
         return "action_answer_mood"
 
@@ -76,7 +76,7 @@ class AnswerMood(Action):
         
         return []
     
-class chooseActivity(Action):
+class ActionChooseActivity(Action):
     def name(self):
         return "action_choose_activity"
 
@@ -126,19 +126,82 @@ class chooseActivity(Action):
     
 class ActionGetFreetext(FormAction):
 
-    @staticmethod
-    def required_fields():
-        return [
-            FreeTextFormField(action_planning_answer)
-        ]
-
     def name(self):
         return 'action_freetext'
 
-    def submit(self, dispatcher, tracker, domain):
-        return []
+    async def run(self, dispatcher, tracker, domain):
+
+        user_plan = tracker.latest_message['text']
+        
+        print(user_plan)
+        
+        return [SlotSet("action_planning_answer", user_plan)]
     
-class choosePersuasionRandom(Action):
+class ActionSaveSession(Action):
+    def name(self):
+        return "action_save_session"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        metadata = extract_metadata_from_tracker(tracker)
+        #user_id = metadata['userid']
+        user_id = '111'
+        action0 = tracker.get_slot("mood")
+        
+        # create db connection
+        try:
+            sqliteConnection = sqlite3.connect('chatbot.db')
+            cursor = sqliteConnection.cursor()
+            print("Successfully connected to SQLite")
+            sqlite_select_query = """SELECT * from users WHERE id = ?"""
+            cursor.execute(sqlite_select_query, (user_id,))
+            data = cursor.fetchall()
+            sessions_done = 0;
+            if not data:
+                sessions_done = 1
+                data_tuple = (user_id, action0, sessions_done)
+                sqlite_query = """INSERT INTO users (id, action0, sessions_done) VALUES (?, ?, ?)"""
+                dispatcher.utter_message(template="utter_goodbye_not_last")
+                link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_3VmOMw3USprKQv3?PROLIFIC_PID=" + str(user_id) + "&Group=2"
+                dispatcher.utter_message(link)
+            elif data[0][2] == 1:
+                sessions_done = 2
+                data_tuple = (action0, sessions_done, user_id)
+                sqlite_query = """UPDATE users SET action0 = ?, sessions_done = ? WHERE id = ?"""
+                dispatcher.utter_message(template="utter_goodbye_not_last")
+                link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
+                dispatcher.utter_message(link)
+            elif data [0][2] == 2:
+                sessions_done = 3
+                data_tuple = (action0, sessions_done, user_id)
+                sqlite_query = """UPDATE users SET action0 = ?, sessions_done = ? WHERE id = ?"""
+                dispatcher.utter_message(template="utter_goodbye_not_last")
+                link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_5A0x6l1ToGlSHyJ?PROLIFIC_PID=" + str(user_id) + "&Group=2"
+                dispatcher.utter_message(link)
+            else:
+                dispatcher.utter_message("Something went wrong, please contact researcher: n.albers@tudelft.nl.")
+            # print("user_id: ", user_id, "dd_type: ", dd_type, "dd_present: ", dd_present,
+            #       "comfortable_sharing: ", comfortable_sharing, "last tip: ", last_tip, "sessions_done: ",
+            #       sessions_done)
+            print(user_id, action0, sessions_done)
+            # sqlite_insert_userid = """INSERT INTO users (id, dd_type, dd_present, comfortable_sharing, last_tip, sessions_done) VALUES (?, ?, ?, ?, ?, ?)"""
+            # data_tuple = (user_id, dd_type, dd_present, comfortable_sharing, last_tip, sessions_done)
+            cursor.execute(sqlite_query, data_tuple)
+            sqliteConnection.commit()
+            cursor.close()
+
+        except sqlite3.Error as error:
+            print("Error while connecting to sqlite", error)
+        finally:
+            if (sqliteConnection):
+                sqliteConnection.close()
+                print("The SQLite connection is closed")
+        # connection closed
+
+        return []
+                 
+class ActionChoosePersuasionRandom(Action):
     def name(self):
         return "action_choose_persuasion_random"
 
