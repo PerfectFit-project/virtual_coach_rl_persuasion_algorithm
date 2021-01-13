@@ -28,11 +28,11 @@ pipeline:
 policies:
   - name: MemoizationPolicy
   - name: TEDPolicy
-    max_history: 10
+    max_history: 4
     epochs: 10
-  - name: FallbackPolicy
-    nlu_threshold: 0.4
-    fallback_action_name: "action_freetext"
+  #- name: FallbackPolicy
+  #  nlu_threshold: 0.01
+  #  fallback_action_name: "action_freetext"
   #- name: RulePolicy
     # Confidence threshold for the `core_fallback_action_name` to apply.
     # The action will apply if no other action was predicted with

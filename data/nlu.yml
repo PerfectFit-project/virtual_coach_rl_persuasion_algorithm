@@ -14,6 +14,7 @@ nlu:
     - when
     - then
     - if I do this, then I do that
+    - if I do this
     
 - intent: mood_curr
   examples: |

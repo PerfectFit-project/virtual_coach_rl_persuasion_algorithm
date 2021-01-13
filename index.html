@@ -10,8 +10,8 @@
 <script>
 	  WebChat.default.init({
 		selector: "#webchat",
-		initPayload: "/start_session1",
-		customData: {"language": "en"}, // arbitrary custom data. Stay minimal as this will be added to the socket
+		initPayload: "/start_session5",
+		customData: {"language":"en"}, // arbitrary custom data. Stay minimal as this will be added to the socket
 		socketUrl: "http://localhost:5005",
 		socketPath: "/socket.io/",
 		fullScreenMode: true,
@@ -20,6 +20,22 @@
 		subtitle: "Session 1",
 		params: {"storage": "session"} // can be set to "local"  or "session". details in storage section.
 })
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    var hideSender = function() {
+        if( $('.rw-replies').length || $('#wave').length || $('.rw-message').length == 0){
+            $("textarea").prop('disabled', true);
+            $("textarea").prop('placeholder', "Use one of the buttons to answer.");
+        }
+    
+        else {
+           $("textarea").prop('disabled', false);
+           $("textarea").prop('placeholder', "Type a message...");
+        }
+    }
+    setInterval(hideSender, 250);
 </script>
 </body>
 </html>
