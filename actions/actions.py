@@ -124,6 +124,57 @@ class ActionChooseActivity(Action):
                 SlotSet("activity_index_list", curr_act_ind_list),
                 SlotSet("activity_verb", df_act.loc[act_index, "VerbYou"])]
     
+class ActionSetSlotReward(FormAction):
+
+    def name(self):
+        return 'action_set_slot_reward'
+
+    async def run(self, dispatcher, tracker, domain):
+
+        reward = tracker.get_slot('reward')
+        success = True
+        if reward == "0":
+            success = False
+        
+        return [SlotSet("action_success", success)]
+    
+class ActionGetGroup(FormAction):
+
+    def name(self):
+        return 'action_get_group'
+
+    async def run(self, dispatcher, tracker, domain):
+
+        activity_experience = "df"
+        
+        return [SlotSet("activity_experience", activity_experience)]
+    
+class ActionGetFreetextActivityComp(FormAction):
+
+    def name(self):
+        return 'action_freetext_activity_comp'
+
+    async def run(self, dispatcher, tracker, domain):
+
+        activity_experience = tracker.latest_message['text']
+        
+        #print("Activity experience:", activity_experience)
+        #print("Intent caught:", tracker.latest_message['intent'].get('name') )
+        
+        return [SlotSet("activity_experience", activity_experience)]
+    
+# Read free text reponse for modifications to response for activity experience
+class ActionGetFreetextActivityMod(FormAction):
+
+    def name(self):
+        return 'action_freetext_activity_mod'
+
+    async def run(self, dispatcher, tracker, domain):
+
+        activity_experience_mod = tracker.latest_message['text']
+        
+        return [SlotSet("activity_experience_mod", activity_experience_mod)]
+    
 class ActionGetFreetext(FormAction):
 
     def name(self):
@@ -133,9 +184,20 @@ class ActionGetFreetext(FormAction):
 
         user_plan = tracker.latest_message['text']
         
-        print(user_plan)
+        #print("User plan:", user_plan)
+        #print(tracker.latest_message['intent'].get('name') )
         
-        return [SlotSet("action_planning_answer", user_plan)]
+        plan_correct = True
+        # check syntax
+        if not ("if" in user_plan.lower()):
+            plan_correct = False
+        elif len(user_plan) <= 6:
+            plan_correct = False
+        else:
+            dispatcher.utter_message(template="utter_thank_you_planning")
+        
+        return [SlotSet("action_planning_answer", user_plan),
+                SlotSet("plan_correct", plan_correct)]
     
 class ActionSaveSession(Action):
     def name(self):
@@ -145,7 +207,7 @@ class ActionSaveSession(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         metadata = extract_metadata_from_tracker(tracker)
-        #user_id = metadata['userid']
+        user_id = metadata['userid']
         user_id = '111'
         action0 = tracker.get_slot("mood")
         
@@ -219,7 +281,8 @@ class ActionChoosePersuasionRandom(Action):
         # Choose persuasion type randomly
         pers_type = random.choice([i for i in range(NUM_PERS_TYPES)])
         
-        pers_type = 3
+        # to test implementation intention
+        #pers_type = 3
         
         # Determine whether user input is required for persuasion type
         require_input = False

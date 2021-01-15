@@ -5,37 +5,68 @@ intents:
 - confirm
 - mood_curr
 - start_session1
+- start_session2
+- start_session3
+- start_session4
+- start_session5
 - state_answer
+- reward_answer
 - anything
+- nlu_fallback
+- deny
 slots:
-  mood:
-    type: text
+  action_index_list:
+    type: list
     influence_conversation: false
-  pers_input: 
-    type: bool
-    influence_conversation: true 
-  quadrant:
+  action_planning_answer:
     type: text
     influence_conversation: false
   activity_formulation:
     type: text
     influence_conversation: false
-  activity_verb: 
-    type: text
-    influence_conversation: false
   activity_index_list:
     type: list
     influence_conversation: false
-  action_index_list:
-    type: list
+  activity_verb:
+    type: text
     influence_conversation: false
   message_formulation:
     type: text
     influence_conversation: false
-  action_planning_answer:
+  mood:
+    type: text
+    influence_conversation: false
+  reward:
+    type: text
+    influence_conversation: false
+  action_success:
+    type: bool
+    influence_conversation: true
+  activity_experience:
+    type: text
+    influence_conversation: false
+  activity_experience_mod:
+    type: text
+    influence_conversation: false
+  pers_input:
+    type: bool
+    influence_conversation: true
+  plan_correct:
+    type: bool
+    influence_conversation: true
+  quadrant:
+    type: text
+    influence_conversation: false
+  attention_check:
+    type: text
+    influence_conversation: false
+  attention_check_2:
     type: text
     influence_conversation: false
   state_1:
+    type: text
+    influence_conversation: false
+  state_10:
     type: text
     influence_conversation: false
   state_2:
@@ -62,42 +93,46 @@ slots:
   state_9:
     type: text
     influence_conversation: false
-  state_10:
-    type: text
-    influence_conversation: false
 responses:
   utter_greet_first_time:
   - text: Hey there, I'm Sam. It's nice to meet you!
   - text: Hi, I'm Sam. It's great to meet you!
   - text: Hello there, I'm Sam. I'm happy to meet you!
   utter_purpose:
-  - text: "I've mentioned my name, but I haven't yet told you what I do: I'm here to help you to prepare to quit smoking."
+  - text: "I've mentioned my name, but I haven't yet told you what I do: I'm here\
+      \ to help you to prepare to quit smoking and to become more physically active."
   utter_expertise:
   - buttons:
     - payload: /confirm
       title: I see
     - payload: /confirm
       title: Very cool!
-    text: "The knowledge I have allows me to target my support to the situation that people are in. It helps me to suggest useful activities, and to aid people in doing them. Cool right?"
+    text: The knowledge I have allows me to target my support to the situation that
+      people are in. It helps me to suggest useful activities, and to aid people in
+      doing them. Cool right?
   utter_prompt_usage:
-  - text: Before we start, let me explain how you can communicate with me. 
+  - text: Before we start, let me explain how you can communicate with me.
   utter_explain_usage:
   - buttons:
     - payload: /confirm
       title: Yes, that's clear
     - payload: /confirm
       title: Nice, sounds easy enough!
-    text: Most of the time, you can just click on one of the blue buttons like you already did. If no buttons appear, just make use of the text field below. Sounds good?
+    text: Most of the time, you can just click on one of the blue buttons like you
+      already did. If no buttons appear, just make use of the text field below. Sounds
+      good?
   utter_prompt_session_overview:
   - text: Now, let me tell you how this session works.
   utter_explain_session_overview_1:
-  - text: First, I'll use the information I have about you and other people who want to, or already have, quit smoking to suggest an activity. This activity is designed to help you to quit smoking.
+  - text: First, I'll use the information I have about you and people who are similar to you to suggest a preparation activity.
   utter_explain_session_overview_2:
-  - text: Next, I'll ask you some questions about your thoughts about doing this activity. This will allow me to learn to better support you and other people like you.
+  - text: Next, I'll ask you some questions about your thoughts about doing this activity.
+      This will allow me to learn to better support you and other people like you.
   utter_explain_session_overview_3:
-  - text: In the end, I might help you to plan when, where and how to do your suggested activity.
+  - text: In the end, I might help you to plan when, where and how to do your suggested
+      activity.
   utter_explain_session_overview_4:
-  - text: And don't worry, I will also send you your activity to your Prolific email as a reminder.
+  - text: And don't worry, I will also send you your activity to your Prolific email.
   utter_explain_session_final:
   - buttons:
     - payload: /confirm
@@ -112,6 +147,107 @@ responses:
   - text: Hi there, welcome back!
   - text: Hey there, welcome to your next session!
   - text: Hi, I'm happy to see you again!
+  utter_greet_last:
+  - text: Hi there, welcome to your last session!
+  utter_explain_session_234_1:
+  - text: Before we start, let me give you a quick overview of what this session looks like.
+  - text: Before we begin, let me quickly give you an overview of what this session looks like.
+  utter_explain_session_2_2:
+  - text: "I'll first ask you about your experience (if any) with your assigned activity from last time."
+  utter_explain_session_2_3:
+  - text: Then, I'll use the information I have about you and people who are similar to you to suggest a new preparation activity.
+  utter_explain_session_2_4:
+  - buttons:
+    - payload: /confirm
+      title: Sure!
+    - payload: /confirm
+      title: Sounds good
+    text: And, just like last time, I'll ask you about your thoughts about doing this activity and will maybe help you to plan to do it. Okay?
+  utter_explain_session_234_5:
+  - text: Cool! Oh and of course I'll send you an email with your assigned activity to your Prolific email again.
+  - text: Cool! Oh and of course I'll also send you an email with your new activity to your Prolific email again.
+  utter_explain_session_34_2:
+  - text: Just like last time, I'll first ask you about your experience (if any) with your assigned activity from last time.
+  utter_explain_session_345_3: 
+  - text: I'll then suggest you a new preparation activity based on the information I have about you and people who are similar to you.
+  utter_explain_session_345_4:
+  - buttons:
+    - payload: /confirm
+      title: Okay!
+    - payload: /confirm
+      title: Of course
+    text: In the end, I'll ask you about your thoughts about doing this activity and maybe help you plan to do it. Sounds good?
+  utter_explain_session_5_1:
+  - text: Before we start, let me quickly explain how this last session is structured.
+  utter_explain_session_5_2:
+  - text: Just as before, I'll first ask you about your experience (if any) with your assigned activity from last time.
+  utter_explain_session_5_5:
+  - text: Cool! Of course, since this is the last session, there won't be a next session in which I ask you about your experience with this activity.
+  utter_explain_session_5_6:
+  - text: "But I'll still send you a reminder to your Prolific email like before."
+  utter_ask_activity_completion:
+  - buttons: 
+    - payload: /reward_answer{{"reward":"1"}}
+      title: Yes
+    - payload: /reward_answer{{"reward":"0"}}
+      title: No
+    text: Great! Did you complete the activity I suggested to you last time?
+  utter_ask_activity_completion_last:
+  - buttons: 
+    - payload: /reward_answer{{"reward":"1"}}
+      title: Yes
+    - payload: /reward_answer{{"reward":"0"}}
+      title: No
+    text: Great! Did you complete the activity I suggested to you last time?
+  utter_response_activity_completion_done:
+  - text: Yay, congrats!
+  - text: Nice, good job!
+  - text: Awesome, well done!
+  - text: Yay, nicely done!
+  - text: Nice, congrats!
+  utter_response_activity_completion_notDone:
+  - text: I'm sorry to hear that. I understand that it can be difficult.
+  - text: Hmm, maybe you have been busy.
+  - text: Ah that is unfortunate. I understand that it is not always easy.
+  - text: Too bad. I understand that it can be difficult at the beginning.
+  utter_response_activity_completion_done_last:
+  - text: Yay, congrats!
+  - text: Nice, good job!
+  - text: Awesome, well done!
+  - text: Yay, nicely done!
+  - text: Nice, congrats!
+  utter_response_activity_completion_notDone_last:
+  - text: I'm sorry to hear that. I understand that it can be difficult.
+  - text: Hmm, maybe you have been busy.
+  - text: Ah that is unfortunate. I understand that it is not always easy.
+  - text: Too bad. I understand that it can be difficult at the beginning.
+  utter_ask_activity_completion_details_yes:
+  - text: "Please tell me about your experience with your assigned activity."
+  utter_ask_activity_completion_details_no:
+  - text: "Please tell me about your experience with your assigned activity. If you have none, just type 'None'."
+  utter_ask_activity_completion_details_yes_last:
+  - text: "Please tell me about your experience (if any) with your assigned activity."
+  utter_ask_activity_completion_details_no_last:
+  - text: "Please tell me about your experience (if any) with your assigned activity."
+  utter_thank_you_activity_experience:
+  - text: Okay, thanks for telling me!
+  - text: Cool, thanks for sharing!
+  - text: Cool, thanks for letting me know!
+  utter_thank_you_activity_experience_last:
+  - text: Okay, thanks for telling me!
+  - text: Cool, thanks for sharing!
+  - text: Cool, thanks for letting me know!
+  utter_repeat_activity_completion_answer:
+  - buttons:
+    - payload: /confirm
+      title: Yes
+    - payload: /deny
+      title: No
+    text: "This is what I got: {activity_experience}. Would you like to add or change anything?"
+  utter_ask_activity_comp_details_mod_last:
+  - text: Okay, please tell me what you would like to add or change.
+  utter_ask_activity_comp_details_mod:
+  - text: Okay, please tell me what you would like to add or change.
   utter_ask_for_mood:
   - buttons:
     - payload: /mood_curr{{"mood":"satisfied"}}
@@ -185,16 +321,26 @@ responses:
   - text: Nice, I'm glad to hear that.
   - text: Nice, that's always good to hear.
   utter_mood_negative_valence_low_arousal_quadrant:
-  - text: I'm sorry to hear that you're feeling {mood}. I hope you feel better soon! Meanwhile, maybe this session can help to direct your thoughts to something else.
-  - text: Oh I'm sorry to hear this. Hopefully you feel better soon! In the meantime, maybe this session can distract you a little.
-  - text: Oh I'm sorry that you're not having a good day. I hope it gets better soon! In the meantime, maybe talking to me can help to direct your thoughts to something else.
+  - text: I'm sorry to hear that you're feeling {mood}. I hope you feel better soon!
+      Meanwhile, maybe this session can help to direct your thoughts to something
+      else.
+  - text: Oh I'm sorry to hear this. Hopefully you feel better soon! In the meantime,
+      maybe this session can distract you a little.
+  - text: Oh I'm sorry that you're not having a good day. I hope it gets better soon!
+      In the meantime, maybe talking to me can help to direct your thoughts to something
+      else.
   - text: I'm sorry that today isn't a good day for you. Hopefully you feel better
       soon! And maybe this session can help you to think of something else.
-  - text: Oh I'm sorry about that. Feel better soon! And maybe this session can help to distract you a little.
+  - text: Oh I'm sorry about that. Feel better soon! And maybe this session can help
+      to distract you a little.
   utter_mood_negative_valence_high_arousal_quadrant:
-  - text: I'm sorry to hear that you're feeling {mood}. I hope you feel better soon! In the meantime, maybe this session can distract you a little.
-  - text: Oh I'm sorry to hear this. Hopefully you feel less {mood} soon! In the meantime, maybe talking to me can help to direct your thoughts to something else.
-  - text: Oh I'm sorry that you're not having a good day. I hope it gets better soon! Meanwhile, maybe this session can help to direct your thoughts to something else.
+  - text: I'm sorry to hear that you're feeling {mood}. I hope you feel better soon!
+      In the meantime, maybe this session can distract you a little.
+  - text: Oh I'm sorry to hear this. Hopefully you feel less {mood} soon! In the meantime,
+      maybe talking to me can help to direct your thoughts to something else.
+  - text: Oh I'm sorry that you're not having a good day. I hope it gets better soon!
+      Meanwhile, maybe this session can help to direct your thoughts to something
+      else.
   - text: I'm sorry that today isn't a good day for you. Hopefully you feel better
       soon! And maybe this session can help you to think of something else.
   - text: I'm sorry that today isn't a good day for you. Hopefully you feel less {mood}
@@ -204,26 +350,55 @@ responses:
   - text: Ah, sounds like you're having an average day.
   - text: Hm, that's not too bad I guess.
   utter_prepare_state_asking:
-  - text: "Now, to best support you, I need to ask you some questions about your current situation."
-  utter_prepare_activity_proposal:
-  - text: "Great! Here is the activity that I think would help you to prepare to quit smoking:"
+  - text: Now, to best support you, I need to ask you some questions about your current
+      situation.
+  utter_great:
+  - text: Great!
+  - text: Perfect!
+  - text: Awesome!
+  utter_prepare_activity_proposal_session1:
+  - text: "Here is the first activity that I think would help you:"
+  utter_prepare_activity_proposal_session234:
+  - text: "Here is the new activity that I think would help you:"
+  utter_prepare_activity_proposal_session5:
+  - text: "Here is the new activity that I think would help you:"
   utter_activity_formulation:
-  - text: "{activity_formulation}"
+  - text: '{activity_formulation}'
   utter_activity_clear:
   - buttons:
     - payload: /confirm
       title: Yes!
     - payload: /confirm
       title: Sure
-    text: Sounds like something you can do between this and the next session?
+    text: "Sounds like something you can do between this and the next session?"
+  utter_activity_clear_last:
+  - buttons:
+    - payload: /confirm
+      title: Yes!
+    - payload: /confirm
+      title: Sure
+    text: "Sounds like something you can do after this session?"
   utter_questions_state_intro:
   - buttons:
     - payload: /confirm
       title: Okay!
     - payload: /confirm
       title: Go ahead
-    text: Cool! Now, let me ask you a few questions about how you think about this activity. I'll ask you to rate a few statements.
+    text: "Cool! Now, let me ask you a few questions about how you think about this activity. I'll ask you to rate a few statements."
   utter_question_state_1:
+  - buttons:
+    - payload: /state_answer{{"state_1":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"state_1":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"state_1":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"state_1":"3"}}
+      title: Agree
+    - payload: /state_answer{{"state_1":"4"}}
+      title: Agree strongly
+    text: "Please rate this statement: I know why it is important to do the assigned activity."
+  utter_question_state_1_last:
   - buttons:
     - payload: /state_answer{{"state_1":"0"}}
       title: Disagree strongly
@@ -249,7 +424,33 @@ responses:
     - payload: /state_answer{{"state_2":"4"}}
       title: Agree strongly
     text: "Thanks! Please also rate this statement: I have sufficient time to do the assigned activity."
+  utter_question_state_2_last:
+  - buttons:
+    - payload: /state_answer{{"state_2":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"state_2":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"state_2":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"state_2":"3"}}
+      title: Agree
+    - payload: /state_answer{{"state_2":"4"}}
+      title: Agree strongly
+    text: "Thanks! Please also rate this statement: I have sufficient time to do the assigned activity."
   utter_question_state_3:
+  - buttons:
+    - payload: /state_answer{{"state_3":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"state_3":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"state_3":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"state_3":"3"}}
+      title: Agree
+    - payload: /state_answer{{"state_3":"4"}}
+      title: Agree strongly
+    text: "Alright, here is the next statement that I'd like you to rate: I have triggers that prompt/remind me to do the assigned activity."
+  utter_question_state_3_last:
   - buttons:
     - payload: /state_answer{{"state_3":"0"}}
       title: Disagree strongly
@@ -275,6 +476,45 @@ responses:
     - payload: /state_answer{{"state_4":"4"}}
       title: Agree strongly
     text: "Cool! Please now rate this statement: I feel like I am part of a group that is doing these kinds of activities."
+  utter_question_state_4_last:
+  - buttons:
+    - payload: /state_answer{{"state_4":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"state_4":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"state_4":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"state_4":"3"}}
+      title: Agree
+    - payload: /state_answer{{"state_4":"4"}}
+      title: Agree strongly
+    text: "Cool! Please now rate this statement: I feel like I am part of a group that is doing these kinds of activities."
+  utter_question_attention_check:
+  - buttons:
+    - payload: /state_answer{{"attention_check":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"attention_check":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"attention_check":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"attention_check":"3"}}
+      title: Agree
+    - payload: /state_answer{{"attention_check":"4"}}
+      title: Agree strongly
+    text: "Thanks! Now I'd like to ask you to rate this statement: I am more than seventeen years old."
+  utter_question_attention_check_last:
+  - buttons:
+    - payload: /state_answer{{"attention_check":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"attention_check":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"attention_check":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"attention_check":"3"}}
+      title: Agree
+    - payload: /state_answer{{"attention_check":"4"}}
+      title: Agree strongly
+    text: "Thanks! Now I'd like to ask you to rate this statement: I am somebody born on planet Earth."
   utter_question_state_5:
   - buttons:
     - payload: /state_answer{{"state_5":"0"}}
@@ -287,15 +527,41 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_5":"4"}}
       title: Agree strongly
-    text: "Thank you! Just one more and we are halfway. How would you rate this statement: I feel that I want to do the assigned activity."
+    text: "Thank you! Just one more and we are more than halfway. How would you rate this statement: I feel that I want to do the assigned activity."
+  utter_question_state_5_last:
+  - buttons:
+    - payload: /state_answer{{"state_5":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"state_5":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"state_5":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"state_5":"3"}}
+      title: Agree
+    - payload: /state_answer{{"state_5":"4"}}
+      title: Agree strongly
+    text: "Thank you! Just one more and we are more than halfway. How would you rate this statement: I feel that I want to do the assigned activity."
   utter_question_state_6_prep:
   - buttons:
     - payload: /confirm
-      title: "Yes, let's go!"
+      title: Yes, let's go!
     - payload: /confirm
-      title: "Sure!"
-    text: "Nice, now we're halfway! Ready for the second half?"
+      title: Sure!
+    text: "Nice, now we're more than halfway! Ready for the rest?"
   utter_question_state_6:
+  - buttons:
+    - payload: /state_answer{{"state_6":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"state_6":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"state_6":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"state_6":"3"}}
+      title: Agree
+    - payload: /state_answer{{"state_6":"4"}}
+      title: Agree strongly
+    text: "Perfect! Here is the next statement that I'd like you to rate: I feel that I need to do the assigned activity."
+  utter_question_state_6_last:
   - buttons:
     - payload: /state_answer{{"state_6":"0"}}
       title: Disagree strongly
@@ -321,6 +587,19 @@ responses:
     - payload: /state_answer{{"state_7":"4"}}
       title: Agree strongly
     text: "Alright, and here's already the next one. How would you rate: I believe that it would be a good thing to do the assigned activity."
+  utter_question_state_7_last:
+  - buttons:
+    - payload: /state_answer{{"state_7":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"state_7":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"state_7":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"state_7":"3"}}
+      title: Agree
+    - payload: /state_answer{{"state_7":"4"}}
+      title: Agree strongly
+    text: "Alright, and here's already the next one. How would you rate: I believe that it would be a good thing to do the assigned activity."
   utter_question_state_8:
   - buttons:
     - payload: /state_answer{{"state_8":"0"}}
@@ -333,7 +612,46 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_8":"4"}}
       title: Agree strongly
-    text: "Thanks, just 3 more to go! Please rate this statement: I can do the assigned activity."
+    text: "Thanks, just 4 more to go! Please rate this statement: I can do the assigned activity."
+  utter_question_state_8_last:
+  - buttons:
+    - payload: /state_answer{{"state_8":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"state_8":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"state_8":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"state_8":"3"}}
+      title: Agree
+    - payload: /state_answer{{"state_8":"4"}}
+      title: Agree strongly
+    text: "Thanks, just 4 more to go! Please rate this statement: I can do the assigned activity."
+  utter_question_attention_check_2_last:
+  - buttons:
+    - payload: /state_answer{{"attention_check_2":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"attention_check_2":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"attention_check_2":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"attention_check_2":"3"}}
+      title: Agree
+    - payload: /state_answer{{"attention_check_2":"4"}}
+      title: Agree strongly
+    text: "Cool! Now I'd like to ask you to rate this statement: I am more than hundred or less than eighteen years old."
+  utter_question_attention_check_2:
+  - buttons:
+    - payload: /state_answer{{"attention_check_2":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"attention_check_2":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"attention_check_2":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"attention_check_2":"3"}}
+      title: Agree
+    - payload: /state_answer{{"attention_check_2":"4"}}
+      title: Agree strongly
+    text: "Cool! Now I'd like to ask you to rate this statement: I am somebody born on a planet other than planet Earth."
   utter_question_state_9:
   - buttons:
     - payload: /state_answer{{"state_9":"0"}}
@@ -346,39 +664,78 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_9":"4"}}
       title: Agree strongly
-    text: "Cool! Now I'd like to ask you to rate this statement: Physical activity is a central factor to my self-concept."
+    text: "Thank you! Please now rate this statement: Physical activity is a central factor to my self-concept."
+  utter_question_state_9_last:
+  - buttons:
+    - payload: /state_answer{{"state_9":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"state_9":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"state_9":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"state_9":"3"}}
+      title: Agree
+    - payload: /state_answer{{"state_9":"4"}}
+      title: Agree strongly
+    text: "Thank you! Please now rate this statement: Physical activity is a central factor to my self-concept."
   utter_question_state_10:
   - buttons:
     - payload: /state_answer{{"state_10":"0"}}
-      title: "Smoker"
+      title: Smoker
     - payload: /state_answer{{"state_10":"1"}}
-      title: "Smoker trying to quit"
+      title: Smoker trying to quit
     - payload: /state_answer{{"state_10":"2"}}
-      title: "Smoker who has chosen to no longer smoke"
+      title: Smoker who has chosen to no longer smoke
     - payload: /state_answer{{"state_10":"3"}}
       title: "Non-smoker"
     - payload: /state_answer{{"state_10":"4"}}
       title: "Ex-smoker"
-    text: "Great! And this is the last question I'd like you to answer:  How would you describe yourself now?"
+    text: "Great! And this is the last question I'd like you to answer: How would you describe yourself now?"
+  utter_question_state_10_last:
+  - buttons:
+    - payload: /state_answer{{"state_10":"0"}}
+      title: Smoker
+    - payload: /state_answer{{"state_10":"1"}}
+      title: Smoker trying to quit
+    - payload: /state_answer{{"state_10":"2"}}
+      title: Smoker who has chosen to no longer smoke
+    - payload: /state_answer{{"state_10":"3"}}
+      title: Non-smoker
+    - payload: /state_answer{{"state_10":"4"}}
+      title: Ex-smoker
+    text: "Great! And this is the last question I'd like you to answer: How would you describe yourself now?"
   utter_thank_statement_answering:
   - text: Thank you so much for answering these questions!
-  - text: "Thanks, you're the best for answering these questions!"
+  - text: Thanks, you're the best for answering these questions!
   - text: Awesome, I really appreciate you answering these questions!
   - text: Thank you, you rock for helping me with these questions!
-  - text: Fantastic, thank you for hanging in there! I know those were quite a few questions.
+  - text: Fantastic, thank you for hanging in there! I know those were quite a few
+      questions.
   utter_email_reminder:
-  - text: This is all for this session. Of course, I'll send you a reminder with your assigned activity to your Prolific email.
-  - text: Then that's it for this session. Of course, I'll send you a reminder with your assigned activity to your Prolific email.
-  - text: I've said all that I wanted for this session. Of course, I'll send you a reminder with your assigned activity to your Prolific email.
-  - text: You've made it to the end of this session! Of course, I'll send you a reminder with your assigned activity to your Prolific email.
+  - text: This is all for this session. Of course, I'll send you a reminder with your
+      assigned activity to your Prolific email.
+  - text: Then that's it for this session. Of course, I'll send you a reminder with
+      your assigned activity to your Prolific email.
+  - text: I've said all that I wanted for this session. Of course, I'll send you a
+      reminder with your assigned activity to your Prolific email.
+  - text: You've made it to the end of this session! Of course, I'll send you a reminder
+      with your assigned activity to your Prolific email.
   utter_remind_next_session:
   - buttons:
     - payload: /confirm
       title: Sure!
     - payload: /confirm
       title: Yes!
-    text: Oh, and besides the activity reminder, keep an eye out for the invitation to your next session with me. Sounds good?
-  utter_goodbye_not_last_prep:
+    text: Oh, and besides the activity reminder, keep an eye out for the invitation
+      to your next session with me. Sounds good?
+  utter_remind_post_questionnaire:
+  - buttons:
+    - payload: /confirm
+      title: Sure!
+    - payload: /confirm
+      title: Yes!
+    text: "Oh, and besides the activity reminder, keep an eye out for the invitation to the post-questionnaire. Sounds good?"
+  utter_thank_participation:
   - text: Perfect, and thank you for participating!
   - text: Awesome, and thank you for joining!
   - text: Cool, and thanks for taking the time to talk to me!
@@ -387,7 +744,7 @@ responses:
   utter_message_formulation_prep:
   - text: Between this and the next session, please remember to {activity_verb}.
   utter_message_formulation:
-  - text: "{message_formulation}"
+  - text: '{message_formulation}'
   utter_ok:
   - buttons:
     - payload: /confirm
@@ -395,6 +752,9 @@ responses:
     - payload: /confirm
       title: Alright!
     text: Ok?
+  utter_thank_experience_mod:
+  - text: Alright, thanks for the clarification!
+  - text: Cool, thanks for clarifying that.
   utter_thank_you_planning:
   - text: Cool, sounds good!
   - text: Nice, sounds like a good plan!
@@ -411,9 +771,16 @@ responses:
   - text: I'm a bot!
   utter_default:
   - text: I'm sorry, I did not quite understand this. Can you elaborate?
+  utter_implementation_intention_syntax_error:
+  - text: Hmm, please formulate your plan in the form 'If [situation], then [do activity].'
+  utter_implementation_intention_syntax_error_rep:
+  - text: This still isn't the kind of plan I'm looking for, but I guess we leave that for another session.
 actions:
 - action_answer_mood
 - action_choose_activity
 - action_choose_persuasion_random
 - action_freetext
 - action_save_session
+- action_freetext_activity_comp
+- action_freetext_activity_mod
+- action_set_slot_reward
