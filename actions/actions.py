@@ -212,6 +212,45 @@ class ActionGetFreetext(FormAction):
         return [SlotSet("action_planning_answer", user_plan),
                 SlotSet("plan_correct", plan_correct)]
     
+# Sets slots for later sessions
+class ActionSetSession(Action):
+    def name(self) -> Text:
+        return "action_set_session"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        #metadata = extract_metadata_from_tracker(tracker)
+        #print("metadata:", metadata)
+        #user_id = metadata['userid']
+        user_id = '111'
+        
+        # create db connection
+        try:
+            #sqlite_connection = sqlite3.connect('chatbot.db')
+            sqlite_connection = sqlite3.connect('db_scripts/chatbot.db')
+            cursor = sqlite_connection.cursor()
+            print("Connection created for user ", user_id)
+            sqlite_select_query = """SELECT * from users WHERE id = ?"""
+            cursor.execute(sqlite_select_query, (user_id,))
+            data = cursor.fetchall()
+            cursor.close()
+
+        except sqlite3.Error as error:
+            print("Error while connecting to sqlite", error)
+        finally:
+            if (sqlite_connection):
+                sqlite_connection.close()
+                print("Connection closed for user ", user_id)
+
+        try:
+            # set the list of activity and action indices used so far
+            return [SlotSet("activity_index_list",[int(i) for i in data[0][18].split('|')]), 
+                    SlotSet("action_index_list", [int (i) for i in data[0][19].split('|')])]
+           
+        except NameError:
+            dispatcher.utter_message("Something went wrong, please close this session and contact researcher (m.e.kesteloo@student.tudelft.nl)")
+    
 class ActionSaveSession(Action):
     def name(self):
         return "action_save_session"
@@ -226,7 +265,6 @@ class ActionSaveSession(Action):
         
         # Load slot values
         mood = tracker.get_slot('mood')
-        action_planning_answer = tracker.get_slot('action_planning_answer')
         attention_check = tracker.get_slot('attention_check')
         attention_check_2 = tracker.get_slot('attention_check_2')
         activity_index_list  = '|'.join([str(i) for i in tracker.get_slot('activity_index_list')])
@@ -254,6 +292,7 @@ class ActionSaveSession(Action):
             
             if not data:
                 sessions_done = 1
+                action_planning_answer = tracker.get_slot('action_planning_answer')
                 data_tuple = (user_id, sessions_done, mood, action_planning_answer, 
                               attention_check, attention_check_2, activity_index_list,
                               action_index_list, state)
@@ -264,39 +303,109 @@ class ActionSaveSession(Action):
                 
             elif data[0][1] == 1:
                 sessions_done = 2
-                
-                mood_list = '|'.join([data[2], mood])
-                attention_check_list = '|'.join([data[16], attention_check])
-                attention_check_2_list = '|'.join([data[17], attention_check_2])
-                activity_experience = ''
-                activity_experience_mod = ''
-                
-                data_tuple = (user_id, sessions_done, mood_list, action_planning_answer, 
+                action_planning_answer = tracker.get_slot('action_planning_answer')
+                mood_list = '|'.join([data[0][2], mood])
+                attention_check_list = data[0][16].split('|')
+                attention_check_list.append(attention_check)
+                attention_check_list = '|'.join(attention_check_list)
+                attention_check_2_list = data[0][17].split('|')
+                attention_check_2_list.append(attention_check_2)
+                attention_check_2_list = '|'.join(attention_check_2_list)
+                activity_experience = tracker.get_slot('activity_experience')
+                activity_experience_mod = tracker.get_slot('activity_experience_mod')
+                reward = tracker.get_slot('reward')
+                data_tuple = (sessions_done, mood_list, action_planning_answer, 
                               attention_check_list, attention_check_2_list, activity_index_list,
-                              action_index_list, state)
-                data_tuple = (sessions_done, user_id)
-                sqlite_query = """UPDATE users SET action0 = ?, sessions_done = ? WHERE id = ?"""
+                              action_index_list, state, activity_experience, 
+                              activity_experience_mod, reward, user_id)
+                print("Tuple session 2:", data_tuple)
+                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer1 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_1 = ?, activity_experience1 = ?, activity_experience_mod1 = ?, reward_list = ? WHERE id = ?"""
                 dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
                 dispatcher.utter_message(link)
                 
-            elif data [0][1] == 2:
+            elif data[0][1] == 2:
                 sessions_done = 3
-                data_tuple = (user_id, sessions_done, mood, action_planning_answer, 
-                              attention_check, attention_check_2, activity_index_list,
-                              action_index_list, state)
-                sqlite_query = """UPDATE users SET action0 = ?, sessions_done = ? WHERE id = ?"""
+                action_planning_answer = tracker.get_slot('action_planning_answer')
+                mood_list = data[0][2].split('|')
+                mood_list.append(mood)
+                mood_list = '|'.join(mood_list)
+                attention_check_list = data[0][16].split('|')
+                attention_check_list.append(attention_check)
+                attention_check_list = '|'.join(attention_check_list)
+                attention_check_2_list = data[0][17].split('|')
+                attention_check_2_list.append(attention_check_2)
+                attention_check_2_list = '|'.join(attention_check_2_list)
+                activity_experience = tracker.get_slot('activity_experience')
+                activity_experience_mod = tracker.get_slot('activity_experience_mod')
+                reward_list = '|'.join([data[0][7], tracker.get_slot('reward')])
+                data_tuple = (sessions_done, mood_list, action_planning_answer, 
+                              attention_check_list, attention_check_2_list, activity_index_list,
+                              action_index_list, state, activity_experience, 
+                              activity_experience_mod, reward_list, user_id)
+                print("Tuple session 3:", data_tuple)
+                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer2 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_2 = ?, activity_experience2 = ?, activity_experience_mod2 = ?, reward_list = ? WHERE id = ?"""
                 dispatcher.utter_message(template="utter_goodbye_not_last")
-                link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_5A0x6l1ToGlSHyJ?PROLIFIC_PID=" + str(user_id) + "&Group=2"
-                dispatcher.utter_message(link)
+                link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
+                dispatcher.utter_message(link)   
+            
+            elif data[0][1] == 3:
+                sessions_done = 4
+                action_planning_answer = tracker.get_slot('action_planning_answer')
+                mood_list = data[0][2].split('|')
+                mood_list.append(mood)
+                mood_list = '|'.join(mood_list)
+                attention_check_list = data[0][16].split('|')
+                attention_check_list.append(attention_check)
+                attention_check_list = '|'.join(attention_check_list)
+                attention_check_2_list = data[0][17].split('|')
+                attention_check_2_list.append(attention_check_2)
+                attention_check_2_list = '|'.join(attention_check_2_list)
+                activity_experience = tracker.get_slot('activity_experience')
+                activity_experience_mod = tracker.get_slot('activity_experience_mod')
+                reward_list = data[0][7].split('|')
+                reward_list.append(tracker.get_slot('reward'))
+                reward_list = '|'.join(reward_list)
+                data_tuple = (sessions_done, mood_list, action_planning_answer, 
+                              attention_check_list, attention_check_2_list, activity_index_list,
+                              action_index_list, state, activity_experience, 
+                              activity_experience_mod, reward_list, user_id)
+                print("Tuple session 4:", data_tuple)
+                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer3 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_3 = ?, activity_experience3 = ?, activity_experience_mod3 = ?, reward_list = ? WHERE id = ?"""
+                dispatcher.utter_message(template="utter_goodbye_not_last")
+                link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
+                dispatcher.utter_message(link)   
+                
+            elif data[0][1] == 4:
+                sessions_done = 5
+                mood_list = data[0][2].split('|')
+                mood_list.append(mood)
+                mood_list = '|'.join(mood_list)
+                attention_check_list = data[0][16].split('|')
+                attention_check_list.append(attention_check)
+                attention_check_list = '|'.join(attention_check_list)
+                attention_check_2_list = data[0][17].split('|')
+                attention_check_2_list.append(attention_check_2)
+                attention_check_2_list = '|'.join(attention_check_2_list)
+                activity_experience = tracker.get_slot('activity_experience')
+                activity_experience_mod = tracker.get_slot('activity_experience_mod')
+                reward_list = data[0][7].split('|')
+                reward_list.append(tracker.get_slot('reward'))
+                reward_list = '|'.join(reward_list)
+                data_tuple = (sessions_done, mood_list,
+                              attention_check_list, attention_check_2_list, activity_index_list,
+                              action_index_list, state, activity_experience, 
+                              activity_experience_mod, reward_list, user_id)
+                print("Tuple session 4:", data_tuple)
+                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_4 = ?, activity_experience4 = ?, activity_experience_mod4 = ?, reward_list = ? WHERE id = ?"""
+                dispatcher.utter_message(template="utter_goodbye_not_last")
+                link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
+                dispatcher.utter_message(link)    
+            #elif data[0][1] == 5:
+             #   print("success")
             else:
                 dispatcher.utter_message("Something went wrong, please contact researcher: n.albers@tudelft.nl.")
-            # print("user_id: ", user_id, "dd_type: ", dd_type, "dd_present: ", dd_present,
-            #       "comfortable_sharing: ", comfortable_sharing, "last tip: ", last_tip, "sessions_done: ",
-            #       sessions_done)
-            print(user_id, sessions_done)
-            # sqlite_insert_userid = """INSERT INTO users (id, dd_type, dd_present, comfortable_sharing, last_tip, sessions_done) VALUES (?, ?, ?, ?, ?, ?)"""
-            # data_tuple = (user_id, dd_type, dd_present, comfortable_sharing, last_tip, sessions_done)
+            
             cursor.execute(sqlite_query, data_tuple)
             sqliteConnection.commit()
             cursor.close()
@@ -308,7 +417,6 @@ class ActionSaveSession(Action):
                 sqliteConnection.close()
                 print("The SQLite connection is closed")
         # connection closed
-
         return []
     
 class ActionGetGroup(FormAction):

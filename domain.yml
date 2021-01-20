@@ -25,6 +25,7 @@ slots:
   action_planning_answer:
     type: text
     influence_conversation: false
+    initial_value: ""
   activity_formulation:
     type: text
     influence_conversation: false
@@ -40,18 +41,22 @@ slots:
   mood:
     type: text
     influence_conversation: false
+    initial_value: ""
   reward:
     type: text
     influence_conversation: false
+    initial_value: ""
   action_success:
     type: bool
     influence_conversation: true
   activity_experience:
     type: text
     influence_conversation: false
+    initial_value: ""
   activity_experience_mod:
     type: text
     influence_conversation: false
+    initial_value: ""
   pers_input:
     type: bool
     influence_conversation: true
@@ -64,9 +69,11 @@ slots:
   attention_check:
     type: text
     influence_conversation: false
+    initial_value: ""
   attention_check_2:
     type: text
     influence_conversation: false
+    initial_value: ""
   state_1:
     type: text
     influence_conversation: false
@@ -805,3 +812,4 @@ actions:
 - action_choose_persuasion_overall
 - action_choose_persuasion_state
 - action_get_group
+- action_set_session

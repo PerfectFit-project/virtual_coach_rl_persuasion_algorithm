@@ -5,6 +5,8 @@ stories:
 - story: test0
   steps:
   - intent: start_test
+  - action: action_set_session
+  - action: utter_test
   - action: utter_ask_for_mood
   - intent: mood_curr
   - action: utter_test
@@ -19,6 +21,8 @@ stories:
 - story: test1
   steps:
   - intent: start_test
+  - action: action_set_session
+  - action: utter_test
   - action: utter_ask_for_mood
   - intent: mood_curr
   - action: utter_test
