@@ -10,14 +10,14 @@
 <script>
 	  WebChat.default.init({
 		selector: "#webchat",
-		initPayload: "/start_session5",
-		customData: {"language":"en"}, // arbitrary custom data. Stay minimal as this will be added to the socket
+		initPayload: "/start_test",
+		customData: {"language":"en", "userid": "111"}, // arbitrary custom data. Stay minimal as this will be added to the socket
 		socketUrl: "http://localhost:5005",
 		socketPath: "/socket.io/",
 		fullScreenMode: true,
 		embedded: true,
 		title: "Sam",
-		subtitle: "Session 1",
+		subtitle: "Session 5",
 		params: {"storage": "session"} // can be set to "local"  or "session". details in storage section.
 })
 </script>

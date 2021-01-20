@@ -9,12 +9,16 @@ intents:
 - start_session3
 - start_session4
 - start_session5
+- start_test
 - state_answer
 - reward_answer
 - anything
 - nlu_fallback
 - deny
 slots:
+  study_group:
+    type: text
+    influence_conversation: true
   action_index_list:
     type: list
     influence_conversation: false
@@ -66,33 +70,43 @@ slots:
   state_1:
     type: text
     influence_conversation: false
+    initial_value: ""
   state_10:
     type: text
     influence_conversation: false
+    initial_value: ""
   state_2:
     type: text
     influence_conversation: false
+    initial_value: ""
   state_3:
     type: text
     influence_conversation: false
+    initial_value: ""
   state_4:
     type: text
     influence_conversation: false
+    initial_value: ""
   state_5:
     type: text
     influence_conversation: false
+    initial_value: ""
   state_6:
     type: text
     influence_conversation: false
+    initial_value: ""
   state_7:
     type: text
     influence_conversation: false
+    initial_value: ""
   state_8:
     type: text
     influence_conversation: false
+    initial_value: ""
   state_9:
     type: text
     influence_conversation: false
+    initial_value: ""
 responses:
   utter_greet_first_time:
   - text: Hey there, I'm Sam. It's nice to meet you!
@@ -100,7 +114,7 @@ responses:
   - text: Hello there, I'm Sam. I'm happy to meet you!
   utter_purpose:
   - text: "I've mentioned my name, but I haven't yet told you what I do: I'm here\
-      \ to help you to prepare to quit smoking and to become more physically active."
+      \ to help you to prepare to quit smoking. Becoming more physically active may help, so I'll also help you to prepare to become more physically active."
   utter_expertise:
   - buttons:
     - payload: /confirm
@@ -132,7 +146,7 @@ responses:
   - text: In the end, I might help you to plan when, where and how to do your suggested
       activity.
   utter_explain_session_overview_4:
-  - text: And don't worry, I will also send you your activity to your Prolific email.
+  - text: And don't worry, I'll also send you your activity to your Prolific email.
   utter_explain_session_final:
   - buttons:
     - payload: /confirm
@@ -769,6 +783,8 @@ responses:
   - text: Goodbye, thanks a lot for your time!
   utter_iamabot:
   - text: I'm a bot!
+  utter_test:
+  - text: This is a test.
   utter_default:
   - text: I'm sorry, I did not quite understand this. Can you elaborate?
   utter_implementation_intention_syntax_error:
@@ -784,3 +800,8 @@ actions:
 - action_freetext_activity_comp
 - action_freetext_activity_mod
 - action_set_slot_reward
+- action_choose_persuasion_q_weighted
+- action_choose_persuasion_q
+- action_choose_persuasion_overall
+- action_choose_persuasion_state
+- action_get_group

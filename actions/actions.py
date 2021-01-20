@@ -16,9 +16,11 @@ import sqlite3
 import pandas as pd
 import random
 import numpy as np
+from datetime import datetime
+
 
 # Activities
-df_act = pd.read_excel("C:/Users/nele2/Documents/PerfectFitt/First Experiment/Activities/Activities.xlsx")
+df_act = pd.read_excel("Activities.xlsx")
 df_act['Exclusion'] = df_act['Exclusion'].str.strip('()').str.split(',')
 for row in df_act.loc[df_act['Exclusion'].isnull(), 'Exclusion'].index:
     df_act.at[row, 'Exclusion'] = []
@@ -31,9 +33,14 @@ s_ind = [i for i in range(len(df_act)) if df_act.loc[i, 'Category'][0] == 'S']
 pa_ind = [i for i in range(len(df_act)) if df_act.loc[i, 'Category'][0] == 'P']
 
 # Persuasive Messages
-df_mess = pd.read_csv("C:/Users/nele2/Documents/PerfectFitt/First Experiment/all_messages.csv")
+df_mess = pd.read_csv("all_messages.csv")
 num_mess_per_type = [6, 4, 4, 3]
 NUM_PERS_TYPES = 4
+
+'''
+# Group assignment
+df_group_ass = pd.read_csv("assignment.csv")
+'''
 
 # Moods, sorted by quadrant w.r.t. valence and arousal
 moods_ha_lv = ["afraid", "alarmed", "annoyed", "distressed", "angry", 
@@ -76,18 +83,22 @@ class ActionAnswerMood(Action):
         
         return []
     
+# Choose an activity for the user
 class ActionChooseActivity(Action):
     def name(self):
         return "action_choose_activity"
 
     async def run(self, dispatcher, tracker, domain):
         
+        # reset random seed
+        random.seed(datetime.now())
+        
         curr_act_ind_list = tracker.get_slot('activity_index_list')
         
         if curr_act_ind_list is None:
             curr_act_ind_list = []
         
-        # Count how many smoking and PA activities have been done and excluded activities
+        # Count how many smoking and PA activities have been done and track excluded activities
         num_s = 0
         num_pa = 0
         excluded = []
@@ -98,24 +109,34 @@ class ActionChooseActivity(Action):
                 num_pa += 1
             excluded += df_act.loc[i, 'Exclusion']
             
+        # get eligible activities (not done before and not excluded)
         remaining_indices = [ i for i in range(num_act) if not i in curr_act_ind_list and not str(i) in excluded]
             
-        # Check if prerequisites are met
+        # Check if prerequisites for remaining activities are met
         for i in remaining_indices:
             preq = [j for j in df_act.loc[i, 'Prerequisite'] if not str(j) in curr_act_ind_list]
             if len(preq) > 0:
                 excluded.append(i)
-                
+            
+        # get activities that also meet the prerequisites
         remaining_indices = [i for i in remaining_indices if not str(i) in excluded]
         
         if num_s == num_pa:
-            # Choose activity randomly among all possible activities
-            act_index = random.choice(remaining_indices)
+            # Choose randomly whether to do a smoking or a PA activity
+            type_choice = random.choice([0, 1])
+            
+            # Choose activity from chosen type
+            if type_choice == 0:
+                # Choose a PA activity
+                act_index = random.choice([i for i in remaining_indices if i in pa_ind])
+            else:
+                # Choose a smoking activity
+                act_index = random.choice([i for i in remaining_indices if i in s_ind])
         elif num_s > num_pa:
             # Choose a PA activity
             act_index = random.choice([i for i in remaining_indices if i in pa_ind])
         else:
-           # Choose a smoking activity
+            # Choose a smoking activity
             act_index = random.choice([i for i in remaining_indices if i in s_ind])
             
         curr_act_ind_list.append(act_index)
@@ -123,7 +144,8 @@ class ActionChooseActivity(Action):
         return [SlotSet("activity_formulation", df_act.loc[act_index, 'Formulation']), 
                 SlotSet("activity_index_list", curr_act_ind_list),
                 SlotSet("activity_verb", df_act.loc[act_index, "VerbYou"])]
-    
+
+# Set slot about whether the user completed the assigned activity    
 class ActionSetSlotReward(FormAction):
 
     def name(self):
@@ -137,17 +159,7 @@ class ActionSetSlotReward(FormAction):
             success = False
         
         return [SlotSet("action_success", success)]
-    
-class ActionGetGroup(FormAction):
 
-    def name(self):
-        return 'action_get_group'
-
-    async def run(self, dispatcher, tracker, domain):
-
-        activity_experience = "df"
-        
-        return [SlotSet("activity_experience", activity_experience)]
     
 class ActionGetFreetextActivityComp(FormAction):
 
@@ -175,6 +187,7 @@ class ActionGetFreetextActivityMod(FormAction):
         
         return [SlotSet("activity_experience_mod", activity_experience_mod)]
     
+# Read free text response for user's implementation intention
 class ActionGetFreetext(FormAction):
 
     def name(self):
@@ -206,37 +219,72 @@ class ActionSaveSession(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        metadata = extract_metadata_from_tracker(tracker)
-        user_id = metadata['userid']
+        #metadata = extract_metadata_from_tracker(tracker)
+        #print("metadata:", metadata)
+        #user_id = metadata['userid']
         user_id = '111'
-        action0 = tracker.get_slot("mood")
+        
+        # Load slot values
+        mood = tracker.get_slot('mood')
+        action_planning_answer = tracker.get_slot('action_planning_answer')
+        attention_check = tracker.get_slot('attention_check')
+        attention_check_2 = tracker.get_slot('attention_check_2')
+        activity_index_list  = '|'.join([str(i) for i in tracker.get_slot('activity_index_list')])
+        action_index_list = '|'.join([str(i) for i in tracker.get_slot('action_index_list')])
+        state = '|'.join([tracker.get_slot('state_1'), tracker.get_slot('state_2'), 
+                          tracker.get_slot('state_3'), tracker.get_slot('state_4'),
+                          tracker.get_slot('state_5'), tracker.get_slot('state_6'),
+                          tracker.get_slot('state_7'), tracker.get_slot('state_8'),
+                          tracker.get_slot('state_9'), tracker.get_slot('state_10')])
         
         # create db connection
         try:
-            sqliteConnection = sqlite3.connect('chatbot.db')
+            sqliteConnection = sqlite3.connect('db_scripts/chatbot.db')
+            #sqliteConnection = sqlite3.connect('chatbot.db')
             cursor = sqliteConnection.cursor()
             print("Successfully connected to SQLite")
             sqlite_select_query = """SELECT * from users WHERE id = ?"""
             cursor.execute(sqlite_select_query, (user_id,))
             data = cursor.fetchall()
+            print(data)
             sessions_done = 0;
+            
+            # to test session 1
+            #data = None
+            
             if not data:
                 sessions_done = 1
-                data_tuple = (user_id, action0, sessions_done)
-                sqlite_query = """INSERT INTO users (id, action0, sessions_done) VALUES (?, ?, ?)"""
+                data_tuple = (user_id, sessions_done, mood, action_planning_answer, 
+                              attention_check, attention_check_2, activity_index_list,
+                              action_index_list, state)
+                sqlite_query = """INSERT INTO users (id, sessions_done, mood_list, action_planning_answer0, attention_check_list, attention_check_2_list, activity_index_list, action_index_list, state_0) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"""
                 dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_3VmOMw3USprKQv3?PROLIFIC_PID=" + str(user_id) + "&Group=2"
                 dispatcher.utter_message(link)
-            elif data[0][2] == 1:
+                
+            elif data[0][1] == 1:
                 sessions_done = 2
-                data_tuple = (action0, sessions_done, user_id)
+                
+                mood_list = '|'.join([data[2], mood])
+                attention_check_list = '|'.join([data[16], attention_check])
+                attention_check_2_list = '|'.join([data[17], attention_check_2])
+                activity_experience = ''
+                activity_experience_mod = ''
+                
+                data_tuple = (user_id, sessions_done, mood_list, action_planning_answer, 
+                              attention_check_list, attention_check_2_list, activity_index_list,
+                              action_index_list, state)
+                data_tuple = (sessions_done, user_id)
                 sqlite_query = """UPDATE users SET action0 = ?, sessions_done = ? WHERE id = ?"""
                 dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
                 dispatcher.utter_message(link)
-            elif data [0][2] == 2:
+                
+            elif data [0][1] == 2:
                 sessions_done = 3
-                data_tuple = (action0, sessions_done, user_id)
+                data_tuple = (user_id, sessions_done, mood, action_planning_answer, 
+                              attention_check, attention_check_2, activity_index_list,
+                              action_index_list, state)
                 sqlite_query = """UPDATE users SET action0 = ?, sessions_done = ? WHERE id = ?"""
                 dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_5A0x6l1ToGlSHyJ?PROLIFIC_PID=" + str(user_id) + "&Group=2"
@@ -246,7 +294,7 @@ class ActionSaveSession(Action):
             # print("user_id: ", user_id, "dd_type: ", dd_type, "dd_present: ", dd_present,
             #       "comfortable_sharing: ", comfortable_sharing, "last tip: ", last_tip, "sessions_done: ",
             #       sessions_done)
-            print(user_id, action0, sessions_done)
+            print(user_id, sessions_done)
             # sqlite_insert_userid = """INSERT INTO users (id, dd_type, dd_present, comfortable_sharing, last_tip, sessions_done) VALUES (?, ?, ?, ?, ?, ?)"""
             # data_tuple = (user_id, dd_type, dd_present, comfortable_sharing, last_tip, sessions_done)
             cursor.execute(sqlite_query, data_tuple)
@@ -262,12 +310,76 @@ class ActionSaveSession(Action):
         # connection closed
 
         return []
-                 
+    
+class ActionGetGroup(FormAction):
+
+    def name(self):
+        return 'action_get_group'
+
+    async def run(self, dispatcher, tracker, domain):
+
+        # get user ID 
+        metadata = extract_metadata_from_tracker(tracker)
+        user_id = metadata['userid']
+        
+        # get pre-computed group
+        group = str(df_group_ass[df_group_ass['ID'] == user_id]["Group"].tolist()[0])
+        
+        return [SlotSet("study_group", group)]
+    
+# Return best persuasion type overall (Group 1)
+class ActionChoosePersuasionBestOverall(Action):
+    def name(self):
+        return "action_choose_persuasion_overall"
+
+    async def run(self, dispatcher, tracker, domain):
+        
+        # somehow compute locally and then upload here
+        return 0
+    
+# Return best persuasion type in state (Group 2)
+class ActionChoosePersuasionBestState(Action):
+    def name(self):
+        return "action_choose_persuasion_state"
+
+    async def run(self, dispatcher, tracker, domain):
+        
+        # somehow compute locally and then upload here
+        return 0
+    
+# Return best persuasion type Q-value (Group 3)
+class ActionChoosePersuasionBestQ(Action):
+    def name(self):
+        return "action_choose_persuasion_q"
+
+    async def run(self, dispatcher, tracker, domain):
+        
+        # somehow compute locally and then upload here
+        # compute Q-values for all states locally and then look up
+        # state
+        return 0
+    
+# Return best persuasion type weighted Q-value (Group 4)
+class ActionChoosePersuasionBestQWeighted(Action):
+    def name(self):
+        return "action_choose_persuasion_q_weighted"
+
+    async def run(self, dispatcher, tracker, domain):
+        
+        # somehow compute locally and then upload here
+        # compute Q-values for all states and participants lcoally and then 
+        # look up combination of user and state
+        return 0
+    
+# Choose a random persuasion type (first 2 sessions)
 class ActionChoosePersuasionRandom(Action):
     def name(self):
         return "action_choose_persuasion_random"
 
     async def run(self, dispatcher, tracker, domain):
+        
+        # reset random seed
+        random.seed(datetime.now())
         
         curr_act_ind_list = tracker.get_slot('activity_index_list')
         curr_action_ind_list = tracker.get_slot('action_index_list')

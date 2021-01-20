@@ -2,6 +2,34 @@ version: "2.0"
 
 stories:
 
+- story: test0
+  steps:
+  - intent: start_test
+  - action: utter_ask_for_mood
+  - intent: mood_curr
+  - action: utter_test
+  - action: action_answer_mood
+  - action: action_choose_activity
+  - action: utter_test
+  - action: action_choose_persuasion_random
+  - slot_was_set:
+    - pers_input: False
+  - action: action_save_session
+  
+- story: test1
+  steps:
+  - intent: start_test
+  - action: utter_ask_for_mood
+  - intent: mood_curr
+  - action: utter_test
+  - action: action_answer_mood
+  - action: action_choose_activity
+  - action: utter_test
+  - action: action_choose_persuasion_random
+  - slot_was_set:
+    - pers_input: True
+  - action: action_save_session
+
 - story: start_session_1
   steps:
   - intent: start_session1
