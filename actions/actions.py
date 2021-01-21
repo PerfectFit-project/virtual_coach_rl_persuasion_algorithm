@@ -37,11 +37,6 @@ df_mess = pd.read_csv("all_messages.csv")
 num_mess_per_type = [6, 4, 4, 3]
 NUM_PERS_TYPES = 4
 
-'''
-# Group assignment
-df_group_ass = pd.read_csv("assignment.csv")
-'''
-
 # Moods, sorted by quadrant w.r.t. valence and arousal
 moods_ha_lv = ["afraid", "alarmed", "annoyed", "distressed", "angry", 
                "frustrated"]
@@ -159,7 +154,6 @@ class ActionSetSlotReward(FormAction):
             success = False
         
         return [SlotSet("action_success", success)]
-
     
 class ActionGetFreetextActivityComp(FormAction):
 
@@ -220,14 +214,16 @@ class ActionSetSession(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+        # TODO
         #metadata = extract_metadata_from_tracker(tracker)
         #print("metadata:", metadata)
         #user_id = metadata['userid']
-        user_id = '111'
+        user_id = '333'
         
         # create db connection
         try:
-            #sqlite_connection = sqlite3.connect('chatbot.db')
+            #sqlite_connection = sqlite3.connect('chatbot.db') # TODO
             sqlite_connection = sqlite3.connect('db_scripts/chatbot.db')
             cursor = sqlite_connection.cursor()
             print("Connection created for user ", user_id)
@@ -244,9 +240,13 @@ class ActionSetSession(Action):
                 print("Connection closed for user ", user_id)
 
         try:
-            # set the list of activity and action indices used so far
-            return [SlotSet("activity_index_list",[int(i) for i in data[0][18].split('|')]), 
-                    SlotSet("action_index_list", [int (i) for i in data[0][19].split('|')])]
+            # load data from previous sessions about activities and actions
+            activity_index_list = [int(i) for i in data[0][18].split('|')]
+            activity_verb_prev = df_act.loc[activity_index_list[-1], "VerbYou"]
+            return [SlotSet("activity_index_list", activity_index_list), 
+                    SlotSet("action_index_list", [int (i) for i in data[0][19].split('|')]),
+                    SlotSet("activity_verb_prev", activity_verb_prev),
+                    SlotSet("action_type_index_list", [int (i) for i in data[0][25].split('|')])]
            
         except NameError:
             dispatcher.utter_message("Something went wrong, please close this session and contact researcher (m.e.kesteloo@student.tudelft.nl)")
@@ -258,16 +258,19 @@ class ActionSaveSession(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+        # TODO
         #metadata = extract_metadata_from_tracker(tracker)
         #print("metadata:", metadata)
         #user_id = metadata['userid']
-        user_id = '111'
+        user_id = '333'
         
         # Load slot values
         mood = tracker.get_slot('mood')
         attention_check = tracker.get_slot('attention_check')
         attention_check_2 = tracker.get_slot('attention_check_2')
         activity_index_list  = '|'.join([str(i) for i in tracker.get_slot('activity_index_list')])
+        action_type_index_list  = '|'.join([str(i) for i in tracker.get_slot('action_type_index_list')])
         action_index_list = '|'.join([str(i) for i in tracker.get_slot('action_index_list')])
         state = '|'.join([tracker.get_slot('state_1'), tracker.get_slot('state_2'), 
                           tracker.get_slot('state_3'), tracker.get_slot('state_4'),
@@ -278,7 +281,7 @@ class ActionSaveSession(Action):
         # create db connection
         try:
             sqliteConnection = sqlite3.connect('db_scripts/chatbot.db')
-            #sqliteConnection = sqlite3.connect('chatbot.db')
+            #sqliteConnection = sqlite3.connect('chatbot.db') # TODO
             cursor = sqliteConnection.cursor()
             print("Successfully connected to SQLite")
             sqlite_select_query = """SELECT * from users WHERE id = ?"""
@@ -287,16 +290,13 @@ class ActionSaveSession(Action):
             print(data)
             sessions_done = 0;
             
-            # to test session 1
-            #data = None
-            
             if not data:
                 sessions_done = 1
                 action_planning_answer = tracker.get_slot('action_planning_answer')
                 data_tuple = (user_id, sessions_done, mood, action_planning_answer, 
                               attention_check, attention_check_2, activity_index_list,
-                              action_index_list, state)
-                sqlite_query = """INSERT INTO users (id, sessions_done, mood_list, action_planning_answer0, attention_check_list, attention_check_2_list, activity_index_list, action_index_list, state_0) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+                              action_index_list, state, action_type_index_list)
+                sqlite_query = """INSERT INTO users (id, sessions_done, mood_list, action_planning_answer0, attention_check_list, attention_check_2_list, activity_index_list, action_index_list, state_0, action_type_index_list) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
                 dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_3VmOMw3USprKQv3?PROLIFIC_PID=" + str(user_id) + "&Group=2"
                 dispatcher.utter_message(link)
@@ -317,9 +317,9 @@ class ActionSaveSession(Action):
                 data_tuple = (sessions_done, mood_list, action_planning_answer, 
                               attention_check_list, attention_check_2_list, activity_index_list,
                               action_index_list, state, activity_experience, 
-                              activity_experience_mod, reward, user_id)
+                              activity_experience_mod, reward, action_type_index_list, user_id)
                 print("Tuple session 2:", data_tuple)
-                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer1 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_1 = ?, activity_experience1 = ?, activity_experience_mod1 = ?, reward_list = ? WHERE id = ?"""
+                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer1 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_1 = ?, activity_experience1 = ?, activity_experience_mod1 = ?, reward_list = ?, action_type_index_list = ? WHERE id = ?"""
                 dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
                 dispatcher.utter_message(link)
@@ -327,6 +327,7 @@ class ActionSaveSession(Action):
             elif data[0][1] == 2:
                 sessions_done = 3
                 action_planning_answer = tracker.get_slot('action_planning_answer')
+                group = tracker.get_slot('study_group')
                 mood_list = data[0][2].split('|')
                 mood_list.append(mood)
                 mood_list = '|'.join(mood_list)
@@ -342,9 +343,9 @@ class ActionSaveSession(Action):
                 data_tuple = (sessions_done, mood_list, action_planning_answer, 
                               attention_check_list, attention_check_2_list, activity_index_list,
                               action_index_list, state, activity_experience, 
-                              activity_experience_mod, reward_list, user_id)
+                              activity_experience_mod, reward_list, action_type_index_list, group, user_id)
                 print("Tuple session 3:", data_tuple)
-                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer2 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_2 = ?, activity_experience2 = ?, activity_experience_mod2 = ?, reward_list = ? WHERE id = ?"""
+                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer2 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_2 = ?, activity_experience2 = ?, activity_experience_mod2 = ?, reward_list = ?, action_type_index_list = ?, group = ? WHERE id = ?"""
                 dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
                 dispatcher.utter_message(link)   
@@ -369,9 +370,9 @@ class ActionSaveSession(Action):
                 data_tuple = (sessions_done, mood_list, action_planning_answer, 
                               attention_check_list, attention_check_2_list, activity_index_list,
                               action_index_list, state, activity_experience, 
-                              activity_experience_mod, reward_list, user_id)
+                              activity_experience_mod, reward_list, action_type_index_list, user_id)
                 print("Tuple session 4:", data_tuple)
-                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer3 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_3 = ?, activity_experience3 = ?, activity_experience_mod3 = ?, reward_list = ? WHERE id = ?"""
+                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer3 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_3 = ?, activity_experience3 = ?, activity_experience_mod3 = ?, reward_list = ?, action_type_index_list = ? WHERE id = ?"""
                 dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
                 dispatcher.utter_message(link)   
@@ -395,9 +396,9 @@ class ActionSaveSession(Action):
                 data_tuple = (sessions_done, mood_list,
                               attention_check_list, attention_check_2_list, activity_index_list,
                               action_index_list, state, activity_experience, 
-                              activity_experience_mod, reward_list, user_id)
+                              activity_experience_mod, reward_list, action_type_index_list, user_id)
                 print("Tuple session 4:", data_tuple)
-                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_4 = ?, activity_experience4 = ?, activity_experience_mod4 = ?, reward_list = ? WHERE id = ?"""
+                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_4 = ?, activity_experience4 = ?, activity_experience_mod4 = ?, reward_list = ?, action_type_index_list = ? WHERE id = ?"""
                 dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
                 dispatcher.utter_message(link)    
@@ -425,10 +426,15 @@ class ActionGetGroup(FormAction):
         return 'action_get_group'
 
     async def run(self, dispatcher, tracker, domain):
+        
+        # Group assignment # TODO
+        df_group_ass = pd.read_csv("assignment.csv")
 
-        # get user ID 
-        metadata = extract_metadata_from_tracker(tracker)
-        user_id = metadata['userid']
+        # TODO
+        # get user ID
+        #metadata = extract_metadata_from_tracker(tracker)
+        #user_id = metadata['userid']
+        user_id = '333'
         
         # get pre-computed group
         group = str(df_group_ass[df_group_ass['ID'] == user_id]["Group"].tolist()[0])
@@ -442,8 +448,36 @@ class ActionChoosePersuasionBestOverall(Action):
 
     async def run(self, dispatcher, tracker, domain):
         
-        # somehow compute locally and then upload here
-        return 0
+        # reset random seed
+        random.seed(datetime.now())
+        
+        # Load pre-computed list with best actions
+        with open('Post_Sess_2/Level_1_Optimal_Policy', 'rb') as f:
+            p = pickle.load(f)
+        
+        # Select a persuasion type randomly (there could be multiple best ones)
+        pers_type = random.choice(p)
+        curr_action_type_ind_list.append(pers_type)
+       
+        # Determine whether user input is required for persuasion type
+        require_input = False
+        if pers_type == 3:
+            require_input = True
+        
+        # Choose message randomly among messages selected the lowest number of times 
+        # for this persuasion type
+        counts = [curr_action_ind_list.count(i) for i in range(sum(num_mess_per_type[0:pers_type]), sum(num_mess_per_type[0:pers_type + 1]))]
+        min_messages = [i for i in range(num_mess_per_type[pers_type]) if counts[i] == min(counts)]
+        message_ind = random.choice(min_messages) + sum(num_mess_per_type[0:pers_type])
+        curr_action_ind_list.append(message_ind)
+        
+        # Determine message
+        message = df_mess.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Message']
+        
+        return [SlotSet("message_formulation", message), 
+                SlotSet("action_index_list", curr_action_ind_list),
+                SlotSet("action_type_index_list", curr_action_type_ind_list),
+                SlotSet("pers_input", require_input)]
     
 # Return best persuasion type in state (Group 2)
 class ActionChoosePersuasionBestState(Action):
@@ -452,8 +486,51 @@ class ActionChoosePersuasionBestState(Action):
 
     async def run(self, dispatcher, tracker, domain):
         
-        # somehow compute locally and then upload here
-        return 0
+        # reset random seed
+        random.seed(datetime.now())
+        
+        with open('Post_Sess_2/Level_2_Optimal_Policy', 'rb') as f:
+            p = pickle.load(f)
+        
+        with open('Post_Sess_2/Level_2_G_algorithm_chosen_features', 'rb') as f:
+            feat = pickle.load(f)
+        
+        # Load mean values of features based on first 2 sessions
+        with open('Post_Sess_2/Post_Sess_2_Feat_Means', 'rb') as f:
+            feat_means = pickle.load(f)
+        
+        state = [int(tracker.get_slot('state_1')), int(tracker.get_slot('state_2')), 
+                 int(tracker.get_slot('state_3')), int(tracker.get_slot('state_4')),
+                 int(tracker.get_slot('state_5')), int(tracker.get_slot('state_6')),
+                 int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8')),
+                 int(tracker.get_slot('state_9')), int(tracker.get_slot('state_10'))]
+        
+        state = [1 if state[i] >= feat_means[i] else 0 for i in range(10)] # make binary
+        state = np.take(np.array(state), feat) # take only selected features
+        
+        # Sample randomly from best persuasion types in state
+        pers_type = random.choice(p[state[0], state[1], state[2]])
+        curr_action_type_ind_list.append(pers_type)
+       
+        # Determine whether user input is required for persuasion type
+        require_input = False
+        if pers_type == 3:
+            require_input = True
+        
+        # Choose message randomly among messages selected the lowest number of times 
+        # for this persuasion type
+        counts = [curr_action_ind_list.count(i) for i in range(sum(num_mess_per_type[0:pers_type]), sum(num_mess_per_type[0:pers_type + 1]))]
+        min_messages = [i for i in range(num_mess_per_type[pers_type]) if counts[i] == min(counts)]
+        message_ind = random.choice(min_messages) + sum(num_mess_per_type[0:pers_type])
+        curr_action_ind_list.append(message_ind)
+        
+        # Determine message
+        message = df_mess.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Message']
+        
+        return [SlotSet("message_formulation", message), 
+                SlotSet("action_index_list", curr_action_ind_list),
+                SlotSet("action_type_index_list", curr_action_type_ind_list),
+                SlotSet("pers_input", require_input)]
     
 # Return best persuasion type Q-value (Group 3)
 class ActionChoosePersuasionBestQ(Action):
@@ -462,10 +539,50 @@ class ActionChoosePersuasionBestQ(Action):
 
     async def run(self, dispatcher, tracker, domain):
         
-        # somehow compute locally and then upload here
-        # compute Q-values for all states locally and then look up
-        # state
-        return 0
+        # reset random seed
+        random.seed(datetime.now())
+        
+        with open('Post_Sess_2/Level_3_Optimal_Policy', 'rb') as f:
+            p = pickle.load(f)
+        
+        with open('Post_Sess_2/Level_3_G_algorithm_chosen_features', 'rb') as f:
+            feat = pickle.load(f)
+            
+        with open('Post_Sess_2/Post_Sess_2_Feat_Means', 'rb') as f:
+            feat_means = pickle.load(f)
+        
+        state = [int(tracker.get_slot('state_1')), int(tracker.get_slot('state_2')), 
+                 int(tracker.get_slot('state_3')), int(tracker.get_slot('state_4')),
+                 int(tracker.get_slot('state_5')), int(tracker.get_slot('state_6')),
+                 int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8')),
+                 int(tracker.get_slot('state_9')), int(tracker.get_slot('state_10'))]
+        
+        state = [1 if state[i] >= feat_means[i] else 0 for i in range(10)] # make binary
+        state = np.take(np.array(state), feat) # take only selected features
+        
+        # Sample randomly from best persuasion types
+        pers_type = random.choice(p[state[0], state[1], state[2]])
+        curr_action_type_ind_list.append(pers_type)
+       
+        # Determine whether user input is required for persuasion type
+        require_input = False
+        if pers_type == 3:
+            require_input = True
+        
+        # Choose message randomly among messages selected the lowest number of times 
+        # for this persuasion type
+        counts = [curr_action_ind_list.count(i) for i in range(sum(num_mess_per_type[0:pers_type]), sum(num_mess_per_type[0:pers_type + 1]))]
+        min_messages = [i for i in range(num_mess_per_type[pers_type]) if counts[i] == min(counts)]
+        message_ind = random.choice(min_messages) + sum(num_mess_per_type[0:pers_type])
+        curr_action_ind_list.append(message_ind)
+        
+        # Determine message
+        message = df_mess.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Message']
+        
+        return [SlotSet("message_formulation", message), 
+                SlotSet("action_index_list", curr_action_ind_list),
+                SlotSet("action_type_index_list", curr_action_type_ind_list),
+                SlotSet("pers_input", require_input)]
     
 # Return best persuasion type weighted Q-value (Group 4)
 class ActionChoosePersuasionBestQWeighted(Action):
@@ -474,10 +591,56 @@ class ActionChoosePersuasionBestQWeighted(Action):
 
     async def run(self, dispatcher, tracker, domain):
         
-        # somehow compute locally and then upload here
-        # compute Q-values for all states and participants lcoally and then 
-        # look up combination of user and state
-        return 0
+        # reset random seed
+        random.seed(datetime.now())
+        
+        # TODO
+        #metadata = extract_metadata_from_tracker(tracker)
+        #print("metadata:", metadata)
+        #user_id = metadata['userid']
+        user_id = '333'
+        
+        with open('Post_Sess_2/Level_4_Optimal_Policy', 'rb') as f:
+            p = pickle.load(f)
+        
+        with open('Post_Sess_2/Level_3_G_algorithm_chosen_features', 'rb') as f:
+            feat = pickle.load(f)
+            
+        with open('Post_Sess_2/Post_Sess_2_Feat_Means', 'rb') as f:
+            feat_means = pickle.load(f)
+        
+        state = [int(tracker.get_slot('state_1')), int(tracker.get_slot('state_2')), 
+                 int(tracker.get_slot('state_3')), int(tracker.get_slot('state_4')),
+                 int(tracker.get_slot('state_5')), int(tracker.get_slot('state_6')),
+                 int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8')),
+                 int(tracker.get_slot('state_9')), int(tracker.get_slot('state_10'))]
+        
+        state = [1 if state[i] >= feat_means[i] else 0 for i in range(10)] # make binary
+        state = np.take(np.array(state), feat) # take only selected features
+        
+        # Sample randomly from best persuasion types
+        pers_type = random.choice(p[user_id][state[0], state[1], state[2]])
+        curr_action_type_ind_list.append(pers_type)
+       
+        # Determine whether user input is required for persuasion type
+        require_input = False
+        if pers_type == 3:
+            require_input = True
+        
+        # Choose message randomly among messages selected the lowest number of times 
+        # for this persuasion type
+        counts = [curr_action_ind_list.count(i) for i in range(sum(num_mess_per_type[0:pers_type]), sum(num_mess_per_type[0:pers_type + 1]))]
+        min_messages = [i for i in range(num_mess_per_type[pers_type]) if counts[i] == min(counts)]
+        message_ind = random.choice(min_messages) + sum(num_mess_per_type[0:pers_type])
+        curr_action_ind_list.append(message_ind)
+        
+        # Determine message
+        message = df_mess.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Message']
+        
+        return [SlotSet("message_formulation", message), 
+                SlotSet("action_index_list", curr_action_ind_list),
+                SlotSet("action_type_index_list", curr_action_type_ind_list),
+                SlotSet("pers_input", require_input)]
     
 # Choose a random persuasion type (first 2 sessions)
 class ActionChoosePersuasionRandom(Action):
@@ -489,17 +652,23 @@ class ActionChoosePersuasionRandom(Action):
         # reset random seed
         random.seed(datetime.now())
         
+        # load slots
         curr_act_ind_list = tracker.get_slot('activity_index_list')
         curr_action_ind_list = tracker.get_slot('action_index_list')
+        curr_action_type_ind_list = tracker.get_slot('action_type_index_list')
         curr_activity = curr_act_ind_list[-1]
         
         if curr_action_ind_list is None:
             curr_action_ind_list = []
+        if curr_action_type_ind_list is None:
+            curr_action_type_ind_list = []
         
+        # total number of messages per activity in message dataframe
         num_mess_per_activ = len(df_mess)/len(df_act)
         
         # Choose persuasion type randomly
         pers_type = random.choice([i for i in range(NUM_PERS_TYPES)])
+        curr_action_type_ind_list.append(pers_type)
         
         # to test implementation intention
         #pers_type = 3
@@ -509,7 +678,8 @@ class ActionChoosePersuasionRandom(Action):
         if pers_type == 3:
             require_input = True
         
-        # Choose message randomly among messages selected the lowest number of times
+        # Choose message randomly among messages selected the lowest number of times 
+        # for this persuasion type
         counts = [curr_action_ind_list.count(i) for i in range(sum(num_mess_per_type[0:pers_type]), sum(num_mess_per_type[0:pers_type + 1]))]
         min_messages = [i for i in range(num_mess_per_type[pers_type]) if counts[i] == min(counts)]
         message_ind = random.choice(min_messages) + sum(num_mess_per_type[0:pers_type])
@@ -520,4 +690,5 @@ class ActionChoosePersuasionRandom(Action):
         
         return [SlotSet("message_formulation", message), 
                 SlotSet("action_index_list", curr_action_ind_list),
+                SlotSet("action_type_index_list", curr_action_type_ind_list),
                 SlotSet("pers_input", require_input)]
