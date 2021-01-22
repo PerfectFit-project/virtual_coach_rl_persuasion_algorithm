@@ -8,6 +8,8 @@ from scipy import stats
 import pickle
 import Utils as util
 import pandas as pd
+import math
+import random
 
 # load data. Data has <s, s', a, r> samples.
 feat_to_select = [0, 1, 2, 3, 4, 6, 7]
@@ -25,6 +27,7 @@ states = list(map(list, itertools.product([0, 1], repeat = num_feat)))
 
 # Settings for calculation of Q-values
 q_num_iter = 1000 * num_samples # num_samples = num people after session 2
+q_num_iter_final = 100000 * num_samples # num_samples = num people after session 2
 discount_factor = 0.85
 alpha = 0.01
 
@@ -54,9 +57,14 @@ for f in range(num_feat):
     # t-test
     t_tests[f] = stats.ttest_ind(q_values[f][0], q_values[f][1])[0]
 
-feat_sel = [np.argmin(abs(t_tests))]
-feat_sel_criteria = ["First feature -> min. p-value."]
-print("First feature selected:", feat_sel[0], "with p-value", np.min(abs(t_tests)))
+min_p_val = min(abs(t_tests)) # minimum p-value for t-test
+feat_sel_options = [i for i in range(num_feat) if abs(t_tests[i]) == min_p_val]
+feat_sel = [random.choice(feat_sel_options)] # choose randomly if there are multiple best features
+criterion = "First feature -> min. p-value: " + str(round(min_p_val, 4))
+if len(feat_sel_options) > 1:
+    criterion += " random from " + str(feat_sel_options)
+feat_sel_criteria = [criterion]
+print("First feature selected:", feat_sel[0], criterion)
 
 # Select remaining features
 for j in range(num_feat_to_select - 1):
@@ -94,7 +102,10 @@ for j in range(num_feat_to_select - 1):
                     q_values_2[b_ind][f_ind][s][a] += alpha * td_delta 
             
             # t-test
-            t_tests_2[b_ind, f_ind] = stats.ttest_ind(q_values_2[b_ind][f_ind][0], q_values_2[b_ind][f_ind][1])[0]
+            t_value = stats.ttest_ind(q_values_2[b_ind][f_ind][0], q_values_2[b_ind][f_ind][1])[0]
+            if math.isnan(t_value):
+                t_value = 1
+            t_tests_2[b_ind, f_ind] = t_value
     
     # Select next feature
     feat_sel, feat_sel_criteria = util.feat_sel_num_blocks_avg_p_val(feat_not_sel, num_feat_not_sel, 
@@ -110,10 +121,11 @@ with open('Level_3_G_algorithm_chosen_features', 'wb') as f:
     pickle.dump(feat_sel, f)
 with open("Level_3_G_algorithm_chosen_features_criteria", 'wb') as f:
     pickle.dump(feat_sel_criteria, f)
-    
+
+'''    
 # Compute Q-values
 q_values = np.zeros((2, 2, 2, num_act))
-for t in range(q_num_iter):
+for t in range(q_num_iter_final):
     data_index = np.random.randint(0, num_samples)
     s = np.take(np.array(data[data_index][0]), feat_sel)
     s_prime = np.take(np.array(data[data_index][1]), feat_sel)
@@ -129,6 +141,35 @@ for t in range(q_num_iter):
     q_values[s[0], s[1], s[2], a]  += alpha * td_delta 
     
 opt_policy = [[[[a for a in range(num_act) if q_values[i, j, k, a] == max(q_values[i, j, k])] for k in range(2)] for j in range(2)] for i in range(2)]
+'''
+
+abstract_states = [list(i) for i in itertools.product([0, 1], repeat = num_feat_to_select)]
+
+# Compute transition function and reward function
+trans_func = np.zeros((int(2 ** num_feat_to_select), num_act, int(2 ** num_feat_to_select)))
+reward_func = np.zeros((int(2 ** num_feat_to_select), num_act))
+reward_func_count = np.zeros((int(2 ** num_feat_to_select), num_act))
+for s_ind, s in enumerate(abstract_states):
+    for data_index in range(num_samples):
+        if list(np.take(np.array(data[data_index][0]), feat_sel)) == s:
+            trans_func[s_ind, data[data_index][2], abstract_states.index(list(np.take(data[data_index][1], feat_sel)))] += 1
+            r = int(data[data_index][3])
+            if r == 0:
+                r = -1
+            reward_func[s_ind, data[data_index][2]] += r
+            reward_func_count[s_ind, data[data_index][2]] += 1
+   
+    # Normalize
+    for a in range(num_act):
+        summed = sum(trans_func[s_ind, a])
+        if summed > 0:
+            trans_func[s_ind, a] /= summed
+        if reward_func_count[s_ind, a] > 0:
+            reward_func[s_ind, a] /= reward_func_count[s_ind, a]
+
+# Value iteration        
+q_values_exact, _ = util.get_Q_values_opt_policy(discount_factor, trans_func, reward_func)
+opt_policy = [[[[a for a in range(num_act) if q_values_exact[abstract_states.index([i, j, k])][a] == max(q_values_exact[abstract_states.index([i, j, k])])] for k in range(2)] for j in range(2)] for i in range(2)]
 
 with open('Level_3_Optimal_Policy', 'wb') as f:
     pickle.dump(opt_policy, f)

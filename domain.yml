@@ -16,10 +16,26 @@ intents:
 - nlu_fallback
 - deny
 slots:
+  # user satisfaction score
+  user_satisfaction:
+    type: text
+    influence_conversation: false
+    initial_value: ""
+  # whether the entered user satisfaction score is valid
+  satisf_correct:
+    type: bool
+    influence_conversation: true
+  # group, 0 to 3
   study_group:
     type: text
-    influence_conversation: true
+    influence_conversation: false
+    initial_value: ''
+  # stores message numbers sent so far
   action_index_list:
+    type: list
+    influence_conversation: false
+  # stores message types sent so far
+  action_type_index_list:
     type: list
     influence_conversation: false
   action_planning_answer:
@@ -35,6 +51,10 @@ slots:
   activity_verb:
     type: text
     influence_conversation: false
+  activity_verb_prev:
+    type: text
+    influence_conversation: false
+    initial_value: ""
   message_formulation:
     type: text
     influence_conversation: false
@@ -168,9 +188,20 @@ responses:
   - text: Hi there, welcome back!
   - text: Hey there, welcome to your next session!
   - text: Hi, I'm happy to see you again!
+  utter_greet_session_3:
+  - text: Hi, it's great to see you again!
+  - text: Hello there, welcome back!
+  - text: Hey there, it's great to see you again!
+  - text: Hi there, welcome to your third session wth me!
+  - text: Hey there, welcome to your next session!
+  - text: Hi, I'm happy to see you again!
   utter_greet_last:
   - text: Hi there, welcome to your last session!
-  utter_explain_session_234_1:
+  utter_explain_session_3_1:
+  - text: Now let me give you a quick overview of what this session looks like.
+  - text: Now let me quickly give you an overview of what this session looks like.
+  - text: Now let me quickly tell you what this session looks like.
+  utter_explain_session_24_1:
   - text: Before we start, let me give you a quick overview of what this session looks like.
   - text: Before we begin, let me quickly give you an overview of what this session looks like.
   utter_explain_session_2_2:
@@ -212,14 +243,14 @@ responses:
       title: Yes
     - payload: /reward_answer{{"reward":"0"}}
       title: No
-    text: Great! Did you complete the activity I suggested to you last time?
+    text: Great! Last time I suggested you to {activity_verb_prev}. Did you complete this activity?
   utter_ask_activity_completion_last:
   - buttons: 
     - payload: /reward_answer{{"reward":"1"}}
       title: Yes
     - payload: /reward_answer{{"reward":"0"}}
       title: No
-    text: Great! Did you complete the activity I suggested to you last time?
+    text: Great! Last time I suggested you to {activity_verb_prev}. Did you complete this activity?
   utter_response_activity_completion_done:
   - text: Yay, congrats!
   - text: Nice, good job!
@@ -406,6 +437,26 @@ responses:
     - payload: /confirm
       title: Go ahead
     text: "Cool! Now, let me ask you a few questions about how you think about this activity. I'll ask you to rate a few statements."
+  utter_ask_satisfaction_prep:
+  - text: "Before we start, I'd like to ask you for some feedback."
+  utter_ask_satisfaction_explain:
+  - text: "Please answer the following question by typing a number from -10 to 10, -10 being 'Very negative', 0 being 'Neutral' and +10 being 'Very positive.'"
+  utter_ask_satisfaction_explain_last:
+  - text: "Please answer the following question by typing a number from -10 to 10, -10 being 'Very negative', 0 being 'Neutral' and +10 being 'Very positive.'"
+  utter_ask_satisfaction_prep_last:
+  - text: "Before we start your last session, I'd like to ask you for some feedback again."
+  utter_ask_satisfaction:
+  - text: "How is the impact of the support in these conversations with me on your motivation to do your assigned activities?"
+  utter_ask_satisfaction_last:
+  - text: "How is the impact of the support in these conversations with me on your motivation to do your assigned activities?"
+  utter_satisfaction_false:
+  - text: "Hmm, I could not understand that. Please enter a number between -10 and +10."
+  utter_satisfaction_false_last:
+  - text: "Hmm, I could not understand that. Please enter a number between -10 and +10."
+  utter_satisfaction_false_false:
+  - text: "Unfortunately I still could not understand that. But that's okay. Let's move on."
+  utter_satisfaction_false_false_last:
+  - text: "Unfortunately I still could not understand that. But that's okay. Let's move on."
   utter_question_state_1:
   - buttons:
     - payload: /state_answer{{"state_1":"0"}}
@@ -780,16 +831,15 @@ responses:
   - text: Cool, sounds good!
   - text: Nice, sounds like a good plan!
   utter_goodbye_not_last:
-  - buttons:
-    - payload: /confirm
-      title: Bye!
-    - payload: /confirm
-      title: Till next time!
-    text: Bye, see you in the next session!
+  - text: Bye, see you in the next session!
   utter_goodbye:
   - text: Goodbye, thanks a lot for your time!
   utter_iamabot:
   - text: I'm a bot!
+  utter_thank_satisfaction:
+  - text: Cool, thanks for this feedback!
+  utter_thank_satisfaction_last:
+  - text: Cool, this is good to know!
   utter_test:
   - text: This is a test.
   utter_default:
@@ -801,15 +851,12 @@ responses:
 actions:
 - action_answer_mood
 - action_choose_activity
-- action_choose_persuasion_random
+- action_choose_persuasion
 - action_freetext
 - action_save_session
 - action_freetext_activity_comp
 - action_freetext_activity_mod
 - action_set_slot_reward
-- action_choose_persuasion_q_weighted
-- action_choose_persuasion_q
-- action_choose_persuasion_overall
-- action_choose_persuasion_state
 - action_get_group
 - action_set_session
+- action_get_satisfaction

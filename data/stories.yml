@@ -13,7 +13,7 @@ stories:
   - action: action_answer_mood
   - action: action_choose_activity
   - action: utter_test
-  - action: action_choose_persuasion_random
+  - action: action_choose_persuasion
   - slot_was_set:
     - pers_input: False
   - action: action_save_session
@@ -29,7 +29,7 @@ stories:
   - action: action_answer_mood
   - action: action_choose_activity
   - action: utter_test
-  - action: action_choose_persuasion_random
+  - action: action_choose_persuasion
   - slot_was_set:
     - pers_input: True
   - action: action_save_session
@@ -61,11 +61,12 @@ stories:
 - story: start_session_2
   steps: 
   - intent: start_session2
+  - action: action_set_session
   - action: utter_greet_not_first
   - action: utter_ask_for_mood
   - intent: mood_curr
   - action: action_answer_mood
-  - action: utter_explain_session_234_1
+  - action: utter_explain_session_24_1
   - action: utter_explain_session_2_2
   - action: utter_explain_session_2_3
   - action: utter_explain_session_2_4
@@ -78,11 +79,67 @@ stories:
 - story: start_session_3
   steps: 
   - intent: start_session3
-  - action: utter_greet_not_first
+  - action: action_set_session
+  - action: action_get_group
+  - action: utter_greet_session_3
   - action: utter_ask_for_mood
   - intent: mood_curr
   - action: action_answer_mood
-  - action: utter_explain_session_234_1
+  - action: utter_ask_satisfaction_prep
+  - action: utter_ask_satisfaction_explain
+  - action: utter_ask_satisfaction
+  - or:
+    - intent: anything
+    - intent: nlu_fallback
+    - intent: mood_curr
+    - intent: confirm
+  - checkpoint: session_3_satis_received
+  
+- story: start_session_3_satis_correct
+  steps:
+  - checkpoint: session_3_satis_received
+  - action: action_get_satisfaction
+  - slot_was_set: 
+    - satisf_correct: True
+  - action: utter_thank_satisfaction
+  - checkpoint: start_session_3_end
+  
+- story: start_session_3_satis_false
+  steps: 
+  - checkpoint: session_3_satis_received
+  - action: action_get_satisfaction
+  - slot_was_set: 
+    - satisf_correct: False
+  - action: utter_satisfaction_false
+  - or:
+    - intent: anything
+    - intent: nlu_fallback
+    - intent: mood_curr
+    - intent: confirm
+  - checkpoint: session_3_satis_received_2
+  
+- story: start_session_3_satis_false_true
+  steps:
+  - checkpoint: session_3_satis_received_2
+  - action: action_get_satisfaction
+  - slot_was_set: 
+    - satisf_correct: True
+  - action: utter_thank_satisfaction
+  - checkpoint: start_session_3_end
+  
+- story: start_session_3_satis_false_false
+  steps: 
+  - checkpoint: session_3_satis_received_2
+  - action: action_get_satisfaction
+  - slot_was_set: 
+    - satisf_correct: False
+  - action: utter_satisfaction_false_false
+  - checkpoint: start_session_3_end
+  
+- story: start_session_3_end
+  steps:
+  - checkpoint: start_session_3_end
+  - action: utter_explain_session_3_1
   - action: utter_explain_session_34_2
   - action: utter_explain_session_345_3
   - action: utter_explain_session_345_4
@@ -95,11 +152,13 @@ stories:
 - story: start_session_4
   steps: 
   - intent: start_session4
+  - action: action_set_session
+  - action: action_get_group
   - action: utter_greet_not_first
   - action: utter_ask_for_mood
   - intent: mood_curr
   - action: action_answer_mood
-  - action: utter_explain_session_234_1
+  - action: utter_explain_session_24_1
   - action: utter_explain_session_34_2
   - action: utter_explain_session_345_3
   - action: utter_explain_session_345_4
@@ -109,13 +168,73 @@ stories:
   - intent: confirm
   - checkpoint: activity_completion
   
-- story: start_session_5
+- story: start_session_5 
   steps: 
   - intent: start_session5
+  - action: action_set_session
+  - action: action_get_group
   - action: utter_greet_last
   - action: utter_ask_for_mood
   - intent: mood_curr
   - action: action_answer_mood
+  - action: utter_ask_satisfaction_prep_last
+  - action: utter_ask_satisfaction_explain_last
+  - action: utter_ask_satisfaction_last
+  - or:
+    - intent: anything
+    - intent: nlu_fallback
+    - intent: mood_curr
+    - intent: confirm
+  - checkpoint: start_session_5_satis_received
+  
+- story: start_session_5_satisf_true
+  steps: 
+  - checkpoint: start_session_5_satis_received
+  - action: action_get_satisfaction
+  - slot_was_set: 
+    - satisf_correct: True
+  - action: utter_thank_satisfaction_last
+  - checkpoint: start_session_5_end
+  
+- story: start_session_5_satisf_false_true
+  steps: 
+  - checkpoint: start_session_5_satis_received
+  - action: action_get_satisfaction
+  - slot_was_set: 
+    - satisf_correct: False
+  - action: utter_satisfaction_false_last
+  - or:
+    - intent: anything
+    - intent: nlu_fallback
+    - intent: mood_curr
+    - intent: confirm
+  - action: action_get_satisfaction
+  - slot_was_set: 
+    - satisf_correct: True
+  - action: utter_thank_satisfaction_last
+  - checkpoint: start_session_5_end
+  
+- story: start_session_5_satisf_false_false
+  steps: 
+  - checkpoint: start_session_5_satis_received
+  - action: action_get_satisfaction
+  - slot_was_set: 
+    - satisf_correct: False
+  - action: utter_satisfaction_false_last
+  - or:
+    - intent: anything
+    - intent: nlu_fallback
+    - intent: mood_curr
+    - intent: confirm
+  - action: action_get_satisfaction
+  - slot_was_set: 
+    - satisf_correct: False
+  - action: utter_satisfaction_false_false_last
+  - checkpoint: start_session_5_end
+  
+- story: start_session_5_end
+  steps:
+  - checkpoint: start_session_5_end
   - action: utter_explain_session_5_1
   - action: utter_explain_session_5_2
   - action: utter_explain_session_345_3
@@ -332,7 +451,7 @@ stories:
 - story: persuasion_no_input
   steps:
   - checkpoint: choose_persuasion
-  - action: action_choose_persuasion_random
+  - action: action_choose_persuasion
   - slot_was_set:
     - pers_input: False
   - action: utter_message_formulation
@@ -343,7 +462,7 @@ stories:
 - story: persuasion_input
   steps:
   - checkpoint: choose_persuasion
-  - action: action_choose_persuasion_random
+  - action: action_choose_persuasion
   - slot_was_set:
     - pers_input: True
   - action: utter_message_formulation

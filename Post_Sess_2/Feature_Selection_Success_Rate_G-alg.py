@@ -8,6 +8,7 @@ from scipy import stats
 import pickle
 import Utils as util
 import pandas as pd
+import random
 
 # load data. Data has <s, s', a, r> samples.
 feat_to_select = [0, 1, 2, 3, 4, 6, 7]
@@ -22,11 +23,6 @@ num_states = 2 ** num_feat
 actions = [i for i in range(num_act)]
 
 states = list(map(list, itertools.product([0, 1], repeat = num_feat)))
-
-# Settings for calculation of Q-values
-q_num_iter = 1000 * num_samples # num_samples = number of people
-discount_factor = 0.85
-alpha = 0.01
 
 num_feat_to_select = 3 # number of features to select
         
@@ -48,9 +44,14 @@ for f in range(num_feat):
    success_rate_1 = np.divide(rewards[f][1], trials[f][1], out=np.zeros_like(rewards[f][1]), where=trials[f][1]!=0)
    t_tests[f] = stats.ttest_ind(success_rate_0, success_rate_1)[0]
 
-feat_sel = [np.argmin(abs(t_tests))]
-feat_sel_criteria = ["First feature -> min. p-value."]
-print("First feature selected:", feat_sel[0], "with p-value", np.min(abs(t_tests)))
+min_p_val = min(abs(t_tests)) # minimum p-value for t-test
+feat_sel_options = [i for i in range(num_feat) if abs(t_tests[i]) == min_p_val]
+feat_sel = [random.choice(feat_sel_options)] # choose randomly if there are multiple best features
+criterion = "First feature -> min. p-value: " + str(round(min_p_val, 4))
+if len(feat_sel_options) > 1:
+    criterion += " random from " + str(feat_sel_options)
+feat_sel_criteria = [criterion]
+print("First feature selected:", feat_sel[0], criterion)
 
 # Select remaining features
 for j in range(num_feat_to_select - 1):
