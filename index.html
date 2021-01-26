@@ -1,23 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>First Session</title>
+    <title>Sam</title>
 </head>
 <body>
 
 <div id="webchat"></div>
 <script src="https://cdn.jsdelivr.net/npm/rasa-webchat/lib/index.min.js"></script>
 <script>
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString)
+      const userid = urlParams.get('userid')
+      // const userid = "111"
 	  WebChat.default.init({
 		selector: "#webchat",
-		initPayload: "/start_test",
-		customData: {"language":"en", "userid": "111"}, // arbitrary custom data. Stay minimal as this will be added to the socket
+		initPayload: "/start_session3",
+		customData: {"language":"en", "userid": userid}, // arbitrary custom data. Stay minimal as this will be added to the socket
 		socketUrl: "http://localhost:5005",
 		socketPath: "/socket.io/",
 		fullScreenMode: true,
 		embedded: true,
 		title: "Sam",
-		subtitle: "Session 5",
+		subtitle: "",
 		params: {"storage": "session"} // can be set to "local"  or "session". details in storage section.
 })
 </script>
