@@ -33,7 +33,11 @@ try:
                                 action_type_index_list TEXT,
                                 study_group INTEGER,
                                 user_satisfaction2 TEXT,
-                                user_satisfaction4 TEXT
+                                user_satisfaction4 TEXT,
+                                reflection_answer0 TEXT,
+                                reflection_answer1 TEXT,
+                                reflection_answer2 TEXT,
+                                reflection_answer3 TEXT
                                 )'''
 								
     cursor = sqliteConnection.cursor()

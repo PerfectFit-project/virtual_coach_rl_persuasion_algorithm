@@ -40,3 +40,13 @@ action_endpoint:
 #  username: username
 #  password: password
 #  queue: queue
+
+tracker_store:
+    type: SQL
+    dialect: "sqlite"  # the dialect used to interact with the db
+    url: ""  # (optional) host of the sql db, e.g. "localhost"
+    db: "rasa.db"  # path to your db
+    username:  # username used for authentication
+    password:  # password used for authentication
+    query: # optional dictionary to be added as a query string to the connection URL
+      driver: my-driver

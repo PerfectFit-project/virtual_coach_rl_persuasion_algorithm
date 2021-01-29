@@ -38,6 +38,15 @@ slots:
   action_type_index_list:
     type: list
     influence_conversation: false
+  # stores reflective question to ask after persuading
+  reflective_question:
+    type: text
+    influence_conversation: false
+    initial_value: ""
+  reflection_answer:
+    type: text
+    influence_conversation: false
+    initial_value: ""
   action_planning_answer:
     type: text
     influence_conversation: false
@@ -454,9 +463,9 @@ responses:
   utter_satisfaction_false_last:
   - text: "Hmm, I could not understand that. Please enter a number between -10 and +10."
   utter_satisfaction_false_false:
-  - text: "Unfortunately I still could not understand that. But that's okay. Let's move on."
+  - text: "Unfortunately I still could not understand that. But that's okay. Let's move on!"
   utter_satisfaction_false_false_last:
-  - text: "Unfortunately I still could not understand that. But that's okay. Let's move on."
+  - text: "Unfortunately I still could not understand that. But that's okay. Let's move on!"
   utter_question_state_1:
   - buttons:
     - payload: /state_answer{{"state_1":"0"}}
@@ -792,6 +801,12 @@ responses:
       reminder with your assigned activity to your Prolific email.
   - text: You've made it to the end of this session! Of course, I'll send you a reminder
       with your assigned activity to your Prolific email.
+  utter_thank_reflection:
+  - text: Cool, thanks for sharing this reflection with me!
+  - text: Cool, thanks for sharing these thoughts with me!
+  - text: Thanks, I appreciate you sharing these thoughts with me!
+  - text: Thanks, I appreciate you sharing this reflection with me!
+  - text: Cools, thanks for sharing this with me!
   utter_remind_next_session:
   - buttons:
     - payload: /confirm
@@ -817,6 +832,8 @@ responses:
   - text: Between this and the next session, please remember to {activity_verb}.
   utter_message_formulation:
   - text: '{message_formulation}'
+  utter_reflective_question:
+  - text: '{reflective_question}'
   utter_ok:
   - buttons:
     - payload: /confirm
@@ -862,3 +879,4 @@ actions:
 - action_get_satisfaction
 - action_send_email
 - action_send_email_last
+- action_get_reflection

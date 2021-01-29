@@ -6,6 +6,7 @@ stories:
   steps:
   - intent: start_test
   - action: action_set_session
+  - action: action_get_group
   - action: utter_test
   - action: utter_ask_for_mood
   - intent: mood_curr
@@ -17,11 +18,13 @@ stories:
   - slot_was_set:
     - pers_input: False
   - action: action_save_session
+  - action: action_send_email
   
 - story: test1
   steps:
   - intent: start_test
   - action: action_set_session
+  - action: action_get_group
   - action: utter_test
   - action: utter_ask_for_mood
   - intent: mood_curr
@@ -33,6 +36,7 @@ stories:
   - slot_was_set:
     - pers_input: True
   - action: action_save_session
+  - action: action_send_email
 
 - story: start_session_1
   steps:
@@ -455,8 +459,14 @@ stories:
   - slot_was_set:
     - pers_input: False
   - action: utter_message_formulation
-  - action: utter_ok
-  - intent: confirm
+  - action: utter_reflective_question
+  - or:
+    - intent: anything
+    - intent: nlu_fallback
+    - intent: mood_curr
+    - intent: confirm
+  - action: action_get_reflection
+  - action: utter_thank_reflection
   - checkpoint: end_not_last
 
 - story: persuasion_input
@@ -521,6 +531,7 @@ stories:
   - action: utter_remind_next_session
   - intent: confirm
   - action: action_save_session
+  - action: action_send_email
   
 - story: end_last
   steps:
@@ -530,4 +541,5 @@ stories:
   - intent: confirm
   - action: utter_thank_participation
   - action: action_save_session
+  - action: action_send_email_last
   
