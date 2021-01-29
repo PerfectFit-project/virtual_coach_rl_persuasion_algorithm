@@ -1,0 +1,14 @@
+Dear ${PERSON_NAME}, 
+
+
+This is a mesage to remind you of your suggested activity to prepare to quit smoking:
+
+${ACTIVITY}
+
+
+I wish you all the best with quitting smoking!
+
+
+Best regards,
+
+Your Virtual Coach Sam

@@ -18,7 +18,10 @@ import pandas as pd
 import random
 import numpy as np
 from datetime import datetime
-
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import smtplib, ssl
+from string import Template
 
 # Activities
 df_act = pd.read_excel("Activities.xlsx")
@@ -237,11 +240,9 @@ class ActionSetSession(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         
-        # TODO
-        #metadata = extract_metadata_from_tracker(tracker)
-        #print("metadata:", metadata)
-        #user_id = metadata['userid']
-        user_id = '333'
+        metadata = extract_metadata_from_tracker(tracker)
+        user_id = metadata['userid']
+        print("ID:", user_id)
         
         # create db connection
         try:
@@ -273,6 +274,104 @@ class ActionSetSession(Action):
         except NameError:
             dispatcher.utter_message("Something went wrong, please close this session and contact researcher (n.albers@tudelft.nl).")
     
+class ActionSendEmail(Action):
+    def name(self):
+        return "action_send_email"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+    
+        metadata = extract_metadata_from_tracker(tracker)
+        user_id = metadata['userid'] # Anurag: '5f970a74069a250711aaa695'
+        
+        ssl_port = 465
+        with open('x.txt', 'r') as f:
+            x = f.read()
+        smtp = "smtp.web.de" # for web.de: smtp.web.de
+        email = "nele.96@web.de"
+        user_email = user_id + "@email.prolific.co"
+        user_email = "n.albers@tudelft.nl"
+        
+        with open('reminder_template.txt', 'r', encoding='utf-8') as template_file:
+            message_template = Template(template_file.read())
+        context = ssl.create_default_context()
+        
+        persuasion = tracker.get_slot('message_formulation')
+        activity = tracker.get_slot('activity_formulation')
+    
+        # set up the SMTP server
+        with smtplib.SMTP_SSL(smtp, ssl_port, context = context) as server:
+            server.login(email, x)
+        
+            msg = MIMEMultipart() # create a message
+            
+            # add in the actual person name to the message template
+            message = message_template.substitute(PERSON_NAME ="Study Participant",
+                                                  ACTIVITY= activity,
+                                                  PERSUASION = persuasion)
+        
+            # setup the parameters of the message
+            msg['From'] = email
+            msg['To']=  user_email
+            msg['Subject'] = "Prolific Reminder - Computerized Health Coaching"
+            
+            # add in the message body
+            msg.attach(MIMEText(message, 'plain'))
+            
+            # send the message via the server set up earlier.
+            server.send_message(msg)
+            
+            del msg
+            
+class ActionSendEmailLast(Action):
+    def name(self):
+        return "action_send_email_last"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+    
+        metadata = extract_metadata_from_tracker(tracker)
+        user_id = metadata['userid'] # Anurag: '5f970a74069a250711aaa695'
+        
+        ssl_port = 465
+        with open('x.txt', 'r') as f:
+            x = f.read()
+        smtp = "smtp.web.de" # for web.de: smtp.web.de
+        email = "nele.96@web.de"
+        user_email = user_id + "@email.prolific.co"
+        user_email = "n.albers@tudelft.nl"
+        
+        with open('reminder_template_last_session.txt', 'r', encoding='utf-8') as template_file:
+            message_template = Template(template_file.read())
+        context = ssl.create_default_context()
+        
+        activity = tracker.get_slot('activity_formulation')
+    
+        # set up the SMTP server
+        with smtplib.SMTP_SSL(smtp, ssl_port, context = context) as server:
+            server.login(email, x)
+        
+            msg = MIMEMultipart() # create a message
+            
+            # add in the actual person name to the message template
+            message = message_template.substitute(PERSON_NAME="Study Participant",
+                                                  ACTIVITY= activity)
+        
+            # setup the parameters of the message
+            msg['From'] = email
+            msg['To']=  user_email
+            msg['Subject'] = "Prolific Reminder - Computerized Health Coaching"
+            
+            # add in the message body
+            msg.attach(MIMEText(message, 'plain'))
+            
+            # send the message via the server set up earlier.
+            server.send_message(msg)
+            
+            del msg
+
 class ActionSaveSession(Action):
     def name(self):
         return "action_save_session"
@@ -281,11 +380,8 @@ class ActionSaveSession(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         
-        # TODO
-        #metadata = extract_metadata_from_tracker(tracker)
-        #print("metadata:", metadata)
-        #user_id = metadata['userid']
-        user_id = '333'
+        metadata = extract_metadata_from_tracker(tracker)
+        user_id = metadata['userid']
         
         # Load slot values
         mood = tracker.get_slot('mood')
@@ -457,11 +553,9 @@ class ActionGetGroup(Action):
         # Group assignment # TODO
         df_group_ass = pd.read_csv("assignment.csv", dtype={'ID':'string'})
 
-        # TODO
         # get user ID
-        #metadata = extract_metadata_from_tracker(tracker)
-        #user_id = metadata['userid']
-        user_id = '333'
+        metadata = extract_metadata_from_tracker(tracker)
+        user_id = metadata['userid']
         
         # get pre-computed group
         group = str(df_group_ass[df_group_ass['ID'] == user_id]["Group"].tolist()[0])
@@ -555,11 +649,9 @@ class ActionChoosePersuasion(Action):
             
             print("Persuasion level 4")
              
-            # TODO
-            #metadata = extract_metadata_from_tracker(tracker)
-            #print("metadata:", metadata)
-            #user_id = metadata['userid']
-            user_id = '333'
+            # get user ID
+            metadata = extract_metadata_from_tracker(tracker)
+            user_id = metadata['userid']
             
             with open('Post_Sess_2/Level_4_Optimal_Policy', 'rb') as f:
                 p = pickle.load(f)

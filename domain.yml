@@ -860,3 +860,5 @@ actions:
 - action_get_group
 - action_set_session
 - action_get_satisfaction
+- action_send_email
+- action_send_email_last

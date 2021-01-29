@@ -1,0 +1,17 @@
+Dear ${PERSON_NAME}, 
+
+
+This is a mesage to remind you of your suggested activity to prepare to quit smoking:
+
+${ACTIVITY}
+
+
+${PERSUASION}
+
+
+See you in your next session!
+
+
+Best regards,
+
+Your Virtual Coach Sam
