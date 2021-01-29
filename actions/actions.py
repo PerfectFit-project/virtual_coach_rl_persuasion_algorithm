@@ -36,6 +36,20 @@ num_act = len(df_act)
 s_ind = [i for i in range(len(df_act)) if df_act.loc[i, 'Category'][0] == 'S']
 pa_ind = [i for i in range(len(df_act)) if df_act.loc[i, 'Category'][0] == 'P']
 
+# Reflective questions
+df_ref = pd.read_csv("reflective_questions.csv")
+ref_dict = {} # reflective question for each message
+for m in [0, 1, 2, 3]: # Goal
+    ref_dict[m] = 0
+for m in [4, 5]: # Identity
+    ref_dict[m] = 1
+for m in [6, 7, 8, 9]: # Consensus
+    ref_dict[m] = 2
+for m in [10, 11, 12, 13]: # Authority
+    ref_dict[m] = 3
+for m in [14, 15, 16]:
+    ref_dict[m] = -1
+
 # Persuasive Messages
 df_mess = pd.read_csv("all_messages.csv")
 num_mess_per_type = [6, 4, 4, 3]
@@ -231,6 +245,18 @@ class ActionGetSatisfaction(FormAction):
         return [SlotSet("user_satisfaction", satis),
                 SlotSet("satisf_correct", correct)]
     
+# Read free text response for user's reflection on persuasive message
+class ActionGetReflection(FormAction):
+
+    def name(self):
+        return 'action_get_reflection'
+
+    async def run(self, dispatcher, tracker, domain):
+
+        text = tracker.latest_message['text']
+        
+        return [SlotSet("reflection_answer", satis)]
+    
 # Sets slots for later sessions
 class ActionSetSession(Action):
     def name(self) -> Text:
@@ -273,7 +299,8 @@ class ActionSetSession(Action):
            
         except NameError:
             dispatcher.utter_message("Something went wrong, please close this session and contact researcher (n.albers@tudelft.nl).")
-    
+
+# Send reminder email with activity and persuasion after session
 class ActionSendEmail(Action):
     def name(self):
         return "action_send_email"
@@ -297,7 +324,12 @@ class ActionSendEmail(Action):
             message_template = Template(template_file.read())
         context = ssl.create_default_context()
         
-        persuasion = tracker.get_slot('message_formulation')
+        pers_input = tracker.get_slot('pers_input')
+        if not pers_input:
+            persuasion = tracker.get_slot('message_formulation')
+        else:
+            persuasion = "And here is the plan you created for doing the activity:\n\n\t"
+            persuasion += tracker.get_slot('action_planning_answer')
         activity = tracker.get_slot('activity_formulation')
     
         # set up the SMTP server
@@ -411,10 +443,12 @@ class ActionSaveSession(Action):
             if not data:
                 sessions_done = 1
                 action_planning_answer = tracker.get_slot('action_planning_answer')
+                reflection_answer = tracker.get_slot('reflection_answer')
                 data_tuple = (user_id, sessions_done, mood, action_planning_answer, 
                               attention_check, attention_check_2, activity_index_list,
-                              action_index_list, state, action_type_index_list)
-                sqlite_query = """INSERT INTO users (id, sessions_done, mood_list, action_planning_answer0, attention_check_list, attention_check_2_list, activity_index_list, action_index_list, state_0, action_type_index_list) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+                              action_index_list, state, action_type_index_list,
+                              reflection_answer)
+                sqlite_query = """INSERT INTO users (id, sessions_done, mood_list, action_planning_answer0, attention_check_list, attention_check_2_list, activity_index_list, action_index_list, state_0, action_type_index_list, reflection_answer0) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
                 dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_3VmOMw3USprKQv3?PROLIFIC_PID=" + str(user_id) + "&Group=2"
                 dispatcher.utter_message(link)
@@ -422,6 +456,7 @@ class ActionSaveSession(Action):
             elif data[0][1] == 1:
                 sessions_done = 2
                 action_planning_answer = tracker.get_slot('action_planning_answer')
+                reflection_answer = tracker.get_slot('reflection_answer')
                 mood_list = '|'.join([data[0][2], mood])
                 attention_check_list = data[0][16].split('|')
                 attention_check_list.append(attention_check)
@@ -435,9 +470,10 @@ class ActionSaveSession(Action):
                 data_tuple = (sessions_done, mood_list, action_planning_answer, 
                               attention_check_list, attention_check_2_list, activity_index_list,
                               action_index_list, state, activity_experience, 
-                              activity_experience_mod, reward, action_type_index_list, user_id)
+                              activity_experience_mod, reward, action_type_index_list, 
+                              reflection_answer, user_id)
                 print("Tuple session 2:", data_tuple)
-                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer1 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_1 = ?, activity_experience1 = ?, activity_experience_mod1 = ?, reward_list = ?, action_type_index_list = ? WHERE id = ?"""
+                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer1 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_1 = ?, activity_experience1 = ?, activity_experience_mod1 = ?, reward_list = ?, action_type_index_list = ?, reflection_answer1 = ? WHERE id = ?"""
                 dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
                 dispatcher.utter_message(link)
@@ -445,6 +481,7 @@ class ActionSaveSession(Action):
             elif data[0][1] == 2:
                 sessions_done = 3
                 action_planning_answer = tracker.get_slot('action_planning_answer')
+                reflection_answer = tracker.get_slot('reflection_answer')
                 satisf = tracker.get_slot('user_satisfaction')
                 group = int(tracker.get_slot('study_group'))
                 mood_list = data[0][2].split('|')
@@ -463,9 +500,10 @@ class ActionSaveSession(Action):
                               attention_check_list, attention_check_2_list, activity_index_list,
                               action_index_list, state, activity_experience, 
                               activity_experience_mod, reward_list, 
-                              action_type_index_list, group, satisf, user_id)
+                              action_type_index_list, group, satisf, 
+                              reflection_answer, user_id)
                 print("Tuple session 3:", data_tuple)
-                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer2 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_2 = ?, activity_experience2 = ?, activity_experience_mod2 = ?, reward_list = ?, action_type_index_list = ?, study_group = ?, user_satisfaction2 = ? WHERE id = ?"""
+                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer2 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_2 = ?, activity_experience2 = ?, activity_experience_mod2 = ?, reward_list = ?, action_type_index_list = ?, study_group = ?, user_satisfaction2 = ?, reflection_answer2 = ? WHERE id = ?"""
                 dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
                 dispatcher.utter_message(link)   
@@ -473,6 +511,7 @@ class ActionSaveSession(Action):
             elif data[0][1] == 3:
                 sessions_done = 4
                 action_planning_answer = tracker.get_slot('action_planning_answer')
+                reflection_answer = tracker.get_slot('reflection_answer')
                 mood_list = data[0][2].split('|')
                 mood_list.append(mood)
                 mood_list = '|'.join(mood_list)
@@ -491,9 +530,10 @@ class ActionSaveSession(Action):
                               attention_check_list, attention_check_2_list, activity_index_list,
                               action_index_list, state, activity_experience, 
                               activity_experience_mod, reward_list, 
-                              action_type_index_list, user_id)
+                              action_type_index_list, 
+                              reflection_answer, user_id)
                 print("Tuple session 4:", data_tuple)
-                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer3 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_3 = ?, activity_experience3 = ?, activity_experience_mod3 = ?, reward_list = ?, action_type_index_list = ? WHERE id = ?"""
+                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer3 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_3 = ?, activity_experience3 = ?, activity_experience_mod3 = ?, reward_list = ?, action_type_index_list = ?, reflection_answer3 = ? WHERE id = ?"""
                 dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
                 dispatcher.utter_message(link)   
@@ -691,6 +731,8 @@ class ActionChoosePersuasion(Action):
         
         # total number of messages per activity in message dataframe
         num_mess_per_activ = len(df_mess)/len(df_act)
+        
+        pers_type = 1
        
         # Determine whether user input is required for persuasion type
         require_input = False
@@ -704,10 +746,17 @@ class ActionChoosePersuasion(Action):
         message_ind = random.choice(min_messages) + sum(num_mess_per_type[0:pers_type])
         curr_action_ind_list.append(message_ind)
         
+        # Determine reflective question (only for persuasion types 0-2)
+        ref_type = ref_dict[message_ind]
+        ref_question = ""
+        if ref_type >= 0:
+            ref_question = df_ref.loc[ref_type, 'Question']
+        
         # Determine message
         message = df_mess.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Message']
         
         return [SlotSet("message_formulation", message), 
                 SlotSet("action_index_list", curr_action_ind_list),
                 SlotSet("action_type_index_list", curr_action_type_ind_list),
-                SlotSet("pers_input", require_input)]
+                SlotSet("pers_input", require_input),
+                SlotSet("reflective_question", ref_question)]
