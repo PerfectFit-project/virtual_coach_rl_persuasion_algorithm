@@ -255,7 +255,7 @@ class ActionGetReflection(FormAction):
 
         text = tracker.latest_message['text']
         
-        return [SlotSet("reflection_answer", satis)]
+        return [SlotSet("reflection_answer", text)]
     
 # Sets slots for later sessions
 class ActionSetSession(Action):
@@ -621,7 +621,10 @@ class ActionChoosePersuasion(Action):
         curr_activity = curr_act_ind_list[-1]
         
         # study group
-        group = int(tracker.get_slot('study_group'))
+        group = tracker.get_slot('study_group')
+        
+        if len(group) > 0:
+            group = int(group)
         
         if group == 0:
             
@@ -732,7 +735,7 @@ class ActionChoosePersuasion(Action):
         # total number of messages per activity in message dataframe
         num_mess_per_activ = len(df_mess)/len(df_act)
         
-        pers_type = 1
+        #pers_type = 1
        
         # Determine whether user input is required for persuasion type
         require_input = False

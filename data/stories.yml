@@ -131,13 +131,40 @@ stories:
   - action: utter_thank_satisfaction
   - checkpoint: start_session_3_end
   
-- story: start_session_3_satis_false_false
+- story: start_session_3_satis_false_false_false
   steps: 
   - checkpoint: session_3_satis_received_2
   - action: action_get_satisfaction
   - slot_was_set: 
     - satisf_correct: False
   - action: utter_satisfaction_false_false
+  - or:
+    - intent: anything
+    - intent: nlu_fallback
+    - intent: mood_curr
+    - intent: confirm
+  - action: action_get_satisfaction
+  - slot_was_set: 
+    - satisf_correct: False
+  - action: utter_satisfaction_false_false_false
+  - checkpoint: start_session_3_end
+  
+- story: start_session_3_satis_false_false_true
+  steps: 
+  - checkpoint: session_3_satis_received_2
+  - action: action_get_satisfaction
+  - slot_was_set: 
+    - satisf_correct: False
+  - action: utter_satisfaction_false_false
+  - or:
+    - intent: anything
+    - intent: nlu_fallback
+    - intent: mood_curr
+    - intent: confirm
+  - action: action_get_satisfaction
+  - slot_was_set: 
+    - satisf_correct: True
+  - action: utter_thank_satisfaction
   - checkpoint: start_session_3_end
   
 - story: start_session_3_end
@@ -218,7 +245,7 @@ stories:
   - action: utter_thank_satisfaction_last
   - checkpoint: start_session_5_end
   
-- story: start_session_5_satisf_false_false
+- story: start_session_5_satisf_false_false_false
   steps: 
   - checkpoint: start_session_5_satis_received
   - action: action_get_satisfaction
@@ -234,6 +261,42 @@ stories:
   - slot_was_set: 
     - satisf_correct: False
   - action: utter_satisfaction_false_false_last
+  - or:
+    - intent: anything
+    - intent: nlu_fallback
+    - intent: mood_curr
+    - intent: confirm
+  - action: action_get_satisfaction
+  - slot_was_set: 
+    - satisf_correct: False
+  - action: utter_satisfaction_false_false_false_last
+  - checkpoint: start_session_5_end
+  
+- story: start_session_5_satisf_false_false_true
+  steps: 
+  - checkpoint: start_session_5_satis_received
+  - action: action_get_satisfaction
+  - slot_was_set: 
+    - satisf_correct: False
+  - action: utter_satisfaction_false_last
+  - or:
+    - intent: anything
+    - intent: nlu_fallback
+    - intent: mood_curr
+    - intent: confirm
+  - action: action_get_satisfaction
+  - slot_was_set: 
+    - satisf_correct: False
+  - action: utter_satisfaction_false_false_last
+  - or:
+    - intent: anything
+    - intent: nlu_fallback
+    - intent: mood_curr
+    - intent: confirm
+  - action: action_get_satisfaction
+  - slot_was_set: 
+    - satisf_correct: True
+  - action: utter_thank_satisfaction_last
   - checkpoint: start_session_5_end
   
 - story: start_session_5_end

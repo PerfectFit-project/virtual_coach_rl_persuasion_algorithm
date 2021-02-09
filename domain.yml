@@ -449,22 +449,26 @@ responses:
   utter_ask_satisfaction_prep:
   - text: "Before we start, I'd like to ask you for some feedback."
   utter_ask_satisfaction_explain:
-  - text: "Please answer the following question by typing a number from -10 to 10, -10 being 'Very negative', 0 being 'Neutral' and +10 being 'Very positive.'"
+  - text: "Please answer the following question by typing a number between -10 and 10, -10 being 'Very negative', 0 being 'Neutral' and +10 being 'Very positive.'"
   utter_ask_satisfaction_explain_last:
-  - text: "Please answer the following question by typing a number from -10 to 10, -10 being 'Very negative', 0 being 'Neutral' and +10 being 'Very positive.'"
+  - text: "Please answer the following question by typing a number between -10 and 10, -10 being 'Very negative', 0 being 'Neutral' and +10 being 'Very positive.'"
   utter_ask_satisfaction_prep_last:
   - text: "Before we start your last session, I'd like to ask you for some feedback again."
   utter_ask_satisfaction:
-  - text: "How is the impact of the support in these conversations with me on your motivation to do your assigned activities?"
+  - text: "Please rate the impact of our last 2 conversations on your motivation to do your previous assigned activities."
   utter_ask_satisfaction_last:
-  - text: "How is the impact of the support in these conversations with me on your motivation to do your assigned activities?"
+  - text: "Please rate the impact of our last 2 conversations on your motivation to do your previous assigned activities."
   utter_satisfaction_false:
-  - text: "Hmm, I could not understand that. Please enter a number between -10 and +10."
+  - text: "Hmm, I could not understand that. Please enter a number between -10 and 10."
   utter_satisfaction_false_last:
-  - text: "Hmm, I could not understand that. Please enter a number between -10 and +10."
+  - text: "Hmm, I could not understand that. Please enter a number between -10 and 10."
   utter_satisfaction_false_false:
-  - text: "Unfortunately I still could not understand that. But that's okay. Let's move on!"
+  - text: "I'm sorry, this does not seem to be a number between -10 and 10. Please enter a number between -10 and 10 such as -10, -5, 0, 5 or 10."
   utter_satisfaction_false_false_last:
+  - text: "I'm sorry, this does not seem to be a number between -10 and 10. Please enter a number between -10 and 10 such as -10, -5, 0, 5 or 10."
+  utter_satisfaction_false_false_false:
+  - text: "Unfortunately I still could not understand that. But that's okay. Let's move on!"
+  utter_satisfaction_false_false_false_last:
   - text: "Unfortunately I still could not understand that. But that's okay. Let's move on!"
   utter_question_state_1:
   - buttons:
