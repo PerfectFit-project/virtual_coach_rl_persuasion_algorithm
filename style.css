@@ -1,0 +1,13 @@
+/* Header color, can only be seen if embedded = false */
+.rw-conversation-container .rw-header{
+    background-color: #F5360D;
+}
+
+/* Background color of selected buttons */
+.rw-conversation-container .rw-client{
+       background-color: #F5360D !important; 
+}
+
+/*.rw-conversation-container .rw-response{
+       background-color: #F5360D !important; 
+} Changes background color of what agent says (but not buttons) */

@@ -2,11 +2,13 @@
 <html>
 <head>
     <title>Sam</title>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/rasa-webchat@0.11.5/lib/index.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
 
 <div id="webchat"></div>
-<script src="https://cdn.jsdelivr.net/npm/rasa-webchat@0.11.6/lib/index.min.js"></script>
 <script>
       const queryString = window.location.search;
       const urlParams = new URLSearchParams(queryString);
@@ -19,7 +21,7 @@
 		socketUrl: "http://localhost:5005",
 		socketPath: "/socket.io/",
 		fullScreenMode: true,
-		embedded: true,
+		embedded: false,
 		title: "Sam",
 		subtitle: "",
 		params: {"storage": "session"} // can be set to "local"  or "session". details in storage section.
