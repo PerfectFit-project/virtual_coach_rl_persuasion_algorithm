@@ -145,9 +145,9 @@ slots:
     initial_value: ""
 responses:
   utter_greet_first_time:
-  - text: Hey there, I'm Sam. It's nice to meet you!
-  - text: Hi, I'm Sam. It's great to meet you!
-  - text: Hello there, I'm Sam. I'm happy to meet you!
+  - text: "Hey there, I'm Sam. It's nice to meet you!"
+  - text: "Hi, I'm Sam. It's great to meet you!"
+  - text: "Hello there, I'm Sam. I'm happy to meet you!"
   utter_purpose:
   - text: "I've mentioned my name, but I haven't yet told you what I do: I'm here\
       \ to help you to prepare to quit smoking. Becoming more physically active may help, so I'll also help you to prepare to become more physically active."
@@ -168,7 +168,7 @@ responses:
       title: Yes, that's clear
     - payload: /confirm
       title: Nice, sounds easy enough!
-    text: Most of the time, you can just click on one of the blue buttons like you
+    text: Most of the time, you can just click on one of the buttons like you
       already did. If no buttons appear, just make use of the text field below. Sounds
       good?
   utter_prompt_session_overview:
@@ -182,7 +182,7 @@ responses:
   - text: In the end, I might help you to plan when, where and how to do your suggested
       activity.
   utter_explain_session_overview_4:
-  - text: And don't worry, I'll also send you your activity to your Prolific email.
+  - text: And don't worry, I'll also send you your activity as a message in Prolific.
   utter_explain_session_final:
   - buttons:
     - payload: /confirm
@@ -225,8 +225,8 @@ responses:
       title: Sounds good
     text: And, just like last time, I'll ask you about your thoughts about doing this activity and will maybe help you to plan to do it. Okay?
   utter_explain_session_234_5:
-  - text: Cool! Oh and of course I'll send you an email with your assigned activity to your Prolific email again.
-  - text: Cool! Oh and of course I'll also send you an email with your new activity to your Prolific email again.
+  - text: Cool! Oh and of course you'll get a message with your new activity in Prolific.
+  - text: Cool! Oh and of course I'll send you a message with your new activity in Prolific.
   utter_explain_session_34_2:
   - text: Just like last time, I'll first ask you about your experience (if any) with your assigned activity from last time.
   utter_explain_session_345_3: 
@@ -245,7 +245,7 @@ responses:
   utter_explain_session_5_5:
   - text: Cool! Of course, since this is the last session, there won't be a next session in which I ask you about your experience with this activity.
   utter_explain_session_5_6:
-  - text: "But I'll still send you a reminder to your Prolific email like before."
+  - text: "But I'll still send you a reminder in Prolific like before."
   utter_ask_activity_completion:
   - buttons: 
     - payload: /reward_answer{{"reward":"1"}}
@@ -424,7 +424,7 @@ responses:
   utter_prepare_activity_proposal_session5:
   - text: "Here is the new activity that I think would help you:"
   utter_activity_formulation:
-  - text: '{activity_formulation}'
+  - text: '**{activity_formulation}**'
   utter_activity_clear:
   - buttons:
     - payload: /confirm
@@ -482,7 +482,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_1":"4"}}
       title: Agree strongly
-    text: "Please rate this statement: I know why it is important to do the assigned activity."
+    text: "Please rate this statement: I know why it is important to do the activity."
   utter_question_state_1_last:
   - buttons:
     - payload: /state_answer{{"state_1":"0"}}
@@ -495,7 +495,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_1":"4"}}
       title: Agree strongly
-    text: "Please rate this statement: I know why it is important to do the assigned activity."
+    text: "Please rate this statement: I know why it is important to do the activity."
   utter_question_state_2:
   - buttons:
     - payload: /state_answer{{"state_2":"0"}}
@@ -508,7 +508,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_2":"4"}}
       title: Agree strongly
-    text: "Thanks! Please also rate this statement: I have sufficient time to do the assigned activity."
+    text: "Thanks! Please also rate this statement: I have sufficient time to do the activity."
   utter_question_state_2_last:
   - buttons:
     - payload: /state_answer{{"state_2":"0"}}
@@ -521,7 +521,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_2":"4"}}
       title: Agree strongly
-    text: "Thanks! Please also rate this statement: I have sufficient time to do the assigned activity."
+    text: "Thanks! Please also rate this statement: I have sufficient time to do the activity."
   utter_question_state_3:
   - buttons:
     - payload: /state_answer{{"state_3":"0"}}
@@ -534,7 +534,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_3":"4"}}
       title: Agree strongly
-    text: "Alright, here is the next statement that I'd like you to rate: I have triggers that prompt/remind me to do the assigned activity."
+    text: "Alright, here is the next statement that I'd like you to rate: I have triggers that prompt/remind me to do the activity."
   utter_question_state_3_last:
   - buttons:
     - payload: /state_answer{{"state_3":"0"}}
@@ -547,7 +547,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_3":"4"}}
       title: Agree strongly
-    text: "Alright, here is the next statement that I'd like you to rate: I have triggers that prompt/remind me to do the assigned activity."
+    text: "Alright, here is the next statement that I'd like you to rate: I have triggers that prompt/remind me to do the activity."
   utter_question_state_4:
   - buttons:
     - payload: /state_answer{{"state_4":"0"}}
@@ -612,7 +612,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_5":"4"}}
       title: Agree strongly
-    text: "Thank you! Just one more and we are more than halfway. How would you rate this statement: I feel that I want to do the assigned activity."
+    text: "Thank you! Just one more and we are more than halfway. How would you rate this statement: I feel that I want to do the activity."
   utter_question_state_5_last:
   - buttons:
     - payload: /state_answer{{"state_5":"0"}}
@@ -625,7 +625,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_5":"4"}}
       title: Agree strongly
-    text: "Thank you! Just one more and we are more than halfway. How would you rate this statement: I feel that I want to do the assigned activity."
+    text: "Thank you! Just one more and we are more than halfway. How would you rate this statement: I feel that I want to do the activity."
   utter_question_state_6_prep:
   - buttons:
     - payload: /confirm
@@ -645,7 +645,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_6":"4"}}
       title: Agree strongly
-    text: "Perfect! Here is the next statement that I'd like you to rate: I feel that I need to do the assigned activity."
+    text: "Perfect! Here is the next statement that I'd like you to rate: I feel that I need to do the activity."
   utter_question_state_6_last:
   - buttons:
     - payload: /state_answer{{"state_6":"0"}}
@@ -658,7 +658,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_6":"4"}}
       title: Agree strongly
-    text: "Perfect! Here is the next statement that I'd like you to rate: I feel that I need to do the assigned activity."
+    text: "Perfect! Here is the next statement that I'd like you to rate: I feel that I need to do the activity."
   utter_question_state_7:
   - buttons:
     - payload: /state_answer{{"state_7":"0"}}
@@ -671,7 +671,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_7":"4"}}
       title: Agree strongly
-    text: "Alright, and here's already the next one. How would you rate: I believe that it would be a good thing to do the assigned activity."
+    text: "Alright, and here's already the next one. How would you rate: I believe that it would be a good thing to do the activity."
   utter_question_state_7_last:
   - buttons:
     - payload: /state_answer{{"state_7":"0"}}
@@ -684,7 +684,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_7":"4"}}
       title: Agree strongly
-    text: "Alright, and here's already the next one. How would you rate: I believe that it would be a good thing to do the assigned activity."
+    text: "Alright, and here's already the next one. How would you rate: I believe that it would be a good thing to do the activity."
   utter_question_state_8:
   - buttons:
     - payload: /state_answer{{"state_8":"0"}}
@@ -697,7 +697,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_8":"4"}}
       title: Agree strongly
-    text: "Thanks, just 4 more to go! Please rate this statement: I can do the assigned activity."
+    text: "Thanks, just 4 more to go! Please rate this statement: I can do the activity."
   utter_question_state_8_last:
   - buttons:
     - payload: /state_answer{{"state_8":"0"}}
@@ -710,7 +710,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_8":"4"}}
       title: Agree strongly
-    text: "Thanks, just 4 more to go! Please rate this statement: I can do the assigned activity."
+    text: "Thanks, just 4 more to go! Please rate this statement: I can do the activity."
   utter_question_attention_check_2_last:
   - buttons:
     - payload: /state_answer{{"attention_check_2":"0"}}
@@ -798,13 +798,13 @@ responses:
       questions.
   utter_email_reminder:
   - text: This is all for this session. Of course, I'll send you a reminder with your
-      assigned activity to your Prolific email.
+      activity in Prolific.
   - text: Then that's it for this session. Of course, I'll send you a reminder with
-      your assigned activity to your Prolific email.
-  - text: I've said all that I wanted for this session. Of course, I'll send you a
-      reminder with your assigned activity to your Prolific email.
-  - text: You've made it to the end of this session! Of course, I'll send you a reminder
-      with your assigned activity to your Prolific email.
+      your activity in Prolific.
+  - text: I've said all I wanted for this session. Of course, I'll send you a
+      reminder with your activity in Prolific.
+  - text: You've made it to the end of this session! Of course, you'll get a message
+      with your activity in Prolific.
   utter_thank_reflection:
   - text: Cool, thanks for sharing this reflection with me!
   - text: Cool, thanks for sharing these thoughts with me!
@@ -835,7 +835,7 @@ responses:
   utter_message_formulation_prep:
   - text: Between this and the next session, please remember to {activity_verb}.
   utter_message_formulation:
-  - text: '{message_formulation}'
+  - text: '▶️ **{message_formulation}**'
   utter_reflective_question:
   - text: '{reflective_question}'
   utter_ok:
@@ -884,3 +884,5 @@ actions:
 - action_send_email
 - action_send_email_last
 - action_get_reflection
+- action_pause_five
+- action_pause_two

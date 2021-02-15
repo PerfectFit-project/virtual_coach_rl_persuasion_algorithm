@@ -11,7 +11,6 @@ from rasa_sdk.events import SlotSet
 from rasa_sdk.events import ConversationResumed
 from rasa_sdk.events import UserUtteranceReverted
 from rasa_sdk.events import FollowupAction
-from rasa_sdk.forms import FormAction
 import pickle
 import sqlite3
 import pandas as pd
@@ -22,6 +21,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib, ssl
 from string import Template
+import time
 
 # Activities
 df_act = pd.read_excel("Activities.xlsx")
@@ -96,6 +96,27 @@ class ActionAnswerMood(Action):
         
         return []
     
+# Pause for 5 seconds
+class ActionPauseFive(Action):
+    def name(self):
+        return "action_pause_five"
+
+    async def run(self, dispatcher, tracker, domain):
+        
+        time.sleep(5)
+        
+        return []
+    
+class ActionPauseTwo(Action):
+    def name(self):
+        return "action_pause_two"
+
+    async def run(self, dispatcher, tracker, domain):
+        
+        time.sleep(2)
+        
+        return []
+    
 # Choose an activity for the user
 class ActionChooseActivity(Action):
     def name(self):
@@ -159,7 +180,7 @@ class ActionChooseActivity(Action):
                 SlotSet("activity_verb", df_act.loc[act_index, "VerbYou"])]
 
 # Set slot about whether the user completed the assigned activity    
-class ActionSetSlotReward(FormAction):
+class ActionSetSlotReward(Action):
 
     def name(self):
         return 'action_set_slot_reward'
@@ -173,7 +194,7 @@ class ActionSetSlotReward(FormAction):
         
         return [SlotSet("action_success", success)]
     
-class ActionGetFreetextActivityComp(FormAction):
+class ActionGetFreetextActivityComp(Action):
 
     def name(self):
         return 'action_freetext_activity_comp'
@@ -185,7 +206,7 @@ class ActionGetFreetextActivityComp(FormAction):
         return [SlotSet("activity_experience", activity_experience)]
     
 # Read free text reponse for modifications to response for activity experience
-class ActionGetFreetextActivityMod(FormAction):
+class ActionGetFreetextActivityMod(Action):
 
     def name(self):
         return 'action_freetext_activity_mod'
@@ -197,7 +218,7 @@ class ActionGetFreetextActivityMod(FormAction):
         return [SlotSet("activity_experience_mod", activity_experience_mod)]
     
 # Read free text response for user's implementation intention
-class ActionGetFreetext(FormAction):
+class ActionGetFreetext(Action):
 
     def name(self):
         return 'action_freetext'
@@ -219,7 +240,7 @@ class ActionGetFreetext(FormAction):
                 SlotSet("plan_correct", plan_correct)]
     
 # Read free text response for user's satifaction
-class ActionGetSatisfaction(FormAction):
+class ActionGetSatisfaction(Action):
 
     def name(self):
         return 'action_get_satisfaction'
@@ -246,7 +267,7 @@ class ActionGetSatisfaction(FormAction):
                 SlotSet("satisf_correct", correct)]
     
 # Read free text response for user's reflection on persuasive message
-class ActionGetReflection(FormAction):
+class ActionGetReflection(Action):
 
     def name(self):
         return 'action_get_reflection'
@@ -265,6 +286,8 @@ class ActionSetSession(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+        print("started set session")
         
         metadata = extract_metadata_from_tracker(tracker)
         user_id = metadata['userid']
@@ -318,6 +341,8 @@ class ActionSendEmail(Action):
         smtp = "smtp.web.de" # for web.de: smtp.web.de
         email = "nele.96@web.de"
         user_email = user_id + "@email.prolific.co"
+        
+        # TODO: remove this part in the end
         user_email = "n.albers@tudelft.nl"
         
         with open('reminder_template.txt', 'r', encoding='utf-8') as template_file:

@@ -3,7 +3,7 @@
 <head>
     <title>Sam</title>
     <meta charset="UTF-8">
-    <script src="https://cdn.jsdelivr.net/npm/rasa-webchat@0.11.5/lib/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/rasa-webchat@0.11.6/lib/index.min.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
@@ -14,6 +14,7 @@
       const urlParams = new URLSearchParams(queryString);
       const userid = urlParams.get('userid');
       // const userid = "111"
+      // in 0.11.6, buttons are dark blue in color, in 0.11.5, buttons have a white background
 	  WebChat.default.init({
 		selector: "#webchat",
 		initPayload: "/start_session1",
@@ -21,11 +22,17 @@
 		socketUrl: "http://localhost:5005",
 		socketPath: "/socket.io/",
 		fullScreenMode: true,
-		embedded: false,
+		embedded: true,
 		title: "Sam",
 		subtitle: "",
-		params: {"storage": "session"} // can be set to "local"  or "session". details in storage section.
-})
+		params: {"storage": "session"}, // can be set to "local"  or "session". details in storage section.
+		customMessageDelay: (message) => {
+    let delay = message.length * 45;
+    if (delay > 5 * 1000) delay = 5 * 1000;
+    if (delay < 800) delay = 800;
+    return delay;
+  }
+    })
 </script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

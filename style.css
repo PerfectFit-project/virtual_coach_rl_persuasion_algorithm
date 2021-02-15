@@ -8,6 +8,11 @@
        background-color: #F5360D !important; 
 }
 
+/* Background color buttons when presented by agent */
+.rw-conversation-container .rw-reply{
+       background-color: #F5360D !important; 
+}
+
 /*.rw-conversation-container .rw-response{
        background-color: #F5360D !important; 
 } Changes background color of what agent says (but not buttons) */
