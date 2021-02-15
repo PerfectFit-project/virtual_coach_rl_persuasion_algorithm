@@ -34,7 +34,7 @@ q_num_iter = 100000 * num_samples # num_samples = num people after session 2
 discount_factor = 0.85
 alpha = 0.01
 
-# to be replaced with actual data from Qualtricx
+# TODO: to be replaced with actual data from Qualtricx
 traits = np.ones((num_samples, num_traits)) 
 traits[0, 0] = 5
 
@@ -43,7 +43,7 @@ opt_policies = {}
 # for each person
 for p1 in range(num_samples):
     
-    # only people that belong to Group 4 (group numbers go from 0 to 3)
+    # TODO: only people that belong to Group 4 (group numbers go from 0 to 3)
     if str(df_group_ass[df_group_ass['ID'] == user_ids[p1]]["Group"].tolist()[0]) in ["3", "1", "2"]:
     
         data_p = copy.deepcopy(data)

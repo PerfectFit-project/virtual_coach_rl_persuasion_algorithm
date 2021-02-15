@@ -6,11 +6,14 @@ import sqlite3
 import random
 from copy import deepcopy
 
+ATTENTION_CHECK_1_TRUE = 4
+ATTENTION_CHECK_2_TRUE = 0
+
 def feat_sel_num_blocks_avg_p_val(feat_not_sel, num_feat_not_sel, blocks, 
                                   t_tests_2, feat_sel, feat_sel_criteria):
-    '''
+    """
     Best feature first based on num. of blocks in which it is best, then based on avg. p-value for best blocks, then randomly."
-    '''
+    """
     num_best_per_feat = np.zeros(num_feat_not_sel) # num. of blocks in which each feat is best
     p_val_per_feat = np.zeros(num_feat_not_sel)
     for b_ind, block in enumerate(blocks):
@@ -46,19 +49,22 @@ def feat_sel_num_blocks_avg_p_val(feat_not_sel, num_feat_not_sel, blocks,
     return feat_sel, feat_sel_criteria
 
 def gather_data_post_sess_2(feat_to_select = [0, 1, 2, 3, 4, 6, 7]):
-    '''
+    """
     Gathers data from sqlite database after session 2.
-    feat_to_select: which of the state features to consider
-    '''
+    
+    Args:
+        feat_to_select: which of the state features to consider
+    """
     num_select = len(feat_to_select)
     
     # create db connection
     try:
         #sqlite_connection = sqlite3.connect('chatbot.db')
+        # TODO: adapt path in the end
         sqlite_connection = sqlite3.connect('c:/users/nele2/CA/db_scripts/chatbot.db')
         cursor = sqlite_connection.cursor()
         print("Connection created")
-        sqlite_select_query = """SELECT * from users WHERE state_1 IS NOT NULL"""
+        sqlite_select_query = """SELECT * from users WHERE state_0 IS NOT NULL"""
         cursor.execute(sqlite_select_query)
         data_db = cursor.fetchall()
         cursor.close()
@@ -70,27 +76,167 @@ def gather_data_post_sess_2(feat_to_select = [0, 1, 2, 3, 4, 6, 7]):
             sqlite_connection.close()
             print("Connection closed")
  
-    #print(data_db)
     num_rows = len(data_db)
-    all_states = np.zeros((num_rows * 2, num_select))
+    all_states = [] # to compute mean values for the features
     
-    data = []
+    data = [] # to save transitions
     user_ids = []
     
+    # for each user that has completed at least 1 session
     for row in range(num_rows):
+        
+        # Get first state
         s0_arr = np.array([int(i) for i in data_db[row][20].split('|')])[feat_to_select]
         s0 = list(s0_arr)
-        s1_arr = np.array([int(i) for i in data_db[row][21].split('|')])[feat_to_select]
-        s1 = list(s1_arr)
-        a = [int(i) for i in data_db[row][25].split('|')][0]
-        r = [int(i) for i in data_db[row][7].split('|')][0]
         
-        data.append([s0, s1, a, r])
-        user_ids.append(data_db[row][0])
+        # Attention check question answers for first session
+        check_state_1 = [int(i) for i in data_db[row][16].split('|')][0]
+        check_state_2 = [int(i) for i in data_db[row][17].split('|')][0]
+        
+        # Whether the first session has passed enough attention checks
+        passed_check_state = pass_attention_checks(check_state_1, check_state_2)
         
         # needed to later compute the mean values per feature
-        all_states[row * 2] = s0_arr
-        all_states[row * 2 + 1] = s1_arr
+        if passed_check_state:
+            all_states.append(s0_arr)
+        
+        # Check if the user has completed a second session
+        if not data_db[row][21] == None:
+            
+            s1_arr = np.array([int(i) for i in data_db[row][21].split('|')])[feat_to_select]
+            s1 = list(s1_arr)
+        
+            # attention check answers for second session
+            check_next_1 = [int(i) for i in data_db[row][16].split('|')][1]
+            check_next_2 = [int(i) for i in data_db[row][17].split('|')][1]
+        
+            # Whether the second session has passed enough attention checks
+            passed_check_next_state = pass_attention_checks(check_next_1, check_next_2)
+        
+            # need to pass at least 1 out of 2 attention checks in each of the two sessions
+            passed_attention_checks = passed_check_state and passed_check_next_state
+            
+            # the transition is not used if the attention check criteria are not met
+            if passed_attention_checks:
+            
+                a = [int(i) for i in data_db[row][25].split('|')][0]
+                r = [int(i) for i in data_db[row][7].split('|')][0]
+            
+                data.append([s0, s1, a, r]) # save transition
+                user_ids.append(data_db[row][0]) # save corresponding user ID
+              
+            # Even if the transition is not used, a state may still be used to compute 
+            # mean values for the features
+            if passed_check_next_state:
+                all_states.append(s1_arr)
+    
+    all_states = np.array(all_states)
+        
+    # compute the mean value for each feature
+    feat_means = np.mean(all_states, axis = 0)
+    
+    # convert features to binary features based on mean values
+    for row in range(num_rows):
+        data[row][0] = [1 if data[row][0][i] >= feat_means[i] else 0 for i in range(num_select)]
+        data[row][1] = [1 if data[row][1][i] >= feat_means[i] else 0 for i in range(num_select)]
+    
+    return data, feat_means, user_ids
+
+def pass_attention_checks(answer1, answer2):
+    """
+    Returns whether at least 1/2 attention checks were passed for a session.
+    
+    Args:
+        answer1: give answer for attention check 1
+        answer2: given answer for attention check 2
+    """
+    return answer1 == ATTENTION_CHECK_1_TRUE or answer2 == ATTENTION_CHECK_2_TRUE
+
+def gather_data_post_sess_5(feat_to_select = [0, 1, 2, 3, 4, 6, 7]):
+    """
+    Gathers data from sqlite database after session 5.
+    Also considers whether 2/2 attention checks have been failed in a session
+    and removes such samples.
+    
+    Args:
+        feat_to_select: which of the state features to consider
+    """
+    num_select = len(feat_to_select)
+    
+    # create db connection
+    try:
+        #sqlite_connection = sqlite3.connect('chatbot.db')
+        # TODO: adapt path in the end
+        sqlite_connection = sqlite3.connect('c:/users/nele2/CA/db_scripts/chatbot.db')
+        cursor = sqlite_connection.cursor()
+        print("Connection created")
+        sqlite_select_query = """SELECT * from users WHERE state_0 IS NOT NULL"""
+        cursor.execute(sqlite_select_query)
+        data_db = cursor.fetchall()
+        cursor.close()
+
+    except sqlite3.Error as error:
+        print("Error while connecting to sqlite", error)
+    finally:
+        if (sqlite_connection):
+            sqlite_connection.close()
+            print("Connection closed")
+ 
+    num_rows = len(data_db)
+    all_states = []
+    
+    data = []
+    user_ids = [] # user ID for each sample
+    
+    for row in range(num_rows): # for each person with at least 1 session
+    
+        user_id_curr = data_db[row][0] # ID of current person
+        
+        for state_ind, state in enumerate([20, 21, 22, 23]): # for session 1-4
+        
+            if not data_db[row][state] == None: # ensure current state is not None
+            
+                s0_arr = np.array([int(i) for i in data_db[row][state].split('|')])[feat_to_select]
+                s0 = list(s0_arr)
+            
+                # Attention check question answers for first state of transition
+                check_state_1 = [int(i) for i in data_db[row][16].split('|')][state_ind]
+                check_state_2 = [int(i) for i in data_db[row][17].split('|')][state_ind]
+                passed_check_state = pass_attention_checks(check_state_1, check_state_2)
+                
+                # needed to later compute the mean values per feature
+                # Make sure to add each state only once
+                if state_ind == 0 and passed_check_state:
+                    all_states.append(s0_arr)
+            
+                if not data_db[row][state + 1] == None: # ensure next state is not None
+                
+                    s1_arr = np.array([int(i) for i in data_db[row][state + 1].split('|')])[feat_to_select]
+                    s1 = list(s1_arr)
+                
+                    # Attention check question answers for second state of transition
+                    check_next_1 = [int(i) for i in data_db[row][16].split('|')][state_ind + 1]
+                    check_next_2 = [int(i) for i in data_db[row][17].split('|')][state_ind + 1]
+                    passed_check_next_state = pass_attention_checks(check_next_1, check_next_2)
+                    
+                    # need to pass at least 1 out of 2 attention checks in each of the two sessions
+                    passed_attention_checks = passed_check_state and passed_check_next_state
+                    
+                    # the transition is not used if the attention check criteria are not met
+                    if passed_attention_checks:
+                        
+                        # get action and reward
+                        a = [int(i) for i in data_db[row][25].split('|')][state_ind]
+                        r = [int(i) for i in data_db[row][7].split('|')][state_ind]
+                    
+                        data.append([s0, s1, a, r]) # save transition
+                        user_ids.append(user_id_curr) # save corresponding user ID
+                        
+                    # needed to later compute the mean values per feature
+                    if passed_check_next_state:
+                        all_states.append(s1_arr)
+                        
+    all_states = np.array(all_states)
         
     # compute the mean value for each feature
     feat_means = np.mean(all_states, axis = 0)
@@ -105,16 +251,17 @@ def gather_data_post_sess_2(feat_to_select = [0, 1, 2, 3, 4, 6, 7]):
 def policy_evaluation(observation_space_size, discount_factor, trans_func,
                       reward_func, policy, q_vals, 
                       update_tolerance = 0.000000001):
-    '''
+    """
     Returns the q-values for a specific policy.
     
-    observation_space_size: number of observations
-    discount_factor: discount factor of MDP
-    trans_func: transition function
-    reward_func: reward function
-    policy: policy to compute q-values for
-    update_tolerance: precision
-    '''
+    Args:
+        observation_space_size: number of observations
+        discount_factor: discount factor of MDP
+        trans_func: transition function
+        reward_func: reward function
+        policy: policy to compute q-values for
+        update_tolerance: precision
+    """
     q_vals_new = deepcopy(q_vals)
     num_act = len(trans_func[0])
    
@@ -130,13 +277,14 @@ def policy_evaluation(observation_space_size, discount_factor, trans_func,
     return q_vals_new
 
 def get_Q_values_opt_policy(discount_factor, trans_func, reward_func):
-    '''
+    """
     Returns the q-values for each state under the optimal policy.
     
-    discount_factor: discount factor of MDP
-    trans_func: transition function (dim.: num_states x num_actions x num_states)
-    reward_func: reward function (dim.: num_states x num_actions)
-    '''
+    Args:
+        discount_factor: discount factor of MDP
+        trans_func: transition function (dim.: num_states x num_actions x num_states)
+        reward_func: reward function (dim.: num_states x num_actions)
+    """
     min_iterations = 10 
     num_states = len(trans_func)
     num_act = len(trans_func[0])
