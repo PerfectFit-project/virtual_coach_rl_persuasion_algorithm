@@ -144,7 +144,7 @@ class SocketIOInput(InputChannel):
     ) -> Blueprint:
         # Workaround so that socketio works with requests from other origins.
         # https://github.com/miguelgrinberg/python-socketio/issues/205#issuecomment-493769183
-        sio = AsyncServer(async_mode="sanic", cors_allowed_origins= []) 
+        sio = AsyncServer(async_mode="sanic", cors_allowed_origins=[])
         socketio_webhook = SocketBlueprint(
             sio, self.socketio_path, "socketio_webhook", __name__
         )
@@ -165,7 +165,6 @@ class SocketIOInput(InputChannel):
         async def session_request(sid: Text, data: Optional[Dict]):
             if data is None:
                 data = {}
-            print("*data", data)
             if "session_id" not in data or data["session_id"] is None:
                 data["session_id"] = uuid.uuid4().hex
             await sio.emit("session_confirm", data["session_id"], room=sid)
