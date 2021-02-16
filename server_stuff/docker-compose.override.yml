@@ -1,0 +1,15 @@
+version: '3.4'
+
+services:
+  app:
+    image: gbna4/perfect_fit:google_actions
+    volumes:
+      - ./db_scripts:/app/db_scripts
+      - ./actions:/app/actions
+  
+  rasa-production:
+    volumes:
+      - ./connectors:/app/connectors
+  rasa-worker:
+    volumes:
+      - ./connectors:/app/connectors    
