@@ -443,6 +443,7 @@ stories:
   - checkpoint: main_not_last
   - action: action_choose_activity
   - action: utter_activity_formulation
+  - action: action_pause_five
   - action: utter_activity_clear
   - intent: confirm
   - action: utter_questions_state_intro
@@ -482,6 +483,7 @@ stories:
   - checkpoint: main_last
   - action: action_choose_activity
   - action: utter_activity_formulation
+  - action: action_pause_five
   - action: utter_activity_clear_last
   - intent: confirm
   - action: utter_questions_state_intro
@@ -522,6 +524,7 @@ stories:
   - slot_was_set:
     - pers_input: False
   - action: utter_message_formulation
+  - action: action_pause_five
   - action: utter_reflective_question
   - or:
     - intent: anything
