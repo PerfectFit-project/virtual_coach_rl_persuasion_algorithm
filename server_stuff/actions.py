@@ -47,12 +47,12 @@ for m in [6, 7, 8, 9]: # Consensus
     ref_dict[m] = 2
 for m in [10, 11, 12, 13]: # Authority
     ref_dict[m] = 3
-for m in [14, 15, 16]:
+for m in [14, 15, 16, 17]:
     ref_dict[m] = -1
 
 # Persuasive Messages
 df_mess = pd.read_csv("all_messages.csv")
-num_mess_per_type = [6, 4, 4, 3]
+num_mess_per_type = [6, 4, 4, 4]
 NUM_PERS_TYPES = 4
 
 # Moods, sorted by quadrant w.r.t. valence and arousal
