@@ -23,6 +23,8 @@ import smtplib, ssl
 from string import Template
 import time
 
+DATABASE_PATH = 'db_scripts/chatbot.db'
+
 # Activities
 df_act = pd.read_excel("Activities.xlsx")
 df_act['Exclusion'] = df_act['Exclusion'].str.strip('()').str.split(',')
@@ -283,22 +285,21 @@ class ActionSetSession(Action):
     def name(self) -> Text:
         return "action_set_session"
 
-    def run(self, dispatcher: CollectingDispatcher,
+    async def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         
-        print("started set session")
+        #print("started set session")
         
         metadata = extract_metadata_from_tracker(tracker)
         user_id = metadata['userid']
-        print("ID:", user_id)
+       # print("ID:", user_id)
         
         # create db connection
         try:
-            #sqlite_connection = sqlite3.connect('chatbot.db') # TODO
-            sqlite_connection = sqlite3.connect('db_scripts/chatbot.db')
+            sqlite_connection = sqlite3.connect(DATABASE_PATH)
             cursor = sqlite_connection.cursor()
-            print("Connection created for user ", user_id)
+            #print("Connection created for user ", user_id)
             sqlite_select_query = """SELECT * from users WHERE id = ?"""
             cursor.execute(sqlite_select_query, (user_id,))
             data = cursor.fetchall()
@@ -309,7 +310,7 @@ class ActionSetSession(Action):
         finally:
             if (sqlite_connection):
                 sqlite_connection.close()
-                print("Connection closed for user ", user_id)
+                #print("Connection closed for user ", user_id)
 
         try:
             # load data from previous sessions about activities and actions
@@ -328,7 +329,7 @@ class ActionSendEmail(Action):
     def name(self):
         return "action_send_email"
 
-    def run(self, dispatcher: CollectingDispatcher,
+    async def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
     
@@ -385,7 +386,7 @@ class ActionSendEmailLast(Action):
     def name(self):
         return "action_send_email_last"
 
-    def run(self, dispatcher: CollectingDispatcher,
+    async def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
     
@@ -446,8 +447,6 @@ class ActionGetGroup(Action):
         # get pre-computed group
         group = str(df_group_ass[df_group_ass['ID'] == user_id]["Group"].tolist()[0])
         
-        print(group)
-        
         return [SlotSet("study_group", group)]
     
 # Return best (based on group) or random persuasion
@@ -474,7 +473,7 @@ class ActionChoosePersuasion(Action):
         
         if group == 0:
             
-            print("Persuasion level 1")
+            #print("Persuasion level 1")
         
             # Load pre-computed list with best actions
             with open('Post_Sess_2/Level_1_Optimal_Policy', 'rb') as f:
@@ -485,7 +484,7 @@ class ActionChoosePersuasion(Action):
             
         elif group == 1:
             
-            print("Persuasion level 2")
+            #print("Persuasion level 2")
             
             with open('Post_Sess_2/Level_2_Optimal_Policy', 'rb') as f:
                 p = pickle.load(f)
@@ -511,7 +510,7 @@ class ActionChoosePersuasion(Action):
             
         elif group == 2:
             
-            print("Persuasion level 3")
+            #print("Persuasion level 3")
             
             with open('Post_Sess_2/Level_3_Optimal_Policy', 'rb') as f:
                 p = pickle.load(f)
@@ -536,7 +535,7 @@ class ActionChoosePersuasion(Action):
             
         elif group == 3:
             
-            print("Persuasion level 4")
+            #print("Persuasion level 4")
              
             # get user ID
             metadata = extract_metadata_from_tracker(tracker)
@@ -566,7 +565,7 @@ class ActionChoosePersuasion(Action):
         # Sessions 1 and 2: random 
         else:
             
-            print("Random persuasion")
+            #print("Random persuasion")
             
             if curr_action_ind_list is None:
                 curr_action_ind_list = []
@@ -581,8 +580,6 @@ class ActionChoosePersuasion(Action):
         # total number of messages per activity in message dataframe
         num_mess_per_activ = len(df_mess)/len(df_act)
         
-        #pers_type = 1
-       
         # Determine whether user input is required for persuasion type
         require_input = False
         if pers_type == 3:
@@ -614,7 +611,7 @@ class ActionSaveSession(Action):
     def name(self):
         return "action_save_session"
 
-    def run(self, dispatcher: CollectingDispatcher,
+    async def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         
@@ -636,16 +633,15 @@ class ActionSaveSession(Action):
         
         # create db connection
         try:
-            sqliteConnection = sqlite3.connect('db_scripts/chatbot.db')
-            #sqliteConnection = sqlite3.connect('chatbot.db') # TODO
+            sqliteConnection = sqlite3.connect(DATABASE_PATH)
             cursor = sqliteConnection.cursor()
-            print("Successfully connected to SQLite")
+            #print("Successfully connected to SQLite")
             sqlite_select_query = """SELECT * from users WHERE id = ?"""
             cursor.execute(sqlite_select_query, (user_id,))
             data = cursor.fetchall()
-            print(data)
-            sessions_done = 0;
+            sessions_done = 0
             
+            # save data after first session
             if not data:
                 sessions_done = 1
                 action_planning_answer = tracker.get_slot('action_planning_answer')
@@ -659,6 +655,7 @@ class ActionSaveSession(Action):
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_3VmOMw3USprKQv3?PROLIFIC_PID=" + str(user_id) + "&Group=2"
                 dispatcher.utter_message(link)
                 
+            # save data after second session
             elif data[0][1] == 1:
                 sessions_done = 2
                 action_planning_answer = tracker.get_slot('action_planning_answer')
@@ -678,7 +675,7 @@ class ActionSaveSession(Action):
                               action_index_list, state, activity_experience, 
                               activity_experience_mod, reward, action_type_index_list, 
                               reflection_answer, user_id)
-                print("Tuple session 2:", data_tuple)
+                
                 sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer1 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_1 = ?, activity_experience1 = ?, activity_experience_mod1 = ?, reward_list = ?, action_type_index_list = ?, reflection_answer1 = ? WHERE id = ?"""
                 dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
@@ -708,7 +705,7 @@ class ActionSaveSession(Action):
                               activity_experience_mod, reward_list, 
                               action_type_index_list, group, satisf, 
                               reflection_answer, user_id)
-                print("Tuple session 3:", data_tuple)
+                
                 sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer2 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_2 = ?, activity_experience2 = ?, activity_experience_mod2 = ?, reward_list = ?, action_type_index_list = ?, study_group = ?, user_satisfaction2 = ?, reflection_answer2 = ? WHERE id = ?"""
                 dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
@@ -738,7 +735,6 @@ class ActionSaveSession(Action):
                               activity_experience_mod, reward_list, 
                               action_type_index_list, 
                               reflection_answer, user_id)
-                print("Tuple session 4:", data_tuple)
                 sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer3 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_3 = ?, activity_experience3 = ?, activity_experience_mod3 = ?, reward_list = ?, action_type_index_list = ?, reflection_answer3 = ? WHERE id = ?"""
                 dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
@@ -766,13 +762,11 @@ class ActionSaveSession(Action):
                               action_index_list, state, activity_experience, 
                               activity_experience_mod, reward_list, 
                               action_type_index_list, satisf, user_id)
-                print("Tuple session 4:", data_tuple)
                 sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_4 = ?, activity_experience4 = ?, activity_experience_mod4 = ?, reward_list = ?, action_type_index_list = ?, user_satisfaction4 = ? WHERE id = ?"""
                 dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
                 dispatcher.utter_message(link)    
-            #elif data[0][1] == 5:
-             #   print("success")
+           
             else:
                 dispatcher.utter_message("Something went wrong, please contact researcher: n.albers@tudelft.nl.")
             
