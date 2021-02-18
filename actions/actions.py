@@ -233,10 +233,9 @@ class ActionGetFreetext(Action):
         # check syntax
         if not ("if" in user_plan.lower()):
             plan_correct = False
+        # some minimum length is needed
         elif len(user_plan) <= 6:
             plan_correct = False
-        else:
-            dispatcher.utter_message(template="utter_thank_you_planning")
         
         return [SlotSet("action_planning_answer", user_plan),
                 SlotSet("plan_correct", plan_correct)]
@@ -289,11 +288,11 @@ class ActionSetSession(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         
-        #print("started set session")
+        session_loaded = True
         
+        # get user ID
         metadata = extract_metadata_from_tracker(tracker)
         user_id = metadata['userid']
-       # print("ID:", user_id)
         
         # create db connection
         try:
@@ -306,6 +305,7 @@ class ActionSetSession(Action):
             cursor.close()
 
         except sqlite3.Error as error:
+            session_loaded = False
             print("Error while connecting to sqlite", error)
         finally:
             if (sqlite_connection):
@@ -322,7 +322,10 @@ class ActionSetSession(Action):
                     SlotSet("action_type_index_list", [int (i) for i in data[0][25].split('|')])]
            
         except NameError:
-            dispatcher.utter_message("Something went wrong, please close this session and contact researcher (n.albers@tudelft.nl).")
+            session_loaded = False
+            print("NameError in action_set_session.")
+            
+        return [SlotSet("session_loaded", session_loaded)]
 
 # Send reminder email with activity and persuasion after session
 class ActionSendEmail(Action):
@@ -333,6 +336,7 @@ class ActionSendEmail(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
     
+        # get user ID
         metadata = extract_metadata_from_tracker(tracker)
         user_id = metadata['userid'] # Anurag: '5f970a74069a250711aaa695'
         
@@ -382,6 +386,8 @@ class ActionSendEmail(Action):
             
             del msg
             
+        return []
+            
 class ActionSendEmailLast(Action):
     def name(self):
         return "action_send_email_last"
@@ -429,6 +435,8 @@ class ActionSendEmailLast(Action):
             server.send_message(msg)
             
             del msg
+            
+        return []
 
 class ActionGetGroup(Action):
 
@@ -615,8 +623,12 @@ class ActionSaveSession(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         
+        # get user ID
         metadata = extract_metadata_from_tracker(tracker)
         user_id = metadata['userid']
+        
+        # whether the session has been saved successfully
+        session_saved = True
         
         # Load slot values
         mood = tracker.get_slot('mood')
@@ -651,9 +663,7 @@ class ActionSaveSession(Action):
                               action_index_list, state, action_type_index_list,
                               reflection_answer)
                 sqlite_query = """INSERT INTO users (id, sessions_done, mood_list, action_planning_answer0, attention_check_list, attention_check_2_list, activity_index_list, action_index_list, state_0, action_type_index_list, reflection_answer0) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
-                dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_3VmOMw3USprKQv3?PROLIFIC_PID=" + str(user_id) + "&Group=2"
-                dispatcher.utter_message(link)
                 
             # save data after second session
             elif data[0][1] == 1:
@@ -677,9 +687,8 @@ class ActionSaveSession(Action):
                               reflection_answer, user_id)
                 
                 sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer1 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_1 = ?, activity_experience1 = ?, activity_experience_mod1 = ?, reward_list = ?, action_type_index_list = ?, reflection_answer1 = ? WHERE id = ?"""
-                dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
-                dispatcher.utter_message(link)
+                
                 
             elif data[0][1] == 2:
                 sessions_done = 3
@@ -707,9 +716,8 @@ class ActionSaveSession(Action):
                               reflection_answer, user_id)
                 
                 sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer2 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_2 = ?, activity_experience2 = ?, activity_experience_mod2 = ?, reward_list = ?, action_type_index_list = ?, study_group = ?, user_satisfaction2 = ?, reflection_answer2 = ? WHERE id = ?"""
-                dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
-                dispatcher.utter_message(link)   
+               
             
             elif data[0][1] == 3:
                 sessions_done = 4
@@ -736,9 +744,8 @@ class ActionSaveSession(Action):
                               action_type_index_list, 
                               reflection_answer, user_id)
                 sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer3 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_3 = ?, activity_experience3 = ?, activity_experience_mod3 = ?, reward_list = ?, action_type_index_list = ?, reflection_answer3 = ? WHERE id = ?"""
-                dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
-                dispatcher.utter_message(link)   
+                
                 
             elif data[0][1] == 4:
                 sessions_done = 5
@@ -763,22 +770,25 @@ class ActionSaveSession(Action):
                               activity_experience_mod, reward_list, 
                               action_type_index_list, satisf, user_id)
                 sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_4 = ?, activity_experience4 = ?, activity_experience_mod4 = ?, reward_list = ?, action_type_index_list = ?, user_satisfaction4 = ? WHERE id = ?"""
-                dispatcher.utter_message(template="utter_goodbye_not_last")
                 link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
-                dispatcher.utter_message(link)    
+                
            
             else:
-                dispatcher.utter_message("Something went wrong, please contact researcher: n.albers@tudelft.nl.")
+                # error happened
+                session_saved = False
             
             cursor.execute(sqlite_query, data_tuple)
             sqliteConnection.commit()
             cursor.close()
 
         except sqlite3.Error as error:
+            session_saved = False
             print("Error while connecting to sqlite", error)
         finally:
             if (sqliteConnection):
                 sqliteConnection.close()
                 print("The SQLite connection is closed")
         # connection closed
-        return []
+        
+        return [SlotSet("session_saved", session_saved),
+                SlotSet("prolific_link", link)]

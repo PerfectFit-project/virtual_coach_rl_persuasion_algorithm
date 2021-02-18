@@ -2,28 +2,12 @@ version: "2.0"
 
 stories:
 
-- story: test0
+- story: test_True_True_True
   steps:
   - intent: start_test
   - action: action_set_session
-  - action: action_get_group
-  - action: utter_test
-  - action: utter_ask_for_mood
-  - intent: mood_curr
-  - action: utter_test
-  - action: action_answer_mood
-  - action: action_choose_activity
-  - action: utter_test
-  - action: action_choose_persuasion
   - slot_was_set:
-    - pers_input: False
-  - action: action_save_session
-  - action: action_send_email
-  
-- story: test1
-  steps:
-  - intent: start_test
-  - action: action_set_session
+    - session_loaded: True
   - action: action_get_group
   - action: utter_test
   - action: utter_ask_for_mood
@@ -36,6 +20,162 @@ stories:
   - slot_was_set:
     - pers_input: True
   - action: action_save_session
+  - slot_was_set:
+    - session_saved: True
+  - action: action_send_email
+  
+- story: test_True_True_False
+  steps:
+  - intent: start_test
+  - action: action_set_session
+  - slot_was_set:
+    - session_loaded: True
+  - action: action_get_group
+  - action: utter_test
+  - action: utter_ask_for_mood
+  - intent: mood_curr
+  - action: utter_test
+  - action: action_answer_mood
+  - action: action_choose_activity
+  - action: utter_test
+  - action: action_choose_persuasion
+  - slot_was_set:
+    - pers_input: True
+  - action: action_save_session
+  - slot_was_set:
+    - session_saved: False
+  - action: action_send_email
+  
+- story: test_False_True_True
+  steps:
+  - intent: start_test
+  - action: action_set_session
+  - slot_was_set:
+    - session_loaded: False
+  - action: action_get_group
+  - action: utter_test
+  - action: utter_ask_for_mood
+  - intent: mood_curr
+  - action: utter_test
+  - action: action_answer_mood
+  - action: action_choose_activity
+  - action: utter_test
+  - action: action_choose_persuasion
+  - slot_was_set:
+    - pers_input: True
+  - action: action_save_session
+  - slot_was_set:
+    - session_saved: True
+  - action: action_send_email
+  
+- story: test_False_True_False
+  steps:
+  - intent: start_test
+  - action: action_set_session
+  - slot_was_set:
+    - session_loaded: False
+  - action: action_get_group
+  - action: utter_test
+  - action: utter_ask_for_mood
+  - intent: mood_curr
+  - action: utter_test
+  - action: action_answer_mood
+  - action: action_choose_activity
+  - action: utter_test
+  - action: action_choose_persuasion
+  - slot_was_set:
+    - pers_input: True
+  - action: action_save_session
+  - slot_was_set:
+    - session_saved: False
+  - action: action_send_email
+  
+- story: test_True_False_True
+  steps:
+  - intent: start_test
+  - action: action_set_session
+  - slot_was_set:
+    - session_loaded: True
+  - action: action_get_group
+  - action: utter_test
+  - action: utter_ask_for_mood
+  - intent: mood_curr
+  - action: utter_test
+  - action: action_answer_mood
+  - action: action_choose_activity
+  - action: utter_test
+  - action: action_choose_persuasion
+  - slot_was_set:
+    - pers_input: False
+  - action: action_save_session
+  - slot_was_set:
+    - session_saved: True
+  - action: action_send_email
+  
+- story: test_True_False_False
+  steps:
+  - intent: start_test
+  - action: action_set_session
+  - slot_was_set:
+    - session_loaded: True
+  - action: action_get_group
+  - action: utter_test
+  - action: utter_ask_for_mood
+  - intent: mood_curr
+  - action: utter_test
+  - action: action_answer_mood
+  - action: action_choose_activity
+  - action: utter_test
+  - action: action_choose_persuasion
+  - slot_was_set:
+    - pers_input: False
+  - action: action_save_session
+  - slot_was_set:
+    - session_saved: False
+  - action: action_send_email
+  
+- story: test_False_False_True
+  steps:
+  - intent: start_test
+  - action: action_set_session
+  - slot_was_set:
+    - session_loaded: False
+  - action: action_get_group
+  - action: utter_test
+  - action: utter_ask_for_mood
+  - intent: mood_curr
+  - action: utter_test
+  - action: action_answer_mood
+  - action: action_choose_activity
+  - action: utter_test
+  - action: action_choose_persuasion
+  - slot_was_set:
+    - pers_input: False
+  - action: action_save_session
+  - slot_was_set:
+    - session_saved: True
+  - action: action_send_email
+  
+- story: test_False_False_False
+  steps:
+  - intent: start_test
+  - action: action_set_session
+  - slot_was_set:
+    - session_loaded: False
+  - action: action_get_group
+  - action: utter_test
+  - action: utter_ask_for_mood
+  - intent: mood_curr
+  - action: utter_test
+  - action: action_answer_mood
+  - action: action_choose_activity
+  - action: utter_test
+  - action: action_choose_persuasion
+  - slot_was_set:
+    - pers_input: False
+  - action: action_save_session
+  - slot_was_set:
+    - session_saved: False
   - action: action_send_email
 
 - story: start_session_1
@@ -66,6 +206,8 @@ stories:
   steps: 
   - intent: start_session2
   - action: action_set_session
+  - slot_was_set:
+    - session_loaded: True
   - action: utter_greet_not_first
   - action: utter_ask_for_mood
   - intent: mood_curr
@@ -80,10 +222,28 @@ stories:
   - intent: confirm
   - checkpoint: activity_completion
   
+- story: start_session_2_error
+  steps: 
+  - intent: start_session2
+  - action: action_set_session
+  - slot_was_set:
+    - session_loaded: False
+  - action: utter_error_contact_researcher
+  
+- story: start_session_3_error
+  steps: 
+  - intent: start_session3
+  - action: action_set_session
+  - slot_was_set:
+    - session_loaded: False
+  - action: utter_error_contact_researcher
+  
 - story: start_session_3
   steps: 
   - intent: start_session3
   - action: action_set_session
+  - slot_was_set:
+    - session_loaded: True
   - action: action_get_group
   - action: utter_greet_session_3
   - action: utter_ask_for_mood
@@ -184,6 +344,8 @@ stories:
   steps: 
   - intent: start_session4
   - action: action_set_session
+  - slot_was_set:
+    - session_loaded: True
   - action: action_get_group
   - action: utter_greet_not_first
   - action: utter_ask_for_mood
@@ -199,10 +361,28 @@ stories:
   - intent: confirm
   - checkpoint: activity_completion
   
+- story: start_session_4_error
+  steps: 
+  - intent: start_session4
+  - action: action_set_session
+  - slot_was_set:
+    - session_loaded: False
+  - action: utter_error_contact_researcher
+  
+- story: start_session_5_error
+  steps: 
+  - intent: start_session5
+  - action: action_set_session
+  - slot_was_set:
+    - session_loaded: False
+  - action: utter_error_contact_researcher
+  
 - story: start_session_5 
   steps: 
   - intent: start_session5
   - action: action_set_session
+  - slot_was_set:
+    - session_loaded: True
   - action: action_get_group
   - action: utter_greet_last
   - action: utter_ask_for_mood
@@ -555,6 +735,7 @@ stories:
   - checkpoint: persuasion_input_correctness
   - slot_was_set:
     - plan_correct: True
+  - action: utter_thank_you_planning
   - checkpoint: end_not_last
 
 - story: persuasion_input_false
@@ -571,6 +752,7 @@ stories:
   - action: action_freetext
   - slot_was_set:
     - plan_correct: True
+  - action: utter_thank_you_planning
   - checkpoint: end_not_last
   
 - story: persuasion_input_false_false
@@ -590,16 +772,32 @@ stories:
   - action: utter_implementation_intention_syntax_error_rep
   - checkpoint: end_not_last
   
-- story: end_not_last
+- story: end_not_last_error
   steps:
   - checkpoint: end_not_last
   - action: utter_email_reminder
   - action: utter_remind_next_session
   - intent: confirm
   - action: action_save_session
+  - slot_was_set:
+    - session_saved: False
+  - action: utter_error_contact_researcher
   - action: action_send_email
   
-- story: end_last
+- story: end_not_last_correct
+  steps:
+  - checkpoint: end_not_last
+  - action: utter_email_reminder
+  - action: utter_remind_next_session
+  - intent: confirm
+  - action: action_save_session
+  - slot_was_set:
+    - session_saved: True
+  - action: utter_prolific_link
+  - action: utter_goodbye_not_last
+  - action: action_send_email
+  
+- story: end_last_error
   steps:
   - checkpoint: end_last
   - action: utter_email_reminder
@@ -607,5 +805,22 @@ stories:
   - intent: confirm
   - action: utter_thank_participation
   - action: action_save_session
+  - slot_was_set:
+    - session_saved: False
+  - action: utter_error_contact_researcher
+  - action: action_send_email_last
+  
+- story: end_last_correct
+  steps:
+  - checkpoint: end_last
+  - action: utter_email_reminder
+  - action: utter_remind_post_questionnaire
+  - intent: confirm
+  - action: utter_thank_participation
+  - action: action_save_session
+  - slot_was_set:
+    - session_saved: True
+  - action: utter_prolific_link
+  - action: utter_goodbye
   - action: action_send_email_last
   

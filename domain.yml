@@ -16,7 +16,20 @@ intents:
 - nlu_fallback
 - deny
 slots:
-  # user satisfaction score
+  # whether the session was loaded successfully
+  session_loaded:
+    type: bool
+    influence_conversation: true
+  # Prolific completion link
+  prolific_link:
+    type: text
+    influence_conversation: false
+    initial_value: ""
+  # whether the session has been saved successfully
+  session_saved:
+    type: bool
+    influence_conversation: true
+  # user satisfaction score entered by user
   user_satisfaction:
     type: text
     influence_conversation: false
@@ -43,10 +56,12 @@ slots:
     type: text
     influence_conversation: false
     initial_value: ""
+  # Answer given to reflective question for persuasion types 0-2
   reflection_answer:
     type: text
     influence_conversation: false
     initial_value: ""
+  # Answer given to persuasion type 3 (i.e. action planning)
   action_planning_answer:
     type: text
     influence_conversation: false
@@ -64,6 +79,7 @@ slots:
     type: text
     influence_conversation: false
     initial_value: ""
+  # Persuasive message
   message_formulation:
     type: text
     influence_conversation: false
@@ -150,7 +166,7 @@ responses:
   - text: "Hello there, I'm Sam. I'm happy to meet you!"
   utter_purpose:
   - text: "I've mentioned my name, but I haven't yet told you what I do: I'm here\
-      \ to help you to prepare to quit smoking. Becoming more physically active may help, so I'll also help you to prepare to become more physically active."
+      \ to prepare you for quiting smoking. Becoming more physically active may help to quit smoking, so I'll also prepare you to become more physically active."
   utter_expertise:
   - buttons:
     - payload: /confirm
@@ -174,13 +190,12 @@ responses:
   utter_prompt_session_overview:
   - text: Now, let me tell you how this session works.
   utter_explain_session_overview_1:
-  - text: First, I'll use the information I have about you and people who are similar to you to suggest a preparation activity.
+  - text: First, I'll use my knowledge to recommend you a preparation activity for quitting smoking or becoming more physically active.
   utter_explain_session_overview_2:
-  - text: Next, I'll ask you some questions about your thoughts about doing this activity.
+  - text: Next, I'll ask you how you think about doing this activity.
       This will allow me to learn to better support you and other people like you.
   utter_explain_session_overview_3:
-  - text: In the end, I might help you to plan when, where and how to do your suggested
-      activity.
+  - text: In the end, I will provide more information on doing the activity.
   utter_explain_session_overview_4:
   - text: And don't worry, I'll also send you your activity as a message in Prolific.
   utter_explain_session_final:
@@ -214,38 +229,40 @@ responses:
   - text: Before we start, let me give you a quick overview of what this session looks like.
   - text: Before we begin, let me quickly give you an overview of what this session looks like.
   utter_explain_session_2_2:
-  - text: "I'll first ask you about your experience (if any) with your assigned activity from last time."
+  - text: "I'll first ask you about your experience (if any) with your activity from last time."
   utter_explain_session_2_3:
-  - text: Then, I'll use the information I have about you and people who are similar to you to suggest a new preparation activity.
+  - text: Then, I'll use my knowledge to recommend you a new preparation activity.
   utter_explain_session_2_4:
   - buttons:
     - payload: /confirm
       title: Sure!
     - payload: /confirm
       title: Sounds good
-    text: And, just like last time, I'll ask you about your thoughts about doing this activity and will maybe help you to plan to do it. Okay?
+    text: And, just like last time, I'll ask you how you think about doing this activity. and provide some more information on the activity. Okay?
   utter_explain_session_234_5:
   - text: Cool! Oh and of course you'll get a message with your new activity in Prolific.
   - text: Cool! Oh and of course I'll send you a message with your new activity in Prolific.
   utter_explain_session_34_2:
-  - text: Just like last time, I'll first ask you about your experience (if any) with your assigned activity from last time.
+  - text: Just as before, I'll first ask you about your experience (if any) with your activity from last time.
   utter_explain_session_345_3: 
   - text: I'll then suggest you a new preparation activity based on the information I have about you and people who are similar to you.
+  - text: I'll then recommend you a new preparation activity based on the information I have about you and similar people.
+  - text: I'll then use my knowledge to recommend you a new preparation activity for either quitting smoking or becoming more physically active.
   utter_explain_session_345_4:
   - buttons:
     - payload: /confirm
       title: Okay!
     - payload: /confirm
       title: Of course
-    text: In the end, I'll ask you about your thoughts about doing this activity and maybe help you plan to do it. Sounds good?
+    text: In the end, I'll ask you how you think about doing this activity. and provide some more information on the activity. Sounds good?
   utter_explain_session_5_1:
   - text: Before we start, let me quickly explain how this last session is structured.
   utter_explain_session_5_2:
-  - text: Just as before, I'll first ask you about your experience (if any) with your assigned activity from last time.
+  - text: Just as before, I'll first ask you about your experience (if any) with your activity from last time.
   utter_explain_session_5_5:
   - text: Cool! Of course, since this is the last session, there won't be a next session in which I ask you about your experience with this activity.
   utter_explain_session_5_6:
-  - text: "But I'll still send you a reminder in Prolific like before."
+  - text: "But I'll still send you a message with your new activity in Prolific."
   utter_ask_activity_completion:
   - buttons: 
     - payload: /reward_answer{{"reward":"1"}}
@@ -810,7 +827,7 @@ responses:
   - text: Cool, thanks for sharing these thoughts with me!
   - text: Thanks, I appreciate you sharing these thoughts with me!
   - text: Thanks, I appreciate you sharing this reflection with me!
-  - text: Cools, thanks for sharing this with me!
+  - text: Cool, thanks for sharing this with me!
   utter_remind_next_session:
   - buttons:
     - payload: /confirm
@@ -835,7 +852,7 @@ responses:
   utter_message_formulation_prep:
   - text: Between this and the next session, please remember to {activity_verb}.
   utter_message_formulation:
-  - text: '▶️ **{message_formulation}**'
+  - text: '⚫ **{message_formulation}**'
   utter_reflective_question:
   - text: '{reflective_question}'
   utter_ok:
@@ -846,15 +863,16 @@ responses:
       title: Alright!
     text: Ok?
   utter_thank_experience_mod:
-  - text: Alright, thanks for the clarification!
+  - text: "Alright, thanks for the clarification! ⚪🔹⚫ 🔻🔶"
   - text: Cool, thanks for clarifying that.
   utter_thank_you_planning:
   - text: Cool, sounds good!
   - text: Nice, sounds like a good plan!
   utter_goodbye_not_last:
   - text: Bye, see you in the next session!
+  - text: Goodbye, see you in the next session!
   utter_goodbye:
-  - text: Goodbye, thanks a lot for your time!
+  - text: Goodbye!
   utter_iamabot:
   - text: I'm a bot!
   utter_thank_satisfaction:
@@ -868,7 +886,11 @@ responses:
   utter_implementation_intention_syntax_error:
   - text: Hmm, please formulate your plan in the form 'If [situation], then [do activity].'
   utter_implementation_intention_syntax_error_rep:
-  - text: This still isn't the kind of plan I'm looking for, but I guess we leave that for another session.
+  - text: "This still isn't the kind of plan I'm looking for, but I guess we leave that for another session."
+  utter_error_contact_researcher:
+  - text: "Something went wrong, please contact the researcher: n.albers@tudelft.nl."
+  utter_prolific_link:
+  - text: "Here is your completion link: {prolific_link}."
 actions:
 - action_answer_mood
 - action_choose_activity

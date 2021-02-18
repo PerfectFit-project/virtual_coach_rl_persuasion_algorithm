@@ -42,7 +42,7 @@ try:
 								
     cursor = sqliteConnection.cursor()
     print("Successfully connected to SQLite")
-    #cursor.execute('''DROP table users;''')
+    #cursor.execute('''DROP table users;''') # delete table if it already exists
     cursor.execute(sqlite_create_table_query)
     sqliteConnection.commit()
     print("SQLite table created")
