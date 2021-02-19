@@ -190,12 +190,12 @@ responses:
   utter_prompt_session_overview:
   - text: Now, let me tell you how this session works.
   utter_explain_session_overview_1:
-  - text: First, I'll use my knowledge to recommend you a preparation activity for quitting smoking or becoming more physically active.
+  - text: First, I'll use my knowledge to recommend you a preparation activity.
   utter_explain_session_overview_2:
   - text: Next, I'll ask you how you think about doing this activity.
       This will allow me to learn to better support you and other people like you.
   utter_explain_session_overview_3:
-  - text: In the end, I will provide more information on doing the activity.
+  - text: In the end, I will provide additional information on doing the activity.
   utter_explain_session_overview_4:
   - text: And don't worry, I'll also send you your activity as a message in Prolific.
   utter_explain_session_final:
@@ -246,8 +246,8 @@ responses:
   - text: Just as before, I'll first ask you about your experience (if any) with your activity from last time.
   utter_explain_session_345_3: 
   - text: I'll then suggest you a new preparation activity based on the information I have about you and people who are similar to you.
-  - text: I'll then recommend you a new preparation activity based on the information I have about you and similar people.
-  - text: I'll then use my knowledge to recommend you a new preparation activity for either quitting smoking or becoming more physically active.
+  - text: I'll then recommend you a new preparation activity based on the information I have about you and people like you.
+  - text: I'll then use my knowledge to recommend you a new preparation activity.
   utter_explain_session_345_4:
   - buttons:
     - payload: /confirm
@@ -852,7 +852,7 @@ responses:
   utter_message_formulation_prep:
   - text: Between this and the next session, please remember to {activity_verb}.
   utter_message_formulation:
-  - text: '⚫ **{message_formulation}**'
+  - text: '🔹 **{message_formulation}**'
   utter_reflective_question:
   - text: '{reflective_question}'
   utter_ok:
@@ -863,7 +863,7 @@ responses:
       title: Alright!
     text: Ok?
   utter_thank_experience_mod:
-  - text: "Alright, thanks for the clarification! ⚪🔹⚫ 🔻🔶"
+  - text: "Alright, thanks for the clarification!"
   - text: Cool, thanks for clarifying that.
   utter_thank_you_planning:
   - text: Cool, sounds good!
