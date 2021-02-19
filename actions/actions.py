@@ -26,7 +26,7 @@ import time
 DATABASE_PATH = 'db_scripts/chatbot.db'
 
 # Activities
-df_act = pd.read_excel("Activities.csv")
+df_act = pd.read_csv("Activities.csv")
 df_act['Exclusion'] = df_act['Exclusion'].str.strip('()').str.split(',')
 for row in df_act.loc[df_act['Exclusion'].isnull(), 'Exclusion'].index:
     df_act.at[row, 'Exclusion'] = []
@@ -655,7 +655,9 @@ class ActionSaveSession(Action):
             sqlite_select_query = """SELECT * from users WHERE id = ?"""
             cursor.execute(sqlite_select_query, (user_id,))
             data = cursor.fetchall()
+            
             sessions_done = 0
+            link = ""
             
             # save data after first session
             if not data:
@@ -779,6 +781,10 @@ class ActionSaveSession(Action):
            
             else:
                 # error happened
+                session_saved = False
+                
+            # Something went wrong in the handling of the specific session
+            if len(link) == 0:
                 session_saved = False
             
             cursor.execute(sqlite_query, data_tuple)
