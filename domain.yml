@@ -192,7 +192,7 @@ responses:
   utter_explain_session_overview_1:
   - text: First, I'll use my knowledge to recommend you a preparation activity.
   utter_explain_session_overview_2:
-  - text: Next, I'll ask you how you think about doing this activity.
+  - text: Next, I'll ask you how you think about this activity.
       This will allow me to learn to better support you and other people like you.
   utter_explain_session_overview_3:
   - text: In the end, I will provide additional information on doing the activity.
@@ -238,7 +238,7 @@ responses:
       title: Sure!
     - payload: /confirm
       title: Sounds good
-    text: And, just like last time, I'll ask you how you think about doing this activity. and provide some more information on the activity. Okay?
+    text: And, just like last time, I'll ask you how you think about doing this activity, and provide some more information on the activity. Okay?
   utter_explain_session_234_5:
   - text: Cool! Oh and of course you'll get a message with your new activity in Prolific.
   - text: Cool! Oh and of course I'll send you a message with your new activity in Prolific.
@@ -254,7 +254,7 @@ responses:
       title: Okay!
     - payload: /confirm
       title: Of course
-    text: In the end, I'll ask you how you think about doing this activity. and provide some more information on the activity. Sounds good?
+    text: In the end, I'll ask you how you think about doing this activity, and provide some more information on the activity. Sounds good?
   utter_explain_session_5_1:
   - text: Before we start, let me quickly explain how this last session is structured.
   utter_explain_session_5_2:

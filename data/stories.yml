@@ -782,7 +782,6 @@ stories:
   - slot_was_set:
     - session_saved: False
   - action: utter_error_contact_researcher
-  - action: action_send_email
   
 - story: end_not_last_correct
   steps:
@@ -808,7 +807,6 @@ stories:
   - slot_was_set:
     - session_saved: False
   - action: utter_error_contact_researcher
-  - action: action_send_email_last
   
 - story: end_last_correct
   steps:

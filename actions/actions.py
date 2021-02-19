@@ -311,21 +311,28 @@ class ActionSetSession(Action):
             if (sqlite_connection):
                 sqlite_connection.close()
                 #print("Connection closed for user ", user_id)
-
+        
+        activity_verb_prev = ""
+        activity_index_list = []
+        action_index_list = []
+        action_type_index_list = []
+        
         try:
             # load data from previous sessions about activities and actions
             activity_index_list = [int(i) for i in data[0][18].split('|')]
             activity_verb_prev = df_act.loc[activity_index_list[-1], "VerbYou"]
-            return [SlotSet("activity_index_list", activity_index_list), 
-                    SlotSet("action_index_list", [int (i) for i in data[0][19].split('|')]),
-                    SlotSet("activity_verb_prev", activity_verb_prev),
-                    SlotSet("action_type_index_list", [int (i) for i in data[0][25].split('|')])]
-           
+            action_index_list = [int (i) for i in data[0][19].split('|')]
+            action_type_index_list = [int (i) for i in data[0][25].split('|')]
+            
         except NameError:
             session_loaded = False
             print("NameError in action_set_session.")
-            
-        return [SlotSet("session_loaded", session_loaded)]
+        
+        return [SlotSet("activity_index_list", activity_index_list), 
+                SlotSet("action_index_list", action_index_list),
+                SlotSet("activity_verb_prev", activity_verb_prev),
+                SlotSet("action_type_index_list", action_type_index_list),
+                SlotSet("session_loaded", session_loaded)]
 
 # Send reminder email with activity and persuasion after session
 class ActionSendEmail(Action):
@@ -376,7 +383,7 @@ class ActionSendEmail(Action):
             # setup the parameters of the message
             msg['From'] = email
             msg['To']=  user_email
-            msg['Subject'] = "Prolific Reminder - Computerized Health Coaching"
+            msg['Subject'] = "Activity Reminder - Computerized Health Coaching"
             
             # add in the message body
             msg.attach(MIMEText(message, 'plain'))
@@ -426,7 +433,7 @@ class ActionSendEmailLast(Action):
             # setup the parameters of the message
             msg['From'] = email
             msg['To']=  user_email
-            msg['Subject'] = "Prolific Reminder - Computerized Health Coaching"
+            msg['Subject'] = "Activity Reminder - Computerized Health Coaching"
             
             # add in the message body
             msg.attach(MIMEText(message, 'plain'))
