@@ -26,7 +26,7 @@ import time
 DATABASE_PATH = 'db_scripts/chatbot.db'
 
 # Activities
-df_act = pd.read_excel("Activities.xlsx")
+df_act = pd.read_excel("Activities.csv")
 df_act['Exclusion'] = df_act['Exclusion'].str.strip('()').str.split(',')
 for row in df_act.loc[df_act['Exclusion'].isnull(), 'Exclusion'].index:
     df_act.at[row, 'Exclusion'] = []
@@ -179,7 +179,7 @@ class ActionChooseActivity(Action):
         
         return [SlotSet("activity_formulation", df_act.loc[act_index, 'Formulation']), 
                 SlotSet("activity_index_list", curr_act_ind_list),
-                SlotSet("activity_verb", df_act.loc[act_index, "VerbYou"])]
+                SlotSet("activity_verb", df_act.loc[act_index, "VerbYouShort"])]
 
 # Set slot about whether the user completed the assigned activity    
 class ActionSetSlotReward(Action):
