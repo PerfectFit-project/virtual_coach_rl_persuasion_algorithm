@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sam</title>
+</head>
+<body>
+
+<div id="webchat"></div>
+<script src="https://cdn.jsdelivr.net/npm/rasa-webchat@0.11.12/lib/index.min.js"></script>
+<script>
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+      const userid = urlParams.get('userid');
+      // const userid = "111"
+	  WebChat.default.init({
+		selector: "#webchat",
+		initPayload: "/start_session5",
+		customData: {"language":"en", "userid": userid}, // arbitrary custom data. Stay minimal as this will be added to the socket
+		socketUrl: "http://35.204.156.243",
+		socketPath: "/socket.io/",
+		fullScreenMode: true,
+		embedded: true,
+		title: "Sam",
+		subtitle: "",
+		params: {"storage": "session"}, // can be set to "local"  or "session". details in storage section.
+		customMessageDelay: (message) => {
+    let delay = message.length * 45;
+    if (delay > 5 * 1000) delay = 5 * 1000;
+    if (delay < 800) delay = 800;
+    return delay;
+  }
+})
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    var hideSender = function() {
+        if( $('.rw-replies').length || $('#wave').length || $('.rw-message').length == 0){
+            $("textarea").prop('disabled', true);
+            $("textarea").prop('placeholder', "Use one of the buttons to answer.");
+        }
+    
+        else {
+           $("textarea").prop('disabled', false);
+           $("textarea").prop('placeholder', "Type a message...");
+        }
+    }
+    setInterval(hideSender, 250);
+</script>
+</body>
+</html>

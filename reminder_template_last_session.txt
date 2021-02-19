@@ -1,7 +1,7 @@
 Dear ${PERSON_NAME}, 
 
 
-This is a mesage to remind you of your suggested activity to prepare to quit smoking:
+This is a mesage to remind you of your suggested preparation activity:
 
 ${ACTIVITY}
 
