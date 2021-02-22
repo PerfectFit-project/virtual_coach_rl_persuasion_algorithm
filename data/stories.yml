@@ -257,6 +257,8 @@ stories:
     - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
+    - intent: deny
+    - intent: greeting
   - checkpoint: session_3_satis_received
   
 - story: start_session_3_satis_correct
@@ -280,6 +282,8 @@ stories:
     - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
+    - intent: deny
+    - intent: greeting
   - checkpoint: session_3_satis_received_2
   
 - story: start_session_3_satis_false_true
@@ -303,6 +307,8 @@ stories:
     - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
+    - intent: deny
+    - intent: greeting
   - action: action_get_satisfaction
   - slot_was_set: 
     - satisf_correct: False
@@ -321,6 +327,8 @@ stories:
     - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
+    - intent: deny
+    - intent: greeting
   - action: action_get_satisfaction
   - slot_was_set: 
     - satisf_correct: True
@@ -396,6 +404,8 @@ stories:
     - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
+    - intent: deny
+    - intent: greeting
   - checkpoint: start_session_5_satis_received
   
 - story: start_session_5_satisf_true
@@ -419,6 +429,8 @@ stories:
     - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
+    - intent: deny
+    - intent: greeting
   - action: action_get_satisfaction
   - slot_was_set: 
     - satisf_correct: True
@@ -437,6 +449,8 @@ stories:
     - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
+    - intent: deny
+    - intent: greeting
   - action: action_get_satisfaction
   - slot_was_set: 
     - satisf_correct: False
@@ -446,6 +460,8 @@ stories:
     - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
+    - intent: deny
+    - intent: greeting
   - action: action_get_satisfaction
   - slot_was_set: 
     - satisf_correct: False
@@ -464,6 +480,8 @@ stories:
     - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
+    - intent: deny
+    - intent: greeting
   - action: action_get_satisfaction
   - slot_was_set: 
     - satisf_correct: False
@@ -473,6 +491,8 @@ stories:
     - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
+    - intent: deny
+    - intent: greeting
   - action: action_get_satisfaction
   - slot_was_set: 
     - satisf_correct: True
@@ -525,6 +545,8 @@ stories:
     - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
+    - intent: deny
+    - intent: greeting
   - action: action_freetext_activity_comp
   - checkpoint: activity_completion_details_confirm_last
   
@@ -550,6 +572,8 @@ stories:
     - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
+    - intent: deny
+    - intent: greeting
   - action: action_freetext_activity_mod
   - action: utter_thank_experience_mod
   - action: utter_prepare_activity_proposal_session5
@@ -587,6 +611,8 @@ stories:
     - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
+    - intent: deny
+    - intent: greeting
   - action: action_freetext_activity_comp
   - checkpoint: activity_completion_details_confirm
   
@@ -612,6 +638,8 @@ stories:
     - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
+    - intent: deny
+    - intent: greeting
   - action: action_freetext_activity_mod
   - action: utter_thank_experience_mod
   - action: utter_prepare_activity_proposal_session234
@@ -711,6 +739,8 @@ stories:
     - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
+    - intent: deny
+    - intent: greeting
   - action: action_get_reflection
   - action: utter_thank_reflection
   - checkpoint: end_not_last
@@ -727,6 +757,8 @@ stories:
     - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
+    - intent: deny
+    - intent: greeting
   - action: action_freetext
   - checkpoint: persuasion_input_correctness
   
@@ -749,6 +781,8 @@ stories:
     - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
+    - intent: deny
+    - intent: greeting
   - action: action_freetext
   - slot_was_set:
     - plan_correct: True
@@ -766,6 +800,8 @@ stories:
     - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
+    - intent: deny
+    - intent: greeting
   - action: action_freetext
   - slot_was_set:
     - plan_correct: False
@@ -792,10 +828,11 @@ stories:
   - action: action_save_session
   - slot_was_set:
     - session_saved: True
+  - action: action_send_email
   - action: utter_prolific_link
   - action: utter_goodbye_not_last
+  - intent: confirm
   - action: utter_final_close_session
-  - action: action_send_email
   
 - story: end_last_error
   steps:
@@ -819,8 +856,9 @@ stories:
   - action: action_save_session
   - slot_was_set:
     - session_saved: True
+  - action: action_send_email_last
   - action: utter_prolific_link_last
   - action: utter_goodbye
+  - intent: confirm
   - action: utter_final_close_session
-  - action: action_send_email_last
   

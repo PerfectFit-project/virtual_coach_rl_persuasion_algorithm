@@ -15,6 +15,7 @@ intents:
 - anything
 - nlu_fallback
 - deny
+- greeting
 slots:
   # whether the session was loaded successfully
   session_loaded:
@@ -427,9 +428,6 @@ responses:
   - text: I see, I guess that's not too bad.
   - text: Ah, sounds like you're having an average day.
   - text: Hm, that's not too bad I guess.
-  utter_prepare_state_asking:
-  - text: Now, to best support you, I need to ask you some questions about your current
-      situation.
   utter_great:
   - text: Great!
   - text: Perfect!
@@ -869,10 +867,19 @@ responses:
   - text: Cool, sounds good!
   - text: Nice, sounds like a good plan!
   utter_goodbye_not_last:
-  - text: Bye, see you in the next session!
-  - text: Goodbye, see you in the next session!
+  - buttons:
+    - payload: /confirm
+      title: Goodbye!
+    - payload: /confirm
+      title: Bye, see you next time!
+    text: Bye, see you in the next session!
   utter_goodbye:
-  - text: Goodbye!
+  - buttons:
+    - payload: /confirm
+      title: Goodbye!
+    - payload: /confirm
+      title: Bye!
+    text: Goodbye!
   utter_iamabot:
   - text: I'm a bot!
   utter_thank_satisfaction:
@@ -884,9 +891,9 @@ responses:
   utter_default:
   - text: I'm sorry, I did not quite understand this. Can you elaborate?
   utter_implementation_intention_syntax_error:
-  - text: Hmm, please formulate your plan in the form 'If [situation], then [do activity].'
+  - text: Hmm, please formulate your rule in the form 'If <situation>, then <do activity>.'
   utter_implementation_intention_syntax_error_rep:
-  - text: "This still isn't the kind of plan I'm looking for, but I guess we leave that for another session."
+  - text: "This still isn't the kind of rule I'm looking for, but I guess we leave that for another session."
   utter_error_contact_researcher:
   - text: "Something went wrong, please contact the researcher: n.albers@tudelft.nl."
   utter_prolific_link:
