@@ -2,6 +2,24 @@
 <html>
 <head>
     <title>Sam</title>
+	
+	<style>
+            html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                background-color: white;
+            }
+			#webchat {
+                width: inherit;
+                height: inherit;
+                margin: 0;
+                padding: 0;
+                background-color: white;
+            }
+    </style>
+	
 </head>
 <body>
 
@@ -16,7 +34,7 @@
 		selector: "#webchat",
 		initPayload: "/start_session4",
 		customData: {"language":"en", "userid": userid}, // arbitrary custom data. Stay minimal as this will be added to the socket
-		socketUrl: "http://35.204.156.243",
+		socketUrl: "http://35.204.125.123",
 		socketPath: "/socket.io/",
 		fullScreenMode: true,
 		embedded: true,
