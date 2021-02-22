@@ -351,7 +351,8 @@ class ActionSendEmail(Action):
         with open('x.txt', 'r') as f:
             x = f.read()
         smtp = "smtp.web.de" # for web.de: smtp.web.de
-        email = "nele.96@web.de"
+        with open('email.txt', 'r') as f:
+            email = f.read()
         user_email = user_id + "@email.prolific.co"
         
         # TODO: remove this part in the end
@@ -410,8 +411,11 @@ class ActionSendEmailLast(Action):
         with open('x.txt', 'r') as f:
             x = f.read()
         smtp = "smtp.web.de" # for web.de: smtp.web.de
-        email = "nele.96@web.de"
+        with open('email.txt', 'r') as f:
+            email = f.read()
         user_email = user_id + "@email.prolific.co"
+        
+        # TODO: remove this part in the end
         user_email = "n.albers@tudelft.nl"
         
         with open('reminder_template_last_session.txt', 'r', encoding='utf-8') as template_file:
