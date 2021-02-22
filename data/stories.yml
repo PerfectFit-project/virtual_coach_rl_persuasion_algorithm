@@ -794,6 +794,7 @@ stories:
     - session_saved: True
   - action: utter_prolific_link
   - action: utter_goodbye_not_last
+  - action: utter_final_close_session
   - action: action_send_email
   
 - story: end_last_error
@@ -818,7 +819,8 @@ stories:
   - action: action_save_session
   - slot_was_set:
     - session_saved: True
-  - action: utter_prolific_link
+  - action: utter_prolific_link_last
   - action: utter_goodbye
+  - action: utter_final_close_session
   - action: action_send_email_last
   

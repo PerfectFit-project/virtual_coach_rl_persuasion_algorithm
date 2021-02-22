@@ -300,13 +300,13 @@ responses:
   - text: Ah that is unfortunate. I understand that it is not always easy.
   - text: Too bad. I understand that it can be difficult at the beginning.
   utter_ask_activity_completion_details_yes:
-  - text: "Please tell me about your experience with your assigned activity."
+  - text: "Please tell me about your experience with your assigned activity. Use the text field."
   utter_ask_activity_completion_details_no:
-  - text: "Please tell me about your experience with your assigned activity. If you have none, just type 'None'."
+  - text: "Please tell me about your experience with your assigned activity. If you have none, just type 'None' in the text field."
   utter_ask_activity_completion_details_yes_last:
-  - text: "Please tell me about your experience (if any) with your assigned activity."
+  - text: "Please tell me about your experience with your assigned activity. Use the text field."
   utter_ask_activity_completion_details_no_last:
-  - text: "Please tell me about your experience (if any) with your assigned activity."
+  - text: "Please tell me about your experience with your assigned activity. If you have none, just type 'None' in the text field."
   utter_thank_you_activity_experience:
   - text: Okay, thanks for telling me!
   - text: Cool, thanks for sharing!
@@ -854,7 +854,7 @@ responses:
   utter_message_formulation:
   - text: '🔹 **{message_formulation}**'
   utter_reflective_question:
-  - text: '{reflective_question}'
+  - text: '{reflective_question} Use the text field to answer.'
   utter_ok:
   - buttons:
     - payload: /confirm
@@ -890,7 +890,11 @@ responses:
   utter_error_contact_researcher:
   - text: "Something went wrong, please contact the researcher: n.albers@tudelft.nl."
   utter_prolific_link:
+  - text: "Cool! Here is your completion link: {prolific_link}."
+  utter_prolific_link_last:
   - text: "Here is your completion link: {prolific_link}."
+  utter_final_close_session:
+  - text: "*THIS IS THE END OF THIS SESSION. PLEASE CLOSE THIS WINDOW.*"
 actions:
 - action_answer_mood
 - action_choose_activity
