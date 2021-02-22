@@ -22,6 +22,7 @@ COPY reminder_template_last_session.txt /app
 COPY reminder_template.txt /app
 COPY reflective_questions.csv /app
 COPY x.txt /app
+COPY email.txt /app
 COPY Post_Sess_2 /app
 
 # Don't use root user to run code
