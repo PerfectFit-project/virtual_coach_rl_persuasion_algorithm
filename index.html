@@ -2,11 +2,28 @@
 <html>
 <head>
     <title>Sam</title>
+	
+	<style>
+            html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                background-color: white;
+            }
+			#webchat {
+                width: inherit;
+                height: inherit;
+                margin: 0;
+                padding: 0;
+                background-color: white;
+            }
+    </style>
+	
 </head>
 <body>
-
 <div id="webchat"></div>
-<script src="https://cdn.jsdelivr.net/npm/rasa-webchat@0.11.6/lib/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/rasa-webchat@0.11.12/lib/index.min.js"></script>
 <script>
       const queryString = window.location.search;
       const urlParams = new URLSearchParams(queryString);
@@ -22,13 +39,13 @@
 		embedded: true,
 		title: "Sam",
 		subtitle: "",
-		params: {"storage": "session"}, // can be set to "local"  or "session". details in storage section.
-		customMessageDelay: (message) => {
-    let delay = message.length * 45;
-    if (delay > 5 * 1000) delay = 5 * 1000;
-    if (delay < 800) delay = 800;
-    return delay;
-  }
+		params: {"storage": "session"} // can be set to "local"  or "session". details in storage section.
+		//customMessageDelay: (message) => { // remember to add commma above if uncommenting this
+    //let delay = message.length * 45;
+    //if (delay > 5 * 1000) delay = 5 * 1000;
+    //if (delay < 800) delay = 800;
+    //return delay;
+ // }
 })
 </script>
 
