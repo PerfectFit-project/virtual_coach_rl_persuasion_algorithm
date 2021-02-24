@@ -850,7 +850,7 @@ responses:
   utter_message_formulation_prep:
   - text: Between this and the next session, please remember to {activity_verb}.
   utter_message_formulation:
-  - text: '🔹 **{message_formulation}**'
+  - text: '**{message_formulation}**'
   utter_reflective_question:
   - text: '{reflective_question} Use the text field to answer.'
   utter_ok:
