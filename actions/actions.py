@@ -616,10 +616,9 @@ class ActionChoosePersuasion(Action):
         ref_type = ref_dict[message_ind]
         ref_question = ""
         if ref_type >= 0:
-            if curr_activity in s_ind:
-                ref_question = df_ref.loc[ref_type, 'QuestionS']
-            else:
-                ref_question = df_ref.loc[ref_type, 'QuestionPA']
+            # Always pick smoking-related reflective question
+            ref_question = df_ref.loc[ref_type, 'QuestionS']
+           
         
         # Determine message
         message = df_mess.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Message']
