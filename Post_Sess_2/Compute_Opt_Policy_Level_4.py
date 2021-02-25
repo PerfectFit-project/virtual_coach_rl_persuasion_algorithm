@@ -43,6 +43,8 @@ opt_policies = {}
 # for each person
 for p1 in range(num_samples):
     
+    print(p1)
+    
     # TODO: only people that belong to Group 4 (group numbers go from 0 to 3)
     if str(df_group_ass[df_group_ass['ID'] == user_ids[p1]]["Group"].tolist()[0]) in ["3", "1", "2"]:
     
@@ -86,7 +88,7 @@ for p1 in range(num_samples):
         
         opt_policy = [[[[a for a in range(num_act) if q_values[i, j, k, a] == max(q_values[i, j, k])] for k in range(2)] for j in range(2)] for i in range(2)]
         '''
-        abstract_states = [list(i) for i in itertools.product([0, 1], repeat = num_feat)]
+        abstract_states = [list(i) for i in itertools.product([0, 1], repeat = 3)]
 
         # Compute transition function and reward function
         trans_func = np.zeros((int(2 ** num_feat), num_act, int(2 ** num_feat)))
@@ -114,7 +116,6 @@ for p1 in range(num_samples):
         q_values_exact, _ = util.get_Q_values_opt_policy(discount_factor, trans_func, reward_func)
         opt_policy = [[[[a for a in range(num_act) if q_values_exact[abstract_states.index([i, j, k])][a] == max(q_values_exact[abstract_states.index([i, j, k])])] for k in range(2)] for j in range(2)] for i in range(2)]
 
-        
         opt_policies[user_ids[p1]] = opt_policy
     
 with open('Level_4_Optimal_Policy', 'wb') as f:
