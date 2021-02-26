@@ -182,15 +182,23 @@ def check_attention_checks_session(database_path, session_num):
     
     session_index = session_num - 1
     
+    print("... Checking attention checks for session ", session_num)
+    
     # for each user that has completed at least 1 session
     for row in range(num_rows):
         
-        # Attention check question answers
-        check_state_1 = [int(i) for i in data_db[row][16].split('|')][session_index]
-        check_state_2 = [int(i) for i in data_db[row][17].split('|')][session_index]
+        # Test data that is still in the database and that does not have
+        # info for attention checks
+        if data_db[row][16] is None or data_db[row][17] is None or data_db[row][16] == ' ':
+            passed_check = False
         
-        # Whether the first session has passed enough attention checks
-        passed_check = pass_attention_checks(check_state_1, check_state_2)
+        else:
+            # Attention check question answers
+            check_state_1 = [int(i) for i in data_db[row][16].split('|')][session_index]
+            check_state_2 = [int(i) for i in data_db[row][17].split('|')][session_index]
+            
+            # Whether the first session has passed enough attention checks
+            passed_check = pass_attention_checks(check_state_1, check_state_2)
        
         # save corresponding user ID
         if passed_check:
