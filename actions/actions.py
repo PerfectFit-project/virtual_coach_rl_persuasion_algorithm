@@ -673,7 +673,7 @@ class ActionSaveSession(Action):
                               action_index_list, state, action_type_index_list,
                               reflection_answer)
                 sqlite_query = """INSERT INTO users (id, sessions_done, mood_list, action_planning_answer0, attention_check_list, attention_check_2_list, activity_index_list, action_index_list, state_0, action_type_index_list, reflection_answer0) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
-                link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_3VmOMw3USprKQv3?PROLIFIC_PID=" + str(user_id) + "&Group=2"
+                link = "https://app.prolific.co/submissions/complete?cc=6C5C40DA"
                 
             # save data after second session
             elif data[0][1] == 1:
@@ -697,7 +697,7 @@ class ActionSaveSession(Action):
                               reflection_answer, user_id)
                 
                 sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer1 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_1 = ?, activity_experience1 = ?, activity_experience_mod1 = ?, reward_list = ?, action_type_index_list = ?, reflection_answer1 = ? WHERE id = ?"""
-                link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
+                link = "https://app.prolific.co/submissions/complete?cc=5AC5F859"
                 
                 
             elif data[0][1] == 2:
@@ -726,7 +726,7 @@ class ActionSaveSession(Action):
                               reflection_answer, user_id)
                 
                 sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer2 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_2 = ?, activity_experience2 = ?, activity_experience_mod2 = ?, reward_list = ?, action_type_index_list = ?, study_group = ?, user_satisfaction2 = ?, reflection_answer2 = ? WHERE id = ?"""
-                link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
+                link = "https://app.prolific.co/submissions/complete?cc=5C9794E1"
                
             
             elif data[0][1] == 3:
@@ -754,7 +754,7 @@ class ActionSaveSession(Action):
                               action_type_index_list, 
                               reflection_answer, user_id)
                 sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer3 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_3 = ?, activity_experience3 = ?, activity_experience_mod3 = ?, reward_list = ?, action_type_index_list = ?, reflection_answer3 = ? WHERE id = ?"""
-                link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
+                link = "https://app.prolific.co/submissions/complete?cc=4DB200E7"
                 
                 
             elif data[0][1] == 4:
@@ -780,7 +780,7 @@ class ActionSaveSession(Action):
                               activity_experience_mod, reward_list, 
                               action_type_index_list, satisf, user_id)
                 sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_4 = ?, activity_experience4 = ?, activity_experience_mod4 = ?, reward_list = ?, action_type_index_list = ?, user_satisfaction4 = ? WHERE id = ?"""
-                link = "https://tudelft.eu.qualtrics.com/jfe/form/SV_ebsYp1kHo3yrzFj?PROLIFIC_PID=" + str(user_id) + "&Group=2"
+                link = "https://app.prolific.co/submissions/complete?cc=3B91AA04"
                 
            
             else:
