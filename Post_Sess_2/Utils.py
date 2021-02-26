@@ -48,20 +48,19 @@ def feat_sel_num_blocks_avg_p_val(feat_not_sel, num_feat_not_sel, blocks,
     
     return feat_sel, feat_sel_criteria
 
-def gather_data_post_sess_2(feat_to_select = [0, 1, 2, 3, 4, 6, 7]):
+def gather_data_post_sess_2(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7]):
     """
     Gathers data from sqlite database after session 2.
     
     Args:
+        database_path: path to database
         feat_to_select: which of the state features to consider
     """
     num_select = len(feat_to_select)
     
     # create db connection
     try:
-        #sqlite_connection = sqlite3.connect('chatbot.db')
-        # TODO: adapt path in the end
-        sqlite_connection = sqlite3.connect('c:/users/nele2/CA/db_scripts/chatbot.db')
+        sqlite_connection = sqlite3.connect(database_path)
         cursor = sqlite_connection.cursor()
         print("Connection created")
         sqlite_select_query = """SELECT * from users WHERE state_0 IS NOT NULL"""
@@ -136,38 +135,96 @@ def gather_data_post_sess_2(feat_to_select = [0, 1, 2, 3, 4, 6, 7]):
     feat_means = np.mean(all_states, axis = 0)
     
     # convert features to binary features based on mean values
-    for row in range(num_rows):
+    for row in range(len(data)):
         data[row][0] = [1 if data[row][0][i] >= feat_means[i] else 0 for i in range(num_select)]
         data[row][1] = [1 if data[row][1][i] >= feat_means[i] else 0 for i in range(num_select)]
     
     return data, feat_means, user_ids
+
+def check_attention_checks_session(database_path, session_num):
+    """
+    Returns IDs of users who have passed/failed a session based on 
+    attention checks.
+    
+    Args:
+        database_path: path to database
+        session_num: which session to check for; from 1 to 5
+    """
+    # create db connection
+    try:
+        sqlite_connection = sqlite3.connect(database_path)
+        cursor = sqlite_connection.cursor()
+        print("Connection created")
+        if session_num == 1:
+            sqlite_select_query = """SELECT * from users WHERE state_0 IS NOT NULL"""
+        elif session_num == 2:
+            sqlite_select_query = """SELECT * from users WHERE state_1 IS NOT NULL"""
+        elif session_num == 3:
+            sqlite_select_query = """SELECT * from users WHERE state_2 IS NOT NULL"""
+        elif session_num == 4:
+            sqlite_select_query = """SELECT * from users WHERE state_3 IS NOT NULL"""
+        elif session_num == 5:
+            sqlite_select_query = """SELECT * from users WHERE state_4 IS NOT NULL"""
+        cursor.execute(sqlite_select_query)
+        data_db = cursor.fetchall()
+        cursor.close()
+
+    except sqlite3.Error as error:
+        print("Error while connecting to sqlite", error)
+    finally:
+        if (sqlite_connection):
+            sqlite_connection.close()
+            print("Connection closed")
+ 
+    num_rows = len(data_db)
+    user_ids_passed = []
+    user_ids_failed = []
+    
+    session_index = session_num - 1
+    
+    # for each user that has completed at least 1 session
+    for row in range(num_rows):
+        
+        # Attention check question answers
+        check_state_1 = [int(i) for i in data_db[row][16].split('|')][session_index]
+        check_state_2 = [int(i) for i in data_db[row][17].split('|')][session_index]
+        
+        # Whether the first session has passed enough attention checks
+        passed_check = pass_attention_checks(check_state_1, check_state_2)
+       
+        # save corresponding user ID
+        if passed_check:
+            user_ids_passed.append(data_db[row][0]) 
+        else:
+            user_ids_failed.append(data_db[row][0]) 
+    
+    return user_ids_passed, user_ids_failed
 
 def pass_attention_checks(answer1, answer2):
     """
     Returns whether at least 1/2 attention checks were passed for a session.
     
     Args:
-        answer1: give answer for attention check 1
+        answer1: given answer for attention check 1
         answer2: given answer for attention check 2
     """
     return answer1 == ATTENTION_CHECK_1_TRUE or answer2 == ATTENTION_CHECK_2_TRUE
 
-def gather_data_post_sess_5(feat_to_select = [0, 1, 2, 3, 4, 6, 7]):
+def gather_data_post_sess_5(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7]):
     """
     Gathers data from sqlite database after session 5.
     Also considers whether 2/2 attention checks have been failed in a session
     and removes such samples.
     
     Args:
+        database_path: path to database
         feat_to_select: which of the state features to consider
     """
     num_select = len(feat_to_select)
     
     # create db connection
     try:
-        #sqlite_connection = sqlite3.connect('chatbot.db')
-        # TODO: adapt path in the end
-        sqlite_connection = sqlite3.connect('c:/users/nele2/CA/db_scripts/chatbot.db')
+        sqlite_connection = sqlite3.connect(database_path)
         cursor = sqlite_connection.cursor()
         print("Connection created")
         sqlite_select_query = """SELECT * from users WHERE state_0 IS NOT NULL"""
@@ -242,7 +299,7 @@ def gather_data_post_sess_5(feat_to_select = [0, 1, 2, 3, 4, 6, 7]):
     feat_means = np.mean(all_states, axis = 0)
     
     # convert features to binary features based on mean values
-    for row in range(num_rows):
+    for row in range(len(data)):
         data[row][0] = [1 if data[row][0][i] >= feat_means[i] else 0 for i in range(num_select)]
         data[row][1] = [1 if data[row][1][i] >= feat_means[i] else 0 for i in range(num_select)]
     

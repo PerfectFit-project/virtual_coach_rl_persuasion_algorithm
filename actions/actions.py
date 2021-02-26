@@ -355,9 +355,6 @@ class ActionSendEmail(Action):
             email = f.read()
         user_email = user_id + "@email.prolific.co"
         
-        # TODO: remove this part in the end
-        user_email = "n.albers@tudelft.nl"
-        
         with open('reminder_template.txt', 'r', encoding='utf-8') as template_file:
             message_template = Template(template_file.read())
         context = ssl.create_default_context()
@@ -415,9 +412,6 @@ class ActionSendEmailLast(Action):
             email = f.read()
         user_email = user_id + "@email.prolific.co"
         
-        # TODO: remove this part in the end
-        user_email = "n.albers@tudelft.nl"
-        
         with open('reminder_template_last_session.txt', 'r', encoding='utf-8') as template_file:
             message_template = Template(template_file.read())
         context = ssl.create_default_context()
@@ -456,7 +450,7 @@ class ActionGetGroup(Action):
 
     async def run(self, dispatcher, tracker, domain):
         
-        # Group assignment # TODO
+        # Group assignment # TODO: use right link
         df_group_ass = pd.read_csv("assignment.csv", dtype={'ID':'string'})
 
         # get user ID

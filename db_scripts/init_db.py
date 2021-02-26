@@ -46,11 +46,11 @@ try:
     cursor.execute(sqlite_create_table_query)
     sqliteConnection.commit()
     print("SQLite table created")
-    data_tuple = ('111', 2, 'droopy|sad', "sdd", " ", " ", "4|10", "1|2", "2|3|1|4|1|3|1|0|3|0", "2|3", "2|0|1|2|1|3|3|0|3|0", "1")
+    data_tuple = ('111', 2, 'droopy|sad', "sdd", "0|0", "4|4", "4|10", "1|2", "2|3|1|4|1|3|1|0|3|0", "2|3", "2|0|1|2|1|3|3|0|3|0", "1")
     sqlite_query = """INSERT INTO users (id, sessions_done, mood_list, action_planning_answer0, attention_check_list, attention_check_2_list, activity_index_list, action_index_list, state_0, action_type_index_list, state_1, reward_list) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
     cursor.execute(sqlite_query, data_tuple)
     sqliteConnection.commit()
-    data_tuple = ('222', 2, 'droopy|happy', "sdd", " ", " ", "2|9", "1|2", "0|4|1|4|1|2|1|1|3|0", "2|3","2|0|2|0|0|0|3|0|4|0", "0")
+    data_tuple = ('222', 2, 'droopy|happy', "sdd", "4|4", "0|0", "2|9", "1|2", "0|4|1|4|1|2|1|1|3|0", "2|3","2|0|2|0|0|0|3|0|4|0", "0")
     sqlite_query = """INSERT INTO users (id, sessions_done, mood_list, action_planning_answer0, attention_check_list, attention_check_2_list, activity_index_list, action_index_list, state_0, action_type_index_list, state_1, reward_list) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""" 
     cursor.execute(sqlite_query, data_tuple) 
     sqliteConnection.commit()    

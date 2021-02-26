@@ -27,17 +27,18 @@ pipeline:
 # https://rasa.com/docs/rasa/core/policies/
 policies:
   - name: MemoizationPolicy
+    max_history: 9
   - name: TEDPolicy
     max_history: 9
     epochs: 10
   #- name: FallbackPolicy
-  #  nlu_threshold: 0.01
-  #  fallback_action_name: "action_freetext"
-  #- name: RulePolicy
+  #  nlu_threshold: 0.8
+   # fallback_action_name: "utter_error_contact_researcher"
+  # - name: RulePolicy
     # Confidence threshold for the `core_fallback_action_name` to apply.
     # The action will apply if no other action was predicted with
     # a confidence >= core_fallback_threshold
-  #  core_fallback_threshold: 0.4
-  #  core_fallback_action_name: "utter_thank_you_planning"
-  #  enable_fallback_prediction: True
+    # core_fallback_threshold: 0.9
+    # core_fallback_action_name: "action_default_fallback"
+    # enable_fallback_prediction: True
   

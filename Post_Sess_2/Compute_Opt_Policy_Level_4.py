@@ -34,7 +34,7 @@ q_num_iter = 100000 * num_samples # num_samples = num people after session 2
 discount_factor = 0.85
 alpha = 0.01
 
-# TODO: to be replaced with actual data from Qualtricx
+# TODO: uncomment lines below
 # traits = pd.read_csv('pers_PA-TTM_sex.csv')
 # traits_ids = traits['PROLIFIC_PID'].tolist()
 # traits = traits[['PA-TTM', 'Extraversion', 'Agreeableness', 'Conscientiousness', 'ES', 'OE']]
