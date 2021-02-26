@@ -20,3 +20,5 @@ rasa
 events.db-shm
 events.db-wal
 events.db
+server_stuff/d.txt
+rasa.db
