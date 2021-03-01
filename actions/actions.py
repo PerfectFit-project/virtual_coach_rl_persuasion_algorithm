@@ -756,7 +756,7 @@ class ActionSaveSession(Action):
                 sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer3 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_3 = ?, activity_experience3 = ?, activity_experience_mod3 = ?, reward_list = ?, action_type_index_list = ?, reflection_answer3 = ? WHERE id = ?"""
                 link = "https://app.prolific.co/submissions/complete?cc=4DB200E7"
                 
-                
+            # save data after last session
             elif data[0][1] == 4:
                 sessions_done = 5
                 satisf = tracker.get_slot('user_satisfaction')
