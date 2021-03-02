@@ -40,13 +40,13 @@
 		embedded: true,
 		title: "Sam",
 		subtitle: "",
-		params: {"storage": "session"}, // can be set to "local"  or "session". details in storage section.
-		customMessageDelay: (message) => {
-    let delay = message.length * 45;
-    if (delay > 5 * 1000) delay = 5 * 1000;
-    if (delay < 800) delay = 800;
-    return delay;
-  }
+		params: {"storage": "session"} // can be set to "local"  or "session". details in storage section.
+		//customMessageDelay: (message) => { // Make sure to add comma above when uncommenting this
+    //let delay = message.length * 45;
+  //  if (delay > 5 * 1000) delay = 5 * 1000;
+    //if (delay < 800) delay = 800;
+    //return delay;
+ // }
 })
 </script>
 
