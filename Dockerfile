@@ -23,7 +23,7 @@ COPY reminder_template.txt /app
 COPY reflective_questions.csv /app
 COPY x.txt /app
 COPY email.txt /app
-COPY Post_Sess_2 /app
+COPY Post_Sess_2 /app/Post_Sess_2
 
 # Don't use root user to run code
 USER 1001
