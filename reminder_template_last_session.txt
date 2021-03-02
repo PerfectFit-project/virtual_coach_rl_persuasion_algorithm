@@ -6,6 +6,9 @@ This is a mesage to remind you of your suggested preparation activity:
 ${ACTIVITY}
 
 
+${PERSUASION}
+
+
 I wish you all the best with quitting smoking!
 
 
