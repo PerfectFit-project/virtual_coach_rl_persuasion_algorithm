@@ -416,6 +416,12 @@ class ActionSendEmailLast(Action):
             message_template = Template(template_file.read())
         context = ssl.create_default_context()
         
+        pers_input = tracker.get_slot('pers_input')
+        if not pers_input:
+            persuasion = tracker.get_slot('message_formulation')
+        else:
+            persuasion = "And here is the plan you created for doing the activity:\n\n\t"
+            persuasion += tracker.get_slot('action_planning_answer')
         activity = tracker.get_slot('activity_formulation')
     
         # set up the SMTP server
@@ -426,7 +432,8 @@ class ActionSendEmailLast(Action):
             
             # add in the actual person name to the message template
             message = message_template.substitute(PERSON_NAME="Study Participant",
-                                                  ACTIVITY= activity)
+                                                  ACTIVITY= activity,
+                                                  PERSUASION = persuasion)
         
             # setup the parameters of the message
             msg['From'] = email
@@ -613,9 +620,175 @@ class ActionChoosePersuasion(Action):
             # Always pick smoking-related reflective question
             ref_question = df_ref.loc[ref_type, 'QuestionS']
            
-        
         # Determine message
         message = df_mess.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Message']
+        
+        return [SlotSet("message_formulation", message), 
+                SlotSet("action_index_list", curr_action_ind_list),
+                SlotSet("action_type_index_list", curr_action_type_ind_list),
+                SlotSet("pers_input", require_input),
+                SlotSet("reflective_question", ref_question)]
+    
+# Return best (based on group) or random persuasion
+# In last session, need to replace parts of messages of the activity planning
+# messages, as they talk about the time between this and the next session.
+class ActionChoosePersuasionLast(Action):
+    def name(self):
+        return "action_choose_persuasion_last"
+
+    async def run(self, dispatcher, tracker, domain):
+        
+        # reset random seed
+        random.seed(datetime.now())
+        
+        # load slots
+        curr_act_ind_list = tracker.get_slot('activity_index_list')
+        curr_action_ind_list = tracker.get_slot('action_index_list')
+        curr_action_type_ind_list = tracker.get_slot('action_type_index_list')
+        curr_activity = curr_act_ind_list[-1]
+        
+        # study group
+        group = tracker.get_slot('study_group')
+        
+        # group is not set in sessions 1 and 2
+        if len(group) > 0:
+            group = int(group)
+        
+        if group == 0:
+            
+            #print("Persuasion level 1")
+        
+            # Load pre-computed list with best actions
+            with open('Post_Sess_2/Level_1_Optimal_Policy', 'rb') as f:
+                p = pickle.load(f)
+            
+            # Select a persuasion type randomly (there could be multiple best ones)
+            pers_type = random.choice(p)
+            
+        elif group == 1:
+            
+            #print("Persuasion level 2")
+            
+            with open('Post_Sess_2/Level_2_Optimal_Policy', 'rb') as f:
+                p = pickle.load(f)
+                
+            with open('Post_Sess_2/Level_2_G_algorithm_chosen_features', 'rb') as f:
+                feat = pickle.load(f)
+            
+            # Load mean values of features based on first 2 sessions
+            with open('Post_Sess_2/Post_Sess_2_Feat_Means', 'rb') as f:
+                feat_means = pickle.load(f)
+            
+            state = [int(tracker.get_slot('state_1')), int(tracker.get_slot('state_2')), 
+                     int(tracker.get_slot('state_3')), int(tracker.get_slot('state_4')),
+                     int(tracker.get_slot('state_5')), int(tracker.get_slot('state_6')),
+                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8')),
+                     int(tracker.get_slot('state_9')), int(tracker.get_slot('state_10'))]
+            
+            state = [1 if state[i] >= feat_means[i] else 0 for i in range(7)] # make binary
+            state = np.take(np.array(state), feat) # take only selected 3 features
+            
+            # Sample randomly from best persuasion types in state
+            pers_type = random.choice(p[state[0]][state[1]][state[2]])
+            
+        elif group == 2:
+            
+            #print("Persuasion level 3")
+            
+            with open('Post_Sess_2/Level_3_Optimal_Policy', 'rb') as f:
+                p = pickle.load(f)
+            
+            with open('Post_Sess_2/Level_3_G_algorithm_chosen_features', 'rb') as f:
+                feat = pickle.load(f)
+                
+            with open('Post_Sess_2/Post_Sess_2_Feat_Means', 'rb') as f:
+                feat_means = pickle.load(f)
+            
+            state = [int(tracker.get_slot('state_1')), int(tracker.get_slot('state_2')), 
+                     int(tracker.get_slot('state_3')), int(tracker.get_slot('state_4')),
+                     int(tracker.get_slot('state_5')), int(tracker.get_slot('state_6')),
+                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8')),
+                     int(tracker.get_slot('state_9')), int(tracker.get_slot('state_10'))]
+            
+            state = [1 if state[i] >= feat_means[i] else 0 for i in range(7)] # make binary
+            state = np.take(np.array(state), feat) # take only selected 3 features
+            
+            # Sample randomly from best persuasion types
+            pers_type = random.choice(p[state[0]][state[1]][state[2]])
+            
+        elif group == 3:
+            
+            #print("Persuasion level 4")
+             
+            # get user ID
+            metadata = extract_metadata_from_tracker(tracker)
+            user_id = metadata['userid']
+            
+            with open('Post_Sess_2/Level_4_Optimal_Policy', 'rb') as f:
+                p = pickle.load(f)
+            
+            with open('Post_Sess_2/Level_3_G_algorithm_chosen_features', 'rb') as f:
+                feat = pickle.load(f)
+                
+            with open('Post_Sess_2/Post_Sess_2_Feat_Means', 'rb') as f:
+                feat_means = pickle.load(f)
+            
+            state = [int(tracker.get_slot('state_1')), int(tracker.get_slot('state_2')), 
+                     int(tracker.get_slot('state_3')), int(tracker.get_slot('state_4')),
+                     int(tracker.get_slot('state_5')), int(tracker.get_slot('state_6')),
+                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8')),
+                     int(tracker.get_slot('state_9')), int(tracker.get_slot('state_10'))]
+            
+            state = [1 if state[i] >= feat_means[i] else 0 for i in range(7)] # make binary
+            state = np.take(np.array(state), feat) # take only selected features
+            
+            # Sample randomly from best persuasion types
+            pers_type = random.choice(p[user_id][state[0]][state[1]][state[2]])
+         
+        # Sessions 1 and 2: random 
+        else:
+            
+            #print("Random persuasion")
+            
+            if curr_action_ind_list is None:
+                curr_action_ind_list = []
+            if curr_action_type_ind_list is None:
+                curr_action_type_ind_list = []
+            
+            # Choose persuasion type randomly
+            pers_type = random.choice([i for i in range(NUM_PERS_TYPES)])
+            
+        curr_action_type_ind_list.append(pers_type)
+        
+        # total number of messages per activity in message dataframe
+        num_mess_per_activ = len(df_mess)/len(df_act)
+        
+        # Determine whether user input is required for persuasion type
+        require_input = False
+        if pers_type == 3:
+            require_input = True
+        
+        # Choose message randomly among messages selected the lowest number of times 
+        # for this persuasion type
+        counts = [curr_action_ind_list.count(i) for i in range(sum(num_mess_per_type[0:pers_type]), sum(num_mess_per_type[0:pers_type + 1]))]
+        min_messages = [i for i in range(num_mess_per_type[pers_type]) if counts[i] == min(counts)]
+        message_ind = random.choice(min_messages) + sum(num_mess_per_type[0:pers_type])
+        curr_action_ind_list.append(message_ind)
+        
+        # Determine reflective question (only for persuasion types 0-2)
+        ref_type = ref_dict[message_ind]
+        ref_question = ""
+        if ref_type >= 0:
+            # Always pick smoking-related reflective question
+            ref_question = df_ref.loc[ref_type, 'QuestionS']
+           
+        # Determine message
+        message = df_mess.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Message']
+        
+        # There is no next session after session 5, so need to adapt action planning messages
+        if pers_type == 3:
+            message = message.replace("before the next", "after this")
+            message = message.replace("between this and the next", "after this")
         
         return [SlotSet("message_formulation", message), 
                 SlotSet("action_index_list", curr_action_ind_list),
@@ -759,6 +932,8 @@ class ActionSaveSession(Action):
             # save data after last session
             elif data[0][1] == 4:
                 sessions_done = 5
+                action_planning_answer = tracker.get_slot('action_planning_answer')
+                reflection_answer = tracker.get_slot('reflection_answer')
                 satisf = tracker.get_slot('user_satisfaction')
                 mood_list = data[0][2].split('|')
                 mood_list.append(mood)
@@ -778,8 +953,9 @@ class ActionSaveSession(Action):
                               attention_check_list, attention_check_2_list, activity_index_list,
                               action_index_list, state, activity_experience, 
                               activity_experience_mod, reward_list, 
-                              action_type_index_list, satisf, user_id)
-                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_4 = ?, activity_experience4 = ?, activity_experience_mod4 = ?, reward_list = ?, action_type_index_list = ?, user_satisfaction4 = ? WHERE id = ?"""
+                              action_type_index_list, satisf, action_planning_answer, 
+                              reflection_answer, user_id)
+                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_4 = ?, activity_experience4 = ?, activity_experience_mod4 = ?, reward_list = ?, action_type_index_list = ?, user_satisfaction4 = ?, action_planning_answer4 = ?, reflection_answer4 = ? WHERE id = ?"""
                 link = "https://app.prolific.co/submissions/complete?cc=3B91AA04"
                 
            

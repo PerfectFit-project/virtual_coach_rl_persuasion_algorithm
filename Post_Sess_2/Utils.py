@@ -88,12 +88,18 @@ def gather_data_post_sess_2(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7
         s0_arr = np.array([int(i) for i in data_db[row][20].split('|')])[feat_to_select]
         s0 = list(s0_arr)
         
-        # Attention check question answers for first session
-        check_state_1 = [int(i) for i in data_db[row][16].split('|')][0]
-        check_state_2 = [int(i) for i in data_db[row][17].split('|')][0]
+        # Test data that is still in the database and that does not have
+        # info for attention checks
+        if data_db[row][16] is None or data_db[row][17] is None or data_db[row][16] == ' ':
+            passed_check_state = False
         
-        # Whether the first session has passed enough attention checks
-        passed_check_state = pass_attention_checks(check_state_1, check_state_2)
+        else:
+            # Attention check question answers for first session
+            check_state_1 = [int(i) for i in data_db[row][16].split('|')][0]
+            check_state_2 = [int(i) for i in data_db[row][17].split('|')][0]
+        
+            # Whether the first session has passed enough attention checks
+            passed_check_state = pass_attention_checks(check_state_1, check_state_2)
         
         # needed to later compute the mean values per feature
         if passed_check_state:
@@ -105,12 +111,18 @@ def gather_data_post_sess_2(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7
             s1_arr = np.array([int(i) for i in data_db[row][21].split('|')])[feat_to_select]
             s1 = list(s1_arr)
         
-            # attention check answers for second session
-            check_next_1 = [int(i) for i in data_db[row][16].split('|')][1]
-            check_next_2 = [int(i) for i in data_db[row][17].split('|')][1]
-        
-            # Whether the second session has passed enough attention checks
-            passed_check_next_state = pass_attention_checks(check_next_1, check_next_2)
+            # Test data that is still in the database and that does not have
+            # info for attention checks
+            if data_db[row][16] is None or data_db[row][17] is None or data_db[row][16] == ' ':
+                passed_check_next_state = False
+            
+            else:
+                # attention check answers for second session
+                check_next_1 = [int(i) for i in data_db[row][16].split('|')][1]
+                check_next_2 = [int(i) for i in data_db[row][17].split('|')][1]
+            
+                # Whether the second session has passed enough attention checks
+                passed_check_next_state = pass_attention_checks(check_next_1, check_next_2)
         
             # need to pass at least 1 out of 2 attention checks in each of the two sessions
             passed_attention_checks = passed_check_state and passed_check_next_state

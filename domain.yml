@@ -888,9 +888,13 @@ responses:
   - text: Perfect, and thanks a lot for participating!
   utter_message_formulation_prep:
   - text: Between this and the next session, please remember to {activity_verb}.
+  utter_message_formulation_prep_last:
+  - text: After this session, please remember to {activity_verb}.
   utter_message_formulation:
   - text: '**{message_formulation}**'
   utter_reflective_question:
+  - text: '{reflective_question} Use the text field to answer.'
+  utter_reflective_question_last:
   - text: '{reflective_question} Use the text field to answer.'
   utter_ok:
   - buttons:
@@ -931,9 +935,13 @@ responses:
   - text: 'Something went wrong, please contact the researcher: n.albers@tudelft.nl.'
   utter_implementation_intention_syntax_error:
   - text: Hmm, please formulate your rule in the form 'If <situation>, then <do activity>.'
+  utter_implementation_intention_syntax_error_last:
+  - text: Hmm, please formulate your rule in the form 'If <situation>, then <do activity>.'
   utter_implementation_intention_syntax_error_rep:
-  - text: This still isn't the kind of rule I'm looking for, but I guess we leave
+  - text: "This still isn't the kind of rule I'm looking for. That's okay - I'll leave it to you to create a rule in your own time."
       that for another session.
+  utter_implementation_intention_syntax_error_rep_last:
+  - text: "This still isn't the kind of rule I'm looking for. That's okay - I'll leave it to you to create a rule in your own time."
   utter_error_contact_researcher:
   - text: 'Something went wrong, please contact the researcher: n.albers@tudelft.nl.'
   utter_prolific_link:
@@ -946,6 +954,7 @@ actions:
 - action_answer_mood
 - action_choose_activity
 - action_choose_persuasion
+- action_choose_persuasion_last
 - action_freetext
 - action_save_session
 - action_freetext_activity_comp

@@ -723,7 +723,8 @@ stories:
   - action: utter_question_state_10_last
   - intent: state_answer
   - action: utter_thank_statement_answering
-  - checkpoint: end_last
+  - action: utter_message_formulation_prep_last
+  - checkpoint: choose_persuasion_last
   
 - story: persuasion_no_input
   steps:
@@ -807,6 +808,89 @@ stories:
     - plan_correct: False
   - action: utter_implementation_intention_syntax_error_rep
   - checkpoint: end_not_last
+  
+- story: persuasion_no_input_last
+  steps:
+  - checkpoint: choose_persuasion_last
+  - action: action_choose_persuasion_last
+  - slot_was_set:
+    - pers_input: False
+  - action: utter_message_formulation
+  - action: action_pause_five
+  - action: utter_reflective_question_last
+  - or:
+    - intent: anything
+    - intent: nlu_fallback
+    - intent: mood_curr
+    - intent: confirm
+    - intent: deny
+    - intent: greeting
+  - action: action_get_reflection
+  - action: utter_thank_reflection
+  - checkpoint: end_last
+
+- story: persuasion_input_last
+  steps:
+  - checkpoint: choose_persuasion_last
+  - action: action_choose_persuasion_last
+  - slot_was_set:
+    - pers_input: True
+  - action: utter_message_formulation
+  - or:
+    - intent: anything
+    - intent: nlu_fallback
+    - intent: mood_curr
+    - intent: confirm
+    - intent: deny
+    - intent: greeting
+  - action: action_freetext
+  - checkpoint: persuasion_input_correctness_last
+  
+- story: persuasion_input_correct_last
+  steps:
+  - checkpoint: persuasion_input_correctness_last
+  - slot_was_set:
+    - plan_correct: True
+  - action: utter_thank_you_planning
+  - checkpoint: end_last
+
+- story: persuasion_input_false_last
+  steps:
+  - checkpoint: persuasion_input_correctness_last
+  - slot_was_set:
+    - plan_correct: False
+  - action: utter_implementation_intention_syntax_error_last
+  - or:
+    - intent: anything
+    - intent: nlu_fallback
+    - intent: mood_curr
+    - intent: confirm
+    - intent: deny
+    - intent: greeting
+  - action: action_freetext
+  - slot_was_set:
+    - plan_correct: True
+  - action: utter_thank_you_planning
+  - checkpoint: end_last
+  
+- story: persuasion_input_false_false_last
+  steps:
+  - checkpoint: persuasion_input_correctness_last
+  - slot_was_set:
+    - plan_correct: False
+  - action: utter_implementation_intention_syntax_error_last
+  - or:
+    - intent: anything
+    - intent: nlu_fallback
+    - intent: mood_curr
+    - intent: confirm
+    - intent: deny
+    - intent: greeting
+  - action: action_freetext
+  - slot_was_set:
+    - plan_correct: False
+  - action: utter_implementation_intention_syntax_error_rep_last
+  - checkpoint: end_last
   
 - story: end_not_last_error
   steps:

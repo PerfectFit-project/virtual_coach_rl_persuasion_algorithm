@@ -37,7 +37,9 @@ try:
                                 reflection_answer0 TEXT,
                                 reflection_answer1 TEXT,
                                 reflection_answer2 TEXT,
-                                reflection_answer3 TEXT
+                                reflection_answer3 TEXT,
+                                reflection_answer4 TEXT,
+                                action_planning_answer4 TEXT
                                 )'''
 								
     cursor = sqliteConnection.cursor()
