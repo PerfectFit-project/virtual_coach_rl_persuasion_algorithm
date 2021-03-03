@@ -689,7 +689,7 @@ stories:
 - story: Main_last
   steps:
   - checkpoint: main_last
-  - action: action_choose_activity
+  - action: action_choose_activity_last
   - action: utter_activity_formulation
   - action: action_pause_five
   - action: utter_activity_clear_last

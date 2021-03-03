@@ -180,6 +180,78 @@ class ActionChooseActivity(Action):
         return [SlotSet("activity_formulation", df_act.loc[act_index, 'Formulation']), 
                 SlotSet("activity_index_list", curr_act_ind_list),
                 SlotSet("activity_verb", df_act.loc[act_index, "VerbYouShort"])]
+    
+# Choose an activity for the user in the last session
+# Difference is that the activity formulation needs to be adapted.
+class ActionChooseActivityLast(Action):
+    def name(self):
+        return "action_choose_activity_last"
+
+    async def run(self, dispatcher, tracker, domain):
+        
+        # reset random seed
+        random.seed(datetime.now())
+        
+        curr_act_ind_list = tracker.get_slot('activity_index_list')
+        
+        if curr_act_ind_list is None:
+            curr_act_ind_list = []
+        
+        # Count how many smoking and PA activities have been done and track excluded activities
+        num_s = 0
+        num_pa = 0
+        excluded = []
+        for i in curr_act_ind_list:
+            if i in s_ind:
+                num_s += 1
+            else:
+                num_pa += 1
+            excluded += df_act.loc[i, 'Exclusion']
+            
+        # get eligible activities (not done before and not excluded)
+        remaining_indices = [ i for i in range(num_act) if not i in curr_act_ind_list and not str(i) in excluded]
+            
+        # Check if prerequisites for remaining activities are met
+        for i in remaining_indices:
+            preq = [j for j in df_act.loc[i, 'Prerequisite'] if not str(j) in curr_act_ind_list]
+            if len(preq) > 0:
+                excluded.append(i)
+            
+        # get activities that also meet the prerequisites
+        remaining_indices = [i for i in remaining_indices if not str(i) in excluded]
+        
+        if num_s == num_pa:
+            # Choose randomly whether to do a smoking or a PA activity
+            type_choice = random.choice([0, 1])
+            
+            # Choose activity from chosen type
+            if type_choice == 0:
+                # Choose a PA activity
+                act_index = random.choice([i for i in remaining_indices if i in pa_ind])
+            else:
+                # Choose a smoking activity
+                act_index = random.choice([i for i in remaining_indices if i in s_ind])
+        elif num_s > num_pa:
+            # Choose a PA activity
+            act_index = random.choice([i for i in remaining_indices if i in pa_ind])
+        else:
+            # Choose a smoking activity
+            act_index = random.choice([i for i in remaining_indices if i in s_ind])
+            
+        curr_act_ind_list.append(act_index)
+        
+        activity_formulation = df_act.loc[act_index, 'Formulation']
+        
+        # replace anything related to the next session as there is no
+        # next session after the last session
+        activity_formulation = activity_formulation.replace("Between this and the next",
+                                                            "After this")
+        activity_formulation = activity_formulation.replace("between this and the next",
+                                                            "after this")
+        
+        return [SlotSet("activity_formulation", activity_formulation), 
+                SlotSet("activity_index_list", curr_act_ind_list),
+                SlotSet("activity_verb", df_act.loc[act_index, "VerbYouShort"])]
 
 # Set slot about whether the user completed the assigned activity    
 class ActionSetSlotReward(Action):
@@ -345,7 +417,7 @@ class ActionSendEmail(Action):
     
         # get user ID
         metadata = extract_metadata_from_tracker(tracker)
-        user_id = metadata['userid'] # Anurag: '5f970a74069a250711aaa695'
+        user_id = metadata['userid']
         
         ssl_port = 465
         with open('x.txt', 'r') as f:
@@ -402,7 +474,7 @@ class ActionSendEmailLast(Action):
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
     
         metadata = extract_metadata_from_tracker(tracker)
-        user_id = metadata['userid'] # Anurag: '5f970a74069a250711aaa695'
+        user_id = metadata['userid']
         
         ssl_port = 465
         with open('x.txt', 'r') as f:
