@@ -939,7 +939,6 @@ responses:
   - text: Hmm, please formulate your rule in the form 'If <situation>, then <do activity>.'
   utter_implementation_intention_syntax_error_rep:
   - text: "This still isn't the kind of rule I'm looking for. That's okay - I'll leave it to you to create a rule in your own time after this session."
-      that for another session.
   utter_implementation_intention_syntax_error_rep_last:
   - text: "This still isn't the kind of rule I'm looking for. That's okay - I'll leave it to you to create a rule in your own time after this session."
   utter_error_contact_researcher:
