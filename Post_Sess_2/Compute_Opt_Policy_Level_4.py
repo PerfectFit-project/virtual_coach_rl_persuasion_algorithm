@@ -1,6 +1,8 @@
 '''
 Computations for Group 4.
 Needs to be run on server (i.e. not locally) as it requires user IDs.
+Considers TTM-stage for becoming more physically active and big-5 personality
+for computing the similarity of people.
 '''
 import numpy as np
 import pickle
@@ -35,7 +37,7 @@ discount_factor = 0.85
 alpha = 0.01
 
 # TODO: uncomment lines below
-# traits = pd.read_csv('pers_PA-TTM_sex.csv')
+# traits = pd.read_csv('pers_PA-TTM_gender.csv')
 # traits_ids = traits['PROLIFIC_PID'].tolist()
 # traits = traits[['PA-TTM', 'Extraversion', 'Agreeableness', 'Conscientiousness', 'ES', 'OE']]
 # traits = traits.to_numpy()
