@@ -31,14 +31,15 @@ policies:
   - name: TEDPolicy
     max_history: 9
     epochs: 10
+    augmentation: 0 # newly added this to see if it reduces core training time
   #- name: FallbackPolicy
   #  nlu_threshold: 0.8
    # fallback_action_name: "utter_error_contact_researcher"
-  # - name: RulePolicy
+  #- name: RulePolicy # TODO: remove if training takes too long in the end
     # Confidence threshold for the `core_fallback_action_name` to apply.
     # The action will apply if no other action was predicted with
     # a confidence >= core_fallback_threshold
-    # core_fallback_threshold: 0.9
-    # core_fallback_action_name: "action_default_fallback"
-    # enable_fallback_prediction: True
+   # core_fallback_threshold: 0.9
+   # core_fallback_action_name: "action_default_fallback"
+   # enable_fallback_prediction: True
   

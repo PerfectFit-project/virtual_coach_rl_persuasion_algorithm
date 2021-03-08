@@ -284,24 +284,19 @@ responses:
   - text: Yay, congrats!
   - text: Nice, good job!
   - text: Awesome, well done!
-  - text: Yay, nicely done!
-  - text: Nice, congrats!
+  - text: Nice, congratulations!
   utter_response_activity_completion_notDone:
   - text: I'm sorry to hear that. I understand that it can be difficult.
-  - text: Hmm, maybe you have been busy.
-  - text: Ah that is unfortunate. I understand that it is not always easy.
-  - text: Too bad. I understand that it can be difficult at the beginning.
+  - text: Hmm, that's a pity. Maybe you have been busy.
+  - text: Too bad. I know that it can be hard at first.
+  - text: That's too bad. This is not uncommon at the start.
+  - text: Ah that's a shame. This can happen at the beginning.
+  - text: I see, that's a pity. This can happen!
+  - text: Oh, what a shame. I see that this can be challenging sometimes.
   utter_response_activity_completion_done_last:
-  - text: Yay, congrats!
-  - text: Nice, good job!
-  - text: Awesome, well done!
   - text: Yay, nicely done!
-  - text: Nice, congrats!
   utter_response_activity_completion_notDone_last:
-  - text: I'm sorry to hear that. I understand that it can be difficult.
-  - text: Hmm, maybe you have been busy.
   - text: Ah that is unfortunate. I understand that it is not always easy.
-  - text: Too bad. I understand that it can be difficult at the beginning.
   utter_ask_activity_completion_details_yes:
   - text: Please tell me about your experience with your assigned activity. Use the
       text field.
@@ -467,8 +462,9 @@ responses:
       title: Okay!
     - payload: /confirm
       title: Go ahead
-    text: Cool! Now, let me ask you a few questions about how you think about this
-      activity. I'll ask you to rate a few statements.
+    text: "Cool! Now, let me ask you a few questions about how you think about this activity."
+  utter_questions_state_intro_2:
+  - text: "Perfect! Please rate the following 12 statements:"
   utter_ask_satisfaction_prep:
   - text: Before we start, I'd like to ask you for some feedback.
   utter_ask_satisfaction_explain:
@@ -516,7 +512,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_1":"4"}}
       title: Agree strongly
-    text: 'Please rate this statement: I know why it is important to do the activity.'
+    text: '1) I know why it is important to do the activity.'
   utter_question_state_1_last:
   - buttons:
     - payload: /state_answer{{"state_1":"0"}}
@@ -529,7 +525,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_1":"4"}}
       title: Agree strongly
-    text: 'Please rate this statement: I know why it is important to do the activity.'
+    text: '1) I know why it is important to do the activity.'
   utter_question_state_2:
   - buttons:
     - payload: /state_answer{{"state_2":"0"}}
@@ -542,7 +538,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_2":"4"}}
       title: Agree strongly
-    text: 'Thanks! Please also rate this statement: I have sufficient time to do the
+    text: '2) I have sufficient time to do the
       activity.'
   utter_question_state_2_last:
   - buttons:
@@ -556,7 +552,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_2":"4"}}
       title: Agree strongly
-    text: 'Thanks! Please also rate this statement: I have sufficient time to do the
+    text: '2) I have sufficient time to do the
       activity.'
   utter_question_state_3:
   - buttons:
@@ -570,7 +566,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_3":"4"}}
       title: Agree strongly
-    text: "Alright, here is the next statement that I'd like you to rate: I have triggers\
+    text: "3) I have triggers\
       \ that prompt/remind me to do the activity."
   utter_question_state_3_last:
   - buttons:
@@ -584,7 +580,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_3":"4"}}
       title: Agree strongly
-    text: "Alright, here is the next statement that I'd like you to rate: I have triggers\
+    text: "3) I have triggers\
       \ that prompt/remind me to do the activity."
   utter_question_state_4:
   - buttons:
@@ -598,7 +594,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_4":"4"}}
       title: Agree strongly
-    text: 'Cool! Please now rate this statement: I feel like I am part of a group
+    text: '4) I feel like I am part of a group
       that is doing these kinds of activities.'
   utter_question_state_4_last:
   - buttons:
@@ -612,10 +608,11 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_4":"4"}}
       title: Agree strongly
-    text: 'Cool! Please now rate this statement: I feel like I am part of a group
+    text: '4) I feel like I am part of a group
       that is doing these kinds of activities.'
   utter_question_attention_check:
-  - buttons:
+  - text: "5) I am more than 17 years old."
+    buttons:
     - payload: /state_answer{{"attention_check":"0"}}
       title: Disagree strongly
     - payload: /state_answer{{"attention_check":"1"}}
@@ -626,8 +623,66 @@ responses:
       title: Agree
     - payload: /state_answer{{"attention_check":"4"}}
       title: Agree strongly
-    text: "Thanks! Now I'd like to ask you to rate this statement: I am more than\
-      \ seventeen years old."
+  - text: "5) I am more than 9 years old."
+    buttons:
+    - payload: /state_answer{{"attention_check":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"attention_check":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"attention_check":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"attention_check":"3"}}
+      title: Agree
+    - payload: /state_answer{{"attention_check":"4"}}
+      title: Agree strongly
+  - text: "5) This is a check so answer that you agree strongly here."
+    buttons:
+    - payload: /state_answer{{"attention_check":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"attention_check":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"attention_check":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"attention_check":"3"}}
+      title: Agree
+    - payload: /state_answer{{"attention_check":"4"}}
+      title: Agree 
+  - text: "5) I do NOT live in the state Camelot in Nepal."
+    buttons:
+    - payload: /state_answer{{"attention_check":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"attention_check":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"attention_check":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"attention_check":"3"}}
+      title: Agree
+    - payload: /state_answer{{"attention_check":"4"}}
+      title: Agree strongly
+  - text: "5) I was NOT born in the city Seppenbade in Germany."
+    buttons:
+    - payload: /state_answer{{"attention_check":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"attention_check":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"attention_check":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"attention_check":"3"}}
+      title: Agree
+    - payload: /state_answer{{"attention_check":"4"}}
+      title: Agree strongly
+  - text: "5) I do NOT live in a house next to the river Ludingh in the Netherlands."
+    buttons:
+    - payload: /state_answer{{"attention_check":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"attention_check":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"attention_check":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"attention_check":"3"}}
+      title: Agree
+    - payload: /state_answer{{"attention_check":"4"}}
+      title: Agree strongly
   utter_question_attention_check_last:
   - buttons:
     - payload: /state_answer{{"attention_check":"0"}}
@@ -640,7 +695,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"attention_check":"4"}}
       title: Agree strongly
-    text: "Thanks! Now I'd like to ask you to rate this statement: I am somebody born\
+    text: "5) I am somebody born\
       \ on planet Earth."
   utter_question_state_5:
   - buttons:
@@ -654,8 +709,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_5":"4"}}
       title: Agree strongly
-    text: 'Thank you! Just one more and we are more than halfway. How would you rate
-      this statement: I feel that I want to do the activity.'
+    text: '6) I feel that I want to do the activity.'
   utter_question_state_5_last:
   - buttons:
     - payload: /state_answer{{"state_5":"0"}}
@@ -668,15 +722,20 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_5":"4"}}
       title: Agree strongly
-    text: 'Thank you! Just one more and we are more than halfway. How would you rate
-      this statement: I feel that I want to do the activity.'
+    text: '6) I feel that I want to do the activity.'
   utter_question_state_6_prep:
   - buttons:
     - payload: /confirm
       title: Yes, let's go!
     - payload: /confirm
       title: Sure!
-    text: Nice, now we're more than halfway! Ready for the rest?
+    text: Nice, now we're halfway! Ready for the rest?
+  utter_halfway_response:
+  - text: "Alright! Then these are the last 6 statements I'd like you to rate:"
+  - text: "Okay! These are the remaining 6 statements I'd like you to rate:"
+  - text: "Okay! Please rate these remaining 6 statements:"
+  - text: "Alright! Then please rate these last 6 statements:"
+  - text: "OK! Then kindly rate these last 6 statements:"
   utter_question_state_6:
   - buttons:
     - payload: /state_answer{{"state_6":"0"}}
@@ -689,8 +748,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_6":"4"}}
       title: Agree strongly
-    text: "Perfect! Here is the next statement that I'd like you to rate: I feel that\
-      \ I need to do the activity."
+    text: "7) I need to do the activity."
   utter_question_state_6_last:
   - buttons:
     - payload: /state_answer{{"state_6":"0"}}
@@ -703,8 +761,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_6":"4"}}
       title: Agree strongly
-    text: "Perfect! Here is the next statement that I'd like you to rate: I feel that\
-      \ I need to do the activity."
+    text: "7) I need to do the activity."
   utter_question_state_7:
   - buttons:
     - payload: /state_answer{{"state_7":"0"}}
@@ -717,7 +774,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_7":"4"}}
       title: Agree strongly
-    text: "Alright, and here's already the next one. How would you rate: I believe\
+    text: "8) I believe\
       \ that it would be a good thing to do the activity."
   utter_question_state_7_last:
   - buttons:
@@ -731,7 +788,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_7":"4"}}
       title: Agree strongly
-    text: "Alright, and here's already the next one. How would you rate: I believe\
+    text: "8) I believe\
       \ that it would be a good thing to do the activity."
   utter_question_state_8:
   - buttons:
@@ -745,7 +802,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_8":"4"}}
       title: Agree strongly
-    text: 'Thanks, just 4 more to go! Please rate this statement: I can do the activity.'
+    text: '9) I can do the activity.'
   utter_question_state_8_last:
   - buttons:
     - payload: /state_answer{{"state_8":"0"}}
@@ -758,7 +815,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_8":"4"}}
       title: Agree strongly
-    text: 'Thanks, just 4 more to go! Please rate this statement: I can do the activity.'
+    text: '9) I can do the activity.'
   utter_question_attention_check_2_last:
   - buttons:
     - payload: /state_answer{{"attention_check_2":"0"}}
@@ -771,10 +828,12 @@ responses:
       title: Agree
     - payload: /state_answer{{"attention_check_2":"4"}}
       title: Agree strongly
-    text: "Cool! Now I'd like to ask you to rate this statement: I am more than hundred\
-      \ or less than eighteen years old."
+    text: "10) I am more than 100\
+      \ or less than 18 years old."
   utter_question_attention_check_2:
-  - buttons:
+  - text: "10) I am somebody born\
+      \ on a planet other than planet Earth."
+    buttons:
     - payload: /state_answer{{"attention_check_2":"0"}}
       title: Disagree strongly
     - payload: /state_answer{{"attention_check_2":"1"}}
@@ -785,8 +844,66 @@ responses:
       title: Agree
     - payload: /state_answer{{"attention_check_2":"4"}}
       title: Agree strongly
-    text: "Cool! Now I'd like to ask you to rate this statement: I am somebody born\
-      \ on a planet other than planet Earth."
+  - text: "10) I am taller than 3 meters or 9 feet."
+    buttons:
+    - payload: /state_answer{{"attention_check_2":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"attention_check_2":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"attention_check_2":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"attention_check_2":"3"}}
+      title: Agree
+    - payload: /state_answer{{"attention_check_2":"4"}}
+      title: Agree strongly
+  - text: "10) I am shorter than 50 cm or 2 feet."
+    buttons:
+    - payload: /state_answer{{"attention_check_2":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"attention_check_2":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"attention_check_2":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"attention_check_2":"3"}}
+      title: Agree
+    - payload: /state_answer{{"attention_check_2":"4"}}
+      title: Agree strongly
+  - text: "10) I speak more than 200 languages fluently."
+    buttons:
+    - payload: /state_answer{{"attention_check_2":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"attention_check_2":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"attention_check_2":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"attention_check_2":"3"}}
+      title: Agree
+    - payload: /state_answer{{"attention_check_2":"4"}}
+      title: Agree strongly
+  - text: "10) I have won more than 30 Olympic medals in individual events."
+    buttons:
+    - payload: /state_answer{{"attention_check_2":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"attention_check_2":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"attention_check_2":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"attention_check_2":"3"}}
+      title: Agree
+    - payload: /state_answer{{"attention_check_2":"4"}}
+      title: Agree strongly
+  - text: "10) I can hold my breath for more than 3 hours."
+    buttons:
+    - payload: /state_answer{{"attention_check_2":"0"}}
+      title: Disagree strongly
+    - payload: /state_answer{{"attention_check_2":"1"}}
+      title: Disagree
+    - payload: /state_answer{{"attention_check_2":"2"}}
+      title: Neither agree nor disagree
+    - payload: /state_answer{{"attention_check_2":"3"}}
+      title: Agree
+    - payload: /state_answer{{"attention_check_2":"4"}}
+      title: Agree strongly
   utter_question_state_9:
   - buttons:
     - payload: /state_answer{{"state_9":"0"}}
@@ -799,7 +916,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_9":"4"}}
       title: Agree strongly
-    text: 'Thank you! Please now rate this statement: Physical activity is a central
+    text: '11) Physical activity is a central
       factor to my self-concept.'
   utter_question_state_9_last:
   - buttons:
@@ -813,7 +930,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_9":"4"}}
       title: Agree strongly
-    text: 'Thank you! Please now rate this statement: Physical activity is a central
+    text: '11) Physical activity is a central
       factor to my self-concept.'
   utter_question_state_10:
   - buttons:
@@ -827,7 +944,7 @@ responses:
       title: Non-smoker
     - payload: /state_answer{{"state_10":"4"}}
       title: Ex-smoker
-    text: "Great! And this is the last question I'd like you to answer: How would\
+    text: "12) How would\
       \ you describe yourself now?"
   utter_question_state_10_last:
   - buttons:
@@ -841,7 +958,7 @@ responses:
       title: Non-smoker
     - payload: /state_answer{{"state_10":"4"}}
       title: Ex-smoker
-    text: "Great! And this is the last question I'd like you to answer: How would\
+    text: "12) How would\
       \ you describe yourself now?"
   utter_thank_statement_answering:
   - text: Thank you so much for answering these questions!

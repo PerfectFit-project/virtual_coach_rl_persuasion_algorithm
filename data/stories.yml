@@ -2,181 +2,49 @@ version: "2.0"
 
 stories:
 
-- story: test_True_True_True
-  steps:
-  - intent: start_test
-  - action: action_set_session
-  - slot_was_set:
-    - session_loaded: True
-  - action: action_get_group
-  - action: utter_test
-  - action: utter_ask_for_mood
-  - intent: mood_curr
-  - action: utter_test
-  - action: action_answer_mood
-  - action: action_choose_activity
-  - action: utter_test
-  - action: action_choose_persuasion
-  - slot_was_set:
-    - pers_input: True
-  - action: action_save_session
-  - slot_was_set:
-    - session_saved: True
-  - action: action_send_email
+#- story: test_True_True_True
+#  steps:
+#  - intent: start_test
+#  - action: action_set_session
+#  - slot_was_set:
+#    - session_loaded: True
+#  - action: action_get_group
+#  - action: utter_test
+#  - action: utter_ask_for_mood
+#  - intent: mood_curr
+#  - action: utter_test
+#  - action: action_answer_mood
+#  - action: action_choose_activity
+#  - action: utter_test
+#  - action: action_choose_persuasion
+#  - slot_was_set:
+#    - pers_input: True
+#  - action: action_save_session
+#  - slot_was_set:
+#    - session_saved: True
+#  - action: action_send_email
   
-- story: test_True_True_False
-  steps:
-  - intent: start_test
-  - action: action_set_session
-  - slot_was_set:
-    - session_loaded: True
-  - action: action_get_group
-  - action: utter_test
-  - action: utter_ask_for_mood
-  - intent: mood_curr
-  - action: utter_test
-  - action: action_answer_mood
-  - action: action_choose_activity
-  - action: utter_test
-  - action: action_choose_persuasion
-  - slot_was_set:
-    - pers_input: True
-  - action: action_save_session
-  - slot_was_set:
-    - session_saved: False
-  - action: action_send_email
-  
-- story: test_False_True_True
-  steps:
-  - intent: start_test
-  - action: action_set_session
-  - slot_was_set:
-    - session_loaded: False
-  - action: action_get_group
-  - action: utter_test
-  - action: utter_ask_for_mood
-  - intent: mood_curr
-  - action: utter_test
-  - action: action_answer_mood
-  - action: action_choose_activity
-  - action: utter_test
-  - action: action_choose_persuasion
-  - slot_was_set:
-    - pers_input: True
-  - action: action_save_session
-  - slot_was_set:
-    - session_saved: True
-  - action: action_send_email
-  
-- story: test_False_True_False
-  steps:
-  - intent: start_test
-  - action: action_set_session
-  - slot_was_set:
-    - session_loaded: False
-  - action: action_get_group
-  - action: utter_test
-  - action: utter_ask_for_mood
-  - intent: mood_curr
-  - action: utter_test
-  - action: action_answer_mood
-  - action: action_choose_activity
-  - action: utter_test
-  - action: action_choose_persuasion
-  - slot_was_set:
-    - pers_input: True
-  - action: action_save_session
-  - slot_was_set:
-    - session_saved: False
-  - action: action_send_email
-  
-- story: test_True_False_True
-  steps:
-  - intent: start_test
-  - action: action_set_session
-  - slot_was_set:
-    - session_loaded: True
-  - action: action_get_group
-  - action: utter_test
-  - action: utter_ask_for_mood
-  - intent: mood_curr
-  - action: utter_test
-  - action: action_answer_mood
-  - action: action_choose_activity
-  - action: utter_test
-  - action: action_choose_persuasion
-  - slot_was_set:
-    - pers_input: False
-  - action: action_save_session
-  - slot_was_set:
-    - session_saved: True
-  - action: action_send_email
-  
-- story: test_True_False_False
-  steps:
-  - intent: start_test
-  - action: action_set_session
-  - slot_was_set:
-    - session_loaded: True
-  - action: action_get_group
-  - action: utter_test
-  - action: utter_ask_for_mood
-  - intent: mood_curr
-  - action: utter_test
-  - action: action_answer_mood
-  - action: action_choose_activity
-  - action: utter_test
-  - action: action_choose_persuasion
-  - slot_was_set:
-    - pers_input: False
-  - action: action_save_session
-  - slot_was_set:
-    - session_saved: False
-  - action: action_send_email
-  
-- story: test_False_False_True
-  steps:
-  - intent: start_test
-  - action: action_set_session
-  - slot_was_set:
-    - session_loaded: False
-  - action: action_get_group
-  - action: utter_test
-  - action: utter_ask_for_mood
-  - intent: mood_curr
-  - action: utter_test
-  - action: action_answer_mood
-  - action: action_choose_activity
-  - action: utter_test
-  - action: action_choose_persuasion
-  - slot_was_set:
-    - pers_input: False
-  - action: action_save_session
-  - slot_was_set:
-    - session_saved: True
-  - action: action_send_email
-  
-- story: test_False_False_False
-  steps:
-  - intent: start_test
-  - action: action_set_session
-  - slot_was_set:
-    - session_loaded: False
-  - action: action_get_group
-  - action: utter_test
-  - action: utter_ask_for_mood
-  - intent: mood_curr
-  - action: utter_test
-  - action: action_answer_mood
-  - action: action_choose_activity
-  - action: utter_test
-  - action: action_choose_persuasion
-  - slot_was_set:
-    - pers_input: False
-  - action: action_save_session
-  - slot_was_set:
-    - session_saved: False
-  - action: action_send_email
+#- story: test_True_True_False
+#  steps:
+#  - intent: start_test
+#  - action: action_set_session
+#  - slot_was_set:
+#    - session_loaded: True
+#  - action: action_get_group
+#  - action: utter_test
+#  - action: utter_ask_for_mood
+#  - intent: mood_curr
+#  - action: utter_test
+#  - action: action_answer_mood
+#  - action: action_choose_activity
+#  - action: utter_test
+#  - action: action_choose_persuasion
+#  - slot_was_set:
+#    - pers_input: True
+#  - action: action_save_session
+#  - slot_was_set:
+#    - session_saved: False
+#  - action: action_send_email
 
 - story: start_session_1
   steps:
@@ -254,11 +122,8 @@ stories:
   - action: utter_ask_satisfaction
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - checkpoint: session_3_satis_received
   
 - story: start_session_3_satis_correct
@@ -279,11 +144,8 @@ stories:
   - action: utter_satisfaction_false
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - checkpoint: session_3_satis_received_2
   
 - story: start_session_3_satis_false_true
@@ -304,11 +166,8 @@ stories:
   - action: utter_satisfaction_false_false
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - action: action_get_satisfaction
   - slot_was_set: 
     - satisf_correct: False
@@ -324,11 +183,8 @@ stories:
   - action: utter_satisfaction_false_false
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - action: action_get_satisfaction
   - slot_was_set: 
     - satisf_correct: True
@@ -401,11 +257,8 @@ stories:
   - action: utter_ask_satisfaction_last
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - checkpoint: start_session_5_satis_received
   
 - story: start_session_5_satisf_true
@@ -426,11 +279,8 @@ stories:
   - action: utter_satisfaction_false_last
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - action: action_get_satisfaction
   - slot_was_set: 
     - satisf_correct: True
@@ -446,22 +296,16 @@ stories:
   - action: utter_satisfaction_false_last
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - action: action_get_satisfaction
   - slot_was_set: 
     - satisf_correct: False
   - action: utter_satisfaction_false_false_last
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - action: action_get_satisfaction
   - slot_was_set: 
     - satisf_correct: False
@@ -477,22 +321,16 @@ stories:
   - action: utter_satisfaction_false_last
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - action: action_get_satisfaction
   - slot_was_set: 
     - satisf_correct: False
   - action: utter_satisfaction_false_false_last
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - action: action_get_satisfaction
   - slot_was_set: 
     - satisf_correct: True
@@ -542,11 +380,8 @@ stories:
   - checkpoint: activity_completion_details_last
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - action: action_freetext_activity_comp
   - checkpoint: activity_completion_details_confirm_last
   
@@ -569,11 +404,8 @@ stories:
   - action: utter_ask_activity_comp_details_mod_last
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - action: action_freetext_activity_mod
   - action: utter_thank_experience_mod
   - action: utter_prepare_activity_proposal_session5
@@ -608,11 +440,8 @@ stories:
   - checkpoint: activity_completion_details
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - action: action_freetext_activity_comp
   - checkpoint: activity_completion_details_confirm
   
@@ -635,11 +464,8 @@ stories:
   - action: utter_ask_activity_comp_details_mod
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - action: action_freetext_activity_mod
   - action: utter_thank_experience_mod
   - action: utter_prepare_activity_proposal_session234
@@ -656,6 +482,7 @@ stories:
   - intent: confirm
   - action: utter_questions_state_intro
   - intent: confirm
+  - action: utter_questions_state_intro_2
   - action: utter_question_state_1
   - intent: state_answer
   - action: utter_question_state_2
@@ -670,6 +497,7 @@ stories:
   - intent: state_answer
   - action: utter_question_state_6_prep
   - intent: confirm
+  - action: utter_halfway_response
   - action: utter_question_state_6
   - intent: state_answer
   - action: utter_question_state_7
@@ -696,6 +524,7 @@ stories:
   - intent: confirm
   - action: utter_questions_state_intro
   - intent: confirm
+  - action: utter_questions_state_intro_2
   - action: utter_question_state_1_last
   - intent: state_answer
   - action: utter_question_state_2_last
@@ -710,6 +539,7 @@ stories:
   - intent: state_answer
   - action: utter_question_state_6_prep
   - intent: confirm
+  - action: utter_halfway_response
   - action: utter_question_state_6_last
   - intent: state_answer
   - action: utter_question_state_7_last
@@ -737,11 +567,8 @@ stories:
   - action: utter_reflective_question
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - action: action_get_reflection
   - action: utter_thank_reflection
   - checkpoint: end_not_last
@@ -755,11 +582,8 @@ stories:
   - action: utter_message_formulation
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - action: action_freetext
   - checkpoint: persuasion_input_correctness
   
@@ -779,11 +603,8 @@ stories:
   - action: utter_implementation_intention_syntax_error
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - action: action_freetext
   - slot_was_set:
     - plan_correct: True
@@ -798,11 +619,8 @@ stories:
   - action: utter_implementation_intention_syntax_error
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - action: action_freetext
   - slot_was_set:
     - plan_correct: False
@@ -820,11 +638,8 @@ stories:
   - action: utter_reflective_question_last
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - action: action_get_reflection
   - action: utter_thank_reflection
   - checkpoint: end_last
@@ -838,11 +653,8 @@ stories:
   - action: utter_message_formulation
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - action: action_freetext
   - checkpoint: persuasion_input_correctness_last
   
@@ -862,11 +674,8 @@ stories:
   - action: utter_implementation_intention_syntax_error_last
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - action: action_freetext
   - slot_was_set:
     - plan_correct: True
@@ -881,11 +690,8 @@ stories:
   - action: utter_implementation_intention_syntax_error_last
   - or:
     - intent: anything
-    - intent: nlu_fallback
     - intent: mood_curr
     - intent: confirm
-    - intent: deny
-    - intent: greeting
   - action: action_freetext
   - slot_was_set:
     - plan_correct: False
