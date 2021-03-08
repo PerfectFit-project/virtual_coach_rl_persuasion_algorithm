@@ -177,7 +177,8 @@ class ActionChooseActivity(Action):
             
         curr_act_ind_list.append(act_index)
         
-        return [SlotSet("activity_formulation", df_act.loc[act_index, 'Formulation']), 
+        return [SlotSet("activity_formulation", df_act.loc[act_index, 'Formulation Chat']), 
+                SlotSet("activity_formulation_email", df_act.loc[act_index, 'Formulation Email']),
                 SlotSet("activity_index_list", curr_act_ind_list),
                 SlotSet("activity_verb", df_act.loc[act_index, "VerbYouShort"])]
     
@@ -249,7 +250,8 @@ class ActionChooseActivityLast(Action):
         activity_formulation = activity_formulation.replace("between this and the next",
                                                             "after this")
         
-        return [SlotSet("activity_formulation", activity_formulation), 
+        return [SlotSet("activity_formulation", df_act.loc[act_index, 'Formulation Chat']), 
+                SlotSet("activity_formulation_email", df_act.loc[act_index, 'Formulation Email']),
                 SlotSet("activity_index_list", curr_act_ind_list),
                 SlotSet("activity_verb", df_act.loc[act_index, "VerbYouShort"])]
 
@@ -437,7 +439,7 @@ class ActionSendEmail(Action):
         else:
             persuasion = "And here is the plan you created for doing the activity:\n\n\t"
             persuasion += tracker.get_slot('action_planning_answer')
-        activity = tracker.get_slot('activity_formulation')
+        activity = tracker.get_slot('activity_formulation_email')
     
         # set up the SMTP server
         with smtplib.SMTP_SSL(smtp, ssl_port, context = context) as server:
@@ -494,7 +496,7 @@ class ActionSendEmailLast(Action):
         else:
             persuasion = "And here is the plan you created for doing the activity:\n\n\t"
             persuasion += tracker.get_slot('action_planning_answer')
-        activity = tracker.get_slot('activity_formulation')
+        activity = tracker.get_slot('activity_formulation_email')
     
         # set up the SMTP server
         with smtplib.SMTP_SSL(smtp, ssl_port, context = context) as server:

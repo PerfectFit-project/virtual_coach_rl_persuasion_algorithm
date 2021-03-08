@@ -9,13 +9,10 @@ intents:
 - start_session3
 - start_session4
 - start_session5
-- start_test
 - state_answer
 - reward_answer
 - anything
-- nlu_fallback
 - deny
-- greeting
 slots:
   action_index_list:
     type: list
@@ -39,6 +36,10 @@ slots:
     initial_value: ''
     influence_conversation: false
   activity_formulation:
+    type: text
+    influence_conversation: false
+  # Text of activity for email reminder in Prolific
+  activity_formulation_email:
     type: text
     influence_conversation: false
   activity_index_list:
