@@ -173,7 +173,6 @@ class SocketIOInput(InputChannel):
         @sio.on(self.user_message_evt, namespace=self.namespace)
         async def handle_message(sid: Text, data: Dict) -> Any:
             output_channel = SocketIOOutput(sio, sid, self.bot_message_evt)
-            print("***data: ", data)
             if self.session_persistence:
                 if not data.get("session_id"):
                     warnings.warn(

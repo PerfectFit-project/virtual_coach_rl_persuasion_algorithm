@@ -391,7 +391,7 @@ responses:
       title: Neutral
     text: How are you feeling today?
   utter_mood_positive_valence_high_arousal_quadrant:
-  - text: Yay, always good to hear that!
+  - text: Yay, always good to hear that somebody is feeling {mood}!
   - text: Awesome, you must be having a good day!
   - text: Fantastic, that's very good to hear!
   - text: Great, I'm happy to hear that that you're feeling {mood}!
@@ -402,33 +402,24 @@ responses:
   - text: Nice, I'm glad to hear that.
   - text: Nice, that's always good to hear.
   utter_mood_negative_valence_low_arousal_quadrant:
-  - text: I'm sorry to hear that you're feeling {mood}. I hope you feel better soon!
-      Meanwhile, maybe this session can help to direct your thoughts to something
-      else.
-  - text: Oh I'm sorry to hear this. Hopefully you feel better soon! In the meantime,
-      maybe this session can distract you a little.
-  - text: Oh I'm sorry that you're not having a good day. I hope it gets better soon!
-      In the meantime, maybe talking to me can help to direct your thoughts to something
-      else.
-  - text: I'm sorry that today isn't a good day for you. Hopefully you feel better
-      soon! And maybe this session can help you to think of something else.
-  - text: Oh I'm sorry about that. Feel better soon! And maybe this session can help
-      to distract you a little.
+  - text: I hate to hear that you're feeling {mood}. I hope you feel better soon!
+      Meanwhile, maybe this session can help to cheer you up a bit.
+  - text: Aww it doesn't feel good to hear that. Hopefully you feel better soon!
+  - text: Oh I'm so sorry that you're not having a good day. I hope it gets better soon and that I can cheer you up a little!
+  - text: That's a shame that you are not feeling well today. Hopefully you feel better
+      soon!
+  - text: "So sorry about that! Feel better soon - hopefully talking about preparing to quit smoking and becoming more physically active can help a bit."
   utter_mood_negative_valence_high_arousal_quadrant:
-  - text: I'm sorry to hear that you're feeling {mood}. I hope you feel better soon!
-      In the meantime, maybe this session can distract you a little.
-  - text: Oh I'm sorry to hear this. Hopefully you feel less {mood} soon! In the meantime,
-      maybe talking to me can help to direct your thoughts to something else.
-  - text: Oh I'm sorry that you're not having a good day. I hope it gets better soon!
-      Meanwhile, maybe this session can help to direct your thoughts to something
-      else.
-  - text: I'm sorry that today isn't a good day for you. Hopefully you feel better
-      soon! And maybe this session can help you to think of something else.
-  - text: I'm sorry that today isn't a good day for you. Hopefully you feel less {mood}
-      soon! And maybe this session can help to distract you a little.
+  - text: I'm really sorry to hear that you're feeling {mood}. I hope you feel better soon!
+  - text: Aww I'm so sorry to hear this. Hopefully you feel less {mood} soon!
+  - text: Oh that's a shame that you're not having a good day. I hope it gets better soon and that I can distract you a bit.
+  - text: I hate to hear that today isn't a good day for you. Hopefully you feel better
+      soon and that it's okay to proceed with this session!
+  - text: Aww what a shame. Hopefully you feel less {mood}
+      soon!
   utter_mood_neutral:
   - text: I see, I guess that's not too bad.
-  - text: Ah, sounds like you're having an average day.
+  - text: Ah, sounds like you're having a pretty average day.
   - text: Hm, that's not too bad I guess.
   utter_great:
   - text: Great!
@@ -828,8 +819,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"attention_check_2":"4"}}
       title: Agree strongly
-    text: "10) I am more than 100\
-      \ or less than 18 years old."
+    text: "10) I am more than 100 years old."
   utter_question_attention_check_2:
   - text: "10) I am somebody born\
       \ on a planet other than planet Earth."
@@ -968,13 +958,13 @@ responses:
   - text: Fantastic, thank you for hanging in there! I know those were quite a few
       questions.
   utter_email_reminder:
-  - text: This is all for this session. Of course, I'll send you a reminder with your
+  - text: This is all for this session. Of course, I'll send you a message with your
       activity in Prolific.
-  - text: Then that's it for this session. Of course, I'll send you a reminder with
+  - text: Then that's it for this session. Naturally, I'll send you a reminder with
       your activity in Prolific.
   - text: I've said all I wanted for this session. Of course, I'll send you a reminder
       with your activity in Prolific.
-  - text: You've made it to the end of this session! Of course, you'll get a message
+  - text: You've made it to the end of this session! Needless to say, you'll get a message
       with your activity in Prolific.
   utter_thank_reflection:
   - text: Cool, thanks for sharing this reflection with me!
@@ -983,21 +973,46 @@ responses:
   - text: Thanks, I appreciate you sharing this reflection with me!
   - text: Cool, thanks for sharing this with me!
   utter_remind_next_session:
-  - buttons:
+  - text: Oh, and besides the activity reminder, keep an eye out for the invitation
+      to your next session with me. Sounds good?
+    buttons:
     - payload: /confirm
       title: Sure!
     - payload: /confirm
       title: Yes!
-    text: Oh, and besides the activity reminder, keep an eye out for the invitation
-      to your next session with me. Sounds good?
+  - text: Also watch out for the invitation
+      to you next session with me. Okay?
+    buttons:
+    - payload: /confirm
+      title: Alright!
+    - payload: /confirm
+      title: Sure!
+  - text: And remember that there's another conversation with me that you'll get invited to. Okay?
+    buttons:
+    - payload: /confirm
+      title: Yes!
+    - payload: /confirm
+      title: Sounds good!
+  - text: And recall that you'll also get invited to another session with me. Sounds good?
+    buttons:
+    - payload: /confirm
+      title: Yes!
+    - payload: /confirm
+      title: OK!
+  - text: And remember to look out for the invitation to your next conversation with me. Alright?
+    buttons:
+    - payload: /confirm
+      title: Sure!
+    - payload: /confirm
+      title: Okay!
   utter_remind_post_questionnaire:
   - buttons:
     - payload: /confirm
-      title: Sure!
+      title: Alright!
     - payload: /confirm
       title: Yes!
     text: Oh, and besides the activity reminder, keep an eye out for the invitation
-      to the post-questionnaire. Sounds good?
+      to the post-questionnaire. Okay?
   utter_thank_participation:
   - text: Perfect, and thank you for participating!
   - text: Awesome, and thank you for joining!
@@ -1025,8 +1040,10 @@ responses:
   - text: Alright, thanks for the clarification!
   - text: Cool, thanks for clarifying that.
   utter_thank_you_planning:
-  - text: Cool, sounds good!
-  - text: Nice, sounds like a good plan!
+  - text: Cool, thanks for this plan!
+  - text: Nice, thank you!
+  - text: Nice, thanks for this rule!
+  - text: "Cool, you've got a plan now!"
   utter_goodbye_not_last:
   - buttons:
     - payload: /confirm
