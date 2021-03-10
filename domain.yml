@@ -166,7 +166,7 @@ responses:
       title: Very cool!
     text: The knowledge I have allows me to target my support to the situation that
       people are in. It helps me to suggest useful activities, and to aid people in
-      doing them. Cool right?
+      doing them. Not bad, right?
   utter_prompt_usage:
   - text: Before we start, let me explain how you can communicate with me.
   utter_explain_usage:
@@ -415,38 +415,64 @@ responses:
   - text: Oh that's a shame that you're not having a good day. I hope it gets better soon and that I can distract you a bit.
   - text: I hate to hear that today isn't a good day for you. Hopefully you feel better
       soon and that it's okay to proceed with this session!
-  - text: Aww what a shame. Hopefully you feel less {mood}
+  - text: Awww what a shame. Hopefully you feel less {mood}
       soon!
   utter_mood_neutral:
-  - text: I see, I guess that's not too bad.
-  - text: Ah, sounds like you're having a pretty average day.
-  - text: Hm, that's not too bad I guess.
+  - text: "I see, I guess that's not too bad."
+  - text: "Ah, sounds like you're having a pretty average day."
+  - text: "Hm, that's not too bad I guess."
+  - text: "I see, seems like you're doing okay then."
+  - text: "Ah well, could be worse I guess."
   utter_great:
   - text: Great!
   - text: Perfect!
   - text: Awesome!
   utter_prepare_activity_proposal_session1:
-  - text: 'Here is the first activity that I think would help you:'
+  - text: 'Here is the first activity that I think would be beneficial for you:'
   utter_prepare_activity_proposal_session234:
-  - text: 'Here is the new activity that I think would help you:'
+  - text: 'Here is the next activity that I think would help you:'
+  - text: "This is the new activity that I think would be helpful for you:"
+  - text: "And this is the new activity that I envision to aid you:"
+  - text: "This is the new activity of which I think that it would help you:"
+  - text: "And here is the next activity of which I believe that it would aid you:"
   utter_prepare_activity_proposal_session5:
-  - text: 'Here is the new activity that I think would help you:'
+  - text: 'Here is the new activity that I expect to be useful for you:'
   utter_activity_formulation:
   - text: '**{activity_formulation}**'
   utter_activity_clear:
-  - buttons:
+  - text: "Let me know once you're done reading your new activity."
+    buttons:
     - payload: /confirm
-      title: Yes!
+      title: "I'm done!"
+  - text: "Just use the button below to continue after you've read the activity description."
+    buttons:
     - payload: /confirm
-      title: Sure
-    text: Sounds like something you can do between this and the next session?
+      title: "I've finished reading"
+  - text: "Please tell me when you've finished reading the description."
+    buttons:
+    - payload: /confirm
+      title: "I've read everything"
+  - text: "Once you're done reading about your new activity, let me know."
+    buttons:
+    - payload: /confirm
+      title: "Done!"
+  - text: "Use the button below once you've finished reading, then I'll continue."
+    buttons:
+    - payload: /confirm
+      title: "Finished!"
+  - text: "Let me know when you've finished reading the description and we can continue."
+    buttons:
+    - payload: /confirm
+      title: "Let's continue"
+  - text: "I'll continue when you're done reading about your new activity."
+    buttons:
+    - payload: /confirm
+      title: "I'm done"
   utter_activity_clear_last:
   - buttons:
     - payload: /confirm
-      title: Yes!
-    - payload: /confirm
-      title: Sure
-    text: Sounds like something you can do after this session?
+      title: "I'm done reading"
+    text: "Just like in the earlier sessions, let me know when you've finished reading."
   utter_questions_state_intro:
   - buttons:
     - payload: /confirm
@@ -715,12 +741,36 @@ responses:
       title: Agree strongly
     text: '6) I feel that I want to do the activity.'
   utter_question_state_6_prep:
-  - buttons:
+  - text: Nice, now we're halfway! Ready for the rest?
+    buttons:
     - payload: /confirm
       title: Yes, let's go!
     - payload: /confirm
+      title: OK!
+  - text: You're halfway done! Ready for the second half?
+    buttons:
+    - payload: /confirm
+      title: Alright
+    - payload: /confirm
       title: Sure!
-    text: Nice, now we're halfway! Ready for the rest?
+  - text: Just 6 more statements to go! Ready?
+    buttons:
+    - payload: /confirm
+      title: Sure!
+    - payload: /confirm
+      title: Okay
+  - text: Nice, you've got only 6 statements left! Let's get them done?
+    buttons:
+    - payload: /confirm
+      title: Alright!
+    - payload: /confirm
+      title: OK
+  - text: You're almost done - just 6 statements left! Let's finish them?
+    buttons:
+    - payload: /confirm
+      title: Yes!
+    - payload: /confirm
+      title: Sounds good
   utter_halfway_response:
   - text: "Alright! Then these are the last 6 statements I'd like you to rate:"
   - text: "Okay! These are the remaining 6 statements I'd like you to rate:"
