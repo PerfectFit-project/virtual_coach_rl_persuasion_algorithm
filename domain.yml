@@ -440,6 +440,11 @@ responses:
   - text: 'Here is the new activity that I expect to be useful for you:'
   utter_activity_formulation:
   - text: '**{activity_formulation}**'
+  utter_activity_clear_first:
+  - text: "I'll continue when you're done reading about your first activity."
+    buttons:
+    - payload: /confirm
+      title: "I'm done"
   utter_activity_clear:
   - text: "Let me know once you're done reading your new activity."
     buttons:
@@ -465,10 +470,6 @@ responses:
     buttons:
     - payload: /confirm
       title: "Let's continue"
-  - text: "I'll continue when you're done reading about your new activity."
-    buttons:
-    - payload: /confirm
-      title: "I'm done"
   utter_activity_clear_last:
   - buttons:
     - payload: /confirm

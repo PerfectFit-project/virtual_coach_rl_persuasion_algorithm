@@ -68,6 +68,10 @@ stories:
   - intent: confirm
   - action: utter_great
   - action: utter_prepare_activity_proposal_session1
+  - action: action_choose_activity
+  - action: utter_activity_formulation
+  - action: action_pause_five
+  - action: utter_activity_clear_first
   - checkpoint: main_not_last
   
 - story: start_session_2
@@ -453,6 +457,10 @@ stories:
   - intent: deny
   - action: utter_great
   - action: utter_prepare_activity_proposal_session234
+  - action: action_choose_activity
+  - action: utter_activity_formulation
+  - action: action_pause_five
+  - action: utter_activity_clear
   - checkpoint: main_not_last
   
 - story: activity_completion_details_confirmation_no
@@ -469,16 +477,16 @@ stories:
   - action: action_freetext_activity_mod
   - action: utter_thank_experience_mod
   - action: utter_prepare_activity_proposal_session234
+  - action: action_choose_activity
+  - action: utter_activity_formulation
+  - action: action_pause_five
+  - action: utter_activity_clear
   - checkpoint: main_not_last
   
 
 - story: Main_not_last
   steps:
   - checkpoint: main_not_last
-  - action: action_choose_activity
-  - action: utter_activity_formulation
-  - action: action_pause_five
-  - action: utter_activity_clear
   - intent: confirm
   - action: utter_questions_state_intro
   - intent: confirm
