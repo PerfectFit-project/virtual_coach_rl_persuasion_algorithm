@@ -285,6 +285,8 @@ responses:
   - text: Nice, good job!
   - text: Awesome, well done!
   - text: Nice, congratulations!
+  - text: "Excellent, way to go!"
+  - text: "Yay, nice work!"
   utter_response_activity_completion_notDone:
   - text: I'm sorry to hear that. I understand that it can be difficult.
   - text: Hmm, that's a pity. Maybe you have been busy.
@@ -298,25 +300,24 @@ responses:
   utter_response_activity_completion_notDone_last:
   - text: Ah that is unfortunate. I understand that it is not always easy.
   utter_ask_activity_completion_details_yes:
-  - text: Please tell me about your experience with your assigned activity. Use the
+  - text: How did you approach, do, or experience your assigned activity? Use the
       text field.
   utter_ask_activity_completion_details_no:
-  - text: Please tell me about your experience with your assigned activity. If you
-      have none, just type 'None' in the text field.
+  - text: "How did you approach, do, or experience your assigned activity? If you have no feedback on the activity, just type 'None' in the text field."
   utter_ask_activity_completion_details_yes_last:
-  - text: Please tell me about your experience with your assigned activity. Use the
+  - text: How did you approach, do, or experience your assigned activity? Use the
       text field.
   utter_ask_activity_completion_details_no_last:
-  - text: Please tell me about your experience with your assigned activity. If you
-      have none, just type 'None' in the text field.
+  - text: "How did you approach, do, or experience your assigned activity? If you have no feedback on the activity, just type 'None' in the text field."
   utter_thank_you_activity_experience:
   - text: Okay, thanks for telling me!
-  - text: Cool, thanks for sharing!
   - text: Cool, thanks for letting me know!
+  - text: Alright, thanks for sharing that with me!
+  - text: Okay, I appreciate that information!
+  - text: "Alright, that's good to know!"
+  - text: "OK, I'm glad you told me that!"
   utter_thank_you_activity_experience_last:
-  - text: Okay, thanks for telling me!
-  - text: Cool, thanks for sharing!
-  - text: Cool, thanks for letting me know!
+  - text: Okay, thanks for sharing!
   utter_repeat_activity_completion_answer:
   - buttons:
     - payload: /confirm
@@ -884,7 +885,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"attention_check_2":"4"}}
       title: Agree strongly
-  - text: "10) I am taller than 3 meters or 9 feet."
+  - text: "10) I am taller than the highest mountain in the world."
     buttons:
     - payload: /state_answer{{"attention_check_2":"0"}}
       title: Disagree strongly
@@ -896,7 +897,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"attention_check_2":"4"}}
       title: Agree strongly
-  - text: "10) I am shorter than 50 cm or 2 feet."
+  - text: "10) I am shorter than the smallest ant in the world."
     buttons:
     - payload: /state_answer{{"attention_check_2":"0"}}
       title: Disagree strongly
