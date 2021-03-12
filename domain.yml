@@ -585,7 +585,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_3":"4"}}
       title: Agree strongly
-    text: "3) I have triggers\
+    text: "3) I have things\
       \ that prompt/remind me to do the activity."
   utter_question_state_3_last:
   - buttons:
@@ -599,7 +599,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_3":"4"}}
       title: Agree strongly
-    text: "3) I have triggers\
+    text: "3) I have things\
       \ that prompt/remind me to do the activity."
   utter_question_state_4:
   - buttons:
