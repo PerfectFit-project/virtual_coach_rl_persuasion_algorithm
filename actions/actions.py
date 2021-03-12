@@ -241,14 +241,14 @@ class ActionChooseActivityLast(Action):
             
         curr_act_ind_list.append(act_index)
         
-        activity_formulation = df_act.loc[act_index, 'Formulation']
+        activity_formulation_email = df_act.loc[act_index, 'Formulation Email']
         
         # replace anything related to the next session as there is no
         # next session after the last session
-        activity_formulation = activity_formulation.replace("Between this and the next",
-                                                            "After this")
-        activity_formulation = activity_formulation.replace("between this and the next",
-                                                            "after this")
+        activity_formulation_email = activity_formulation_email.replace(" before the next session,", 
+                                                                        "")
+        activity_formulation_email = activity_formulation_email.replace(" before the next session",
+                                                                        "")
         
         return [SlotSet("activity_formulation", df_act.loc[act_index, 'Formulation Chat']), 
                 SlotSet("activity_formulation_email", df_act.loc[act_index, 'Formulation Email']),
@@ -861,8 +861,8 @@ class ActionChoosePersuasionLast(Action):
         
         # There is no next session after session 5, so need to adapt action planning messages
         if pers_type == 3:
-            message = message.replace("before the next", "after this")
-            message = message.replace("between this and the next", "after this")
+            message = message.replace("before the next session?", "after this session?")
+            message = message.replace("and before the next session", "session")
         
         return [SlotSet("message_formulation", message), 
                 SlotSet("action_index_list", curr_action_ind_list),
