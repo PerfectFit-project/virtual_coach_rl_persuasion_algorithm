@@ -185,7 +185,7 @@ responses:
   - text: Next, I'll ask you how you think about this activity. This will allow me
       to learn to better support you and other people like you.
   utter_explain_session_overview_3:
-  - text: In the end, I will provide additional information on doing the activity.
+  - text: "In the end, I'll provide additional information on doing the activity."
   utter_explain_session_overview_4:
   - text: And don't worry, I'll also send you your activity as a message in Prolific.
   utter_explain_session_final:
@@ -319,17 +319,49 @@ responses:
   utter_thank_you_activity_experience_last:
   - text: Okay, thanks for sharing!
   utter_repeat_activity_completion_answer:
-  - buttons:
+  - text: "This is what I got: {activity_experience}. Would you like to add or change anything?"
+    buttons:
     - payload: /confirm
       title: Yes
     - payload: /deny
       title: No
-    text: 'This is what I got: {activity_experience}. Would you like to add or change
-      anything?'
+  - text: "I got this: {activity_experience}. Do you want to add or modify anything?"
+    buttons:
+    - payload: /confirm
+      title: Yes
+    - payload: /deny
+      title: No
+  - text: "I received this: {activity_experience}. Is there something that you'd like to add or change?"
+    buttons:
+    - payload: /confirm
+      title: Yes
+    - payload: /deny
+      title: No
+  - text: "This is what you told me: {activity_experience}. Is there anything that you want to add or alter?"
+    buttons:
+    - payload: /confirm
+      title: Yes
+    - payload: /deny
+      title: No
+  - text: "I got this from you: {activity_experience}. Is there anything that I should add or modify about your response?"
+    buttons:
+    - payload: /confirm
+      title: Yes
+    - payload: /deny
+      title: No
+  - text: "This is the response I got: {activity_experience}. Do you want to add or change anything?"
+    buttons:
+    - payload: /confirm
+      title: Yes
+    - payload: /deny
+      title: No
   utter_ask_activity_comp_details_mod_last:
-  - text: Okay, please tell me what you would like to add or change.
+  - text: "OK, kindly tell me what you'd like to add or change."
   utter_ask_activity_comp_details_mod:
-  - text: Okay, please tell me what you would like to add or change.
+  - text: "Okay, please tell me what you'd like to add or alter."
+  - text: "OK, what would you like to add or change? Use the text field."
+  - text: "Okay, what is it that you'd like to add or alter? Use the text field."
+  - text: "Okay, kindly tell me what it is that you'd like to add or modify."
   utter_ask_for_mood:
   - buttons:
     - payload: /mood_curr{{"mood":"satisfied"}}
@@ -476,14 +508,49 @@ responses:
       title: "I'm done reading"
     text: "Just like in the earlier sessions, let me know when you've finished reading."
   utter_questions_state_intro:
-  - buttons:
+  - text: "Cool! Now, let me ask you a few questions about how you think about this activity."
+    buttons:
     - payload: /confirm
       title: Okay!
     - payload: /confirm
       title: Go ahead
-    text: "Cool! Now, let me ask you a few questions about how you think about this activity."
+  - text: "Alright! Then I'd like to ask you some questions about your thoughts on this activity now."
+    buttons:
+    - payload: /confirm
+      title: OK
+    - payload: /confirm
+      title: Sure!
+  - text: "OK, now I'd like to learn about your thoughts on this activity."
+    buttons:
+    - payload: /confirm
+      title: Of course
+    - payload: /confirm
+      title: Okay
+  - text: "Okay! Then it would be great if you could now help me find out how you think about this activity."
+    buttons:
+    - payload: /confirm
+      title: Alright
+    - payload: /confirm
+      title: No problem
+  - text: "Cool! Now it is important for me to find out how you think about this activity."
+    buttons:
+    - payload: /confirm
+      title: Sure thing
+    - payload: /confirm
+      title: OK
+  - text: "Alright! I'd like to now ask you to tell me about your thoughts on this activity."
+    buttons:
+    - payload: /confirm
+      title: I'd love to
+    - payload: /confirm
+      title: Sure
   utter_questions_state_intro_2:
   - text: "Perfect! Please rate the following 12 statements:"
+  - text: "Thanks! Please rate the 12 statements below:"
+  - text: "Perfect! Kindly rate the subsequent 12 statements:"
+  - text: "Thanks! Please rate the 12 statements that I'll present to you:"
+  - text: "Thank you! Kindly rate the 12 statements that I'll send you:"
+  - text: "Thank you! Please rate the 12 statements that you'll now see one by one:"
   utter_ask_satisfaction_prep:
   - text: Before we start, I'd like to ask you for some feedback.
   utter_ask_satisfaction_explain:
@@ -1091,6 +1158,8 @@ responses:
   utter_thank_experience_mod:
   - text: Alright, thanks for the clarification!
   - text: Cool, thanks for clarifying that.
+  - text: Cool, thanks for making that clear.
+  - text: Alright, good that you point that out!
   utter_thank_you_planning:
   - text: Cool, thanks for this plan!
   - text: Nice, thank you!
@@ -1110,8 +1179,6 @@ responses:
     - payload: /confirm
       title: Bye!
     text: Goodbye!
-  utter_iamabot:
-  - text: I'm a bot!
   utter_thank_satisfaction:
   - text: Cool, thanks for this feedback!
   utter_thank_satisfaction_last:
@@ -1132,6 +1199,7 @@ responses:
   - text: 'Something went wrong, please contact the researcher: n.albers@tudelft.nl.'
   utter_prolific_link:
   - text: 'Cool! Here is your completion link: {prolific_link}.'
+  - text: 'Cool! And here is your completion link: {prolific_link}.'
   utter_prolific_link_last:
   - text: 'Here is your completion link: {prolific_link}.'
   utter_final_close_session:
