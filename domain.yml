@@ -1199,7 +1199,7 @@ responses:
   utter_thank_satisfaction:
   - text: Cool, thanks for this feedback!
   utter_thank_satisfaction_last:
-  - text: Cool, this is good to know!
+  - text: "Cool, this is good to know!"
   utter_test:
   - text: This is a test.
   utter_default:
@@ -1221,6 +1221,8 @@ responses:
   - text: 'Here is your completion link: {prolific_link}.'
   utter_final_close_session:
   - text: '*THIS IS THE END OF THIS SESSION. PLEASE CLOSE THIS WINDOW.*'
+  utter_error_close_session:
+  - text: '*PLEASE CLOSE THIS WINDOW.*'
 actions:
 - action_answer_mood
 - action_choose_activity

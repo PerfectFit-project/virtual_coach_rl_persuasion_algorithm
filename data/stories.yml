@@ -101,6 +101,7 @@ stories:
   - slot_was_set:
     - session_loaded: False
   - action: utter_error_contact_researcher
+  - action: utter_error_close_session
   
 - story: start_session_3_error
   steps: 
@@ -109,6 +110,7 @@ stories:
   - slot_was_set:
     - session_loaded: False
   - action: utter_error_contact_researcher
+  - action: utter_error_close_session
   
 - story: start_session_3
   steps: 
@@ -236,6 +238,7 @@ stories:
   - slot_was_set:
     - session_loaded: False
   - action: utter_error_contact_researcher
+  - action: utter_error_close_session
   
 - story: start_session_5_error
   steps: 
@@ -244,6 +247,7 @@ stories:
   - slot_was_set:
     - session_loaded: False
   - action: utter_error_contact_researcher
+  - action: utter_error_close_session
   
 - story: start_session_5 
   steps: 
@@ -716,6 +720,7 @@ stories:
   - slot_was_set:
     - session_saved: False
   - action: utter_error_contact_researcher
+  - action: utter_error_close_session
   
 - story: end_not_last_correct
   steps:
@@ -743,6 +748,7 @@ stories:
   - slot_was_set:
     - session_saved: False
   - action: utter_error_contact_researcher
+  - action: utter_error_close_session
   
 - story: end_last_correct
   steps:
