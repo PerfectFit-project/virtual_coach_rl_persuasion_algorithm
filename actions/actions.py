@@ -314,7 +314,7 @@ class ActionGetFreetext(Action):
         return [SlotSet("action_planning_answer", user_plan),
                 SlotSet("plan_correct", plan_correct)]
     
-# Read free text response for user's satifaction
+# Read free text response for user's satifaction.
 class ActionGetSatisfaction(Action):
 
     def name(self):
