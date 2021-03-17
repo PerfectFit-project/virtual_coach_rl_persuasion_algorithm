@@ -304,8 +304,8 @@ class ActionGetFreetext(Action):
         user_plan = tracker.latest_message['text']
         
         plan_correct = True
-        # check syntax
-        if not ("if" in user_plan.lower()):
+        # check syntax, i.e. require an "if" and a space afterwards
+        if not ("if " in user_plan.lower()):
             plan_correct = False
         # some minimum length is needed
         elif len(user_plan) <= 6:
