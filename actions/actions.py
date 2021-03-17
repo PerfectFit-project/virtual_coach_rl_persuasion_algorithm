@@ -331,6 +331,7 @@ class ActionGetSatisfaction(Action):
         # check syntax
         try:
             satis_float = float(satis)
+			# check bounds
             if satis_float > 10:
                 correct = False
             elif satis_float < -10:
