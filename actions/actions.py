@@ -183,7 +183,7 @@ class ActionChooseActivity(Action):
                 SlotSet("activity_verb", df_act.loc[act_index, "VerbYouShort"])]
     
 # Choose an activity for the user in the last session
-# Difference is that the activity formulation needs to be adapted.
+# Difference is that the activity formulation needs to be adapted since there is no next session.
 class ActionChooseActivityLast(Action):
     def name(self):
         return "action_choose_activity_last"
