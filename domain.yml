@@ -879,7 +879,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_6":"4"}}
       title: Agree strongly
-    text: "7) I need to do the activity."
+    text: "7) I feel that I need to do the activity."
   utter_question_state_6_last:
   - buttons:
     - payload: /state_answer{{"state_6":"0"}}
@@ -892,7 +892,7 @@ responses:
       title: Agree
     - payload: /state_answer{{"state_6":"4"}}
       title: Agree strongly
-    text: "7) I need to do the activity."
+    text: "7) I feel that I need to do the activity."
   utter_question_state_7:
   - buttons:
     - payload: /state_answer{{"state_7":"0"}}
