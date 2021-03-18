@@ -52,8 +52,9 @@ for m in [10, 11, 12, 13]: # Authority
 for m in [14, 15, 16, 17, 18]: # Planning
     ref_dict[m] = -1
 
-# Persuasive Messages
+# Persuasive messages and reminder questions
 df_mess = pd.read_csv("all_messages.csv")
+df_rem = pd.read_csv("all_reminders.csv")
 num_mess_per_type = [6, 4, 4, 5]
 NUM_PERS_TYPES = 4
 
@@ -433,14 +434,6 @@ class ActionSendEmail(Action):
         with open('reminder_template.txt', 'r', encoding='utf-8') as template_file:
             message_template = Template(template_file.read())
         context = ssl.create_default_context()
-        
-        pers_input = tracker.get_slot('pers_input')
-        if not pers_input:
-            persuasion = tracker.get_slot('message_formulation')
-        else:
-            persuasion = "And here is the plan you created for doing the activity:\n\n\t"
-            persuasion += tracker.get_slot('action_planning_answer')
-        activity = tracker.get_slot('activity_formulation_email')
     
         # set up the SMTP server
         with smtplib.SMTP_SSL(smtp, ssl_port, context = context) as server:
@@ -450,8 +443,8 @@ class ActionSendEmail(Action):
             
             # add in the actual person name to the message template
             message = message_template.substitute(PERSON_NAME ="Study Participant",
-                                                  ACTIVITY= activity,
-                                                  PERSUASION = persuasion)
+                                                  ACTIVITY= tracker.get_slot('activity_formulation_email'),
+                                                  PERSUASION = tracker.get_slot('reminder_formulation'))
         
             # setup the parameters of the message
             msg['From'] = email
@@ -491,14 +484,6 @@ class ActionSendEmailLast(Action):
             message_template = Template(template_file.read())
         context = ssl.create_default_context()
         
-        pers_input = tracker.get_slot('pers_input')
-        if not pers_input:
-            persuasion = tracker.get_slot('message_formulation')
-        else:
-            persuasion = "And here is the plan you created for doing the activity:\n\n\t"
-            persuasion += tracker.get_slot('action_planning_answer')
-        activity = tracker.get_slot('activity_formulation_email')
-    
         # set up the SMTP server
         with smtplib.SMTP_SSL(smtp, ssl_port, context = context) as server:
             server.login(email, x)
@@ -507,8 +492,8 @@ class ActionSendEmailLast(Action):
             
             # add in the actual person name to the message template
             message = message_template.substitute(PERSON_NAME="Study Participant",
-                                                  ACTIVITY= activity,
-                                                  PERSUASION = persuasion)
+                                                  ACTIVITY= tracker.get_slot('activity_formulation_email'),
+                                                  PERSUASION = tracker.get_slot('reminder_formulation'))
         
             # setup the parameters of the message
             msg['From'] = email
@@ -695,10 +680,12 @@ class ActionChoosePersuasion(Action):
             # Always pick smoking-related reflective question
             ref_question = df_ref.loc[ref_type, 'QuestionS']
            
-        # Determine message
+        # Determine message and reminder
         message = df_mess.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Message']
+        reminder = df_rem.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Question']
         
         return [SlotSet("message_formulation", message), 
+                SlotSet("reminder_formulation", reminder),
                 SlotSet("action_index_list", curr_action_ind_list),
                 SlotSet("action_type_index_list", curr_action_type_ind_list),
                 SlotSet("pers_input", require_input),
@@ -822,9 +809,6 @@ class ActionChoosePersuasionLast(Action):
          
         # Sessions 1 and 2: random 
         else:
-            
-            #print("Random persuasion")
-            
             if curr_action_ind_list is None:
                 curr_action_ind_list = []
             if curr_action_type_ind_list is None:
@@ -857,15 +841,18 @@ class ActionChoosePersuasionLast(Action):
             # Always pick smoking-related reflective question
             ref_question = df_ref.loc[ref_type, 'QuestionS']
            
-        # Determine message
+        # Determine message and reminder
         message = df_mess.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Message']
+        reminder = df_rem.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Question']
         
         # There is no next session after session 5, so need to adapt action planning messages
         if pers_type == 3:
             message = message.replace("before the next session?", "after this session?")
             message = message.replace("and before the next session", "session")
+            reminder = reminder.replace("before the next session?", "after this session?")
         
         return [SlotSet("message_formulation", message), 
+                SlotSet("reminder_formulation", reminder),
                 SlotSet("action_index_list", curr_action_ind_list),
                 SlotSet("action_type_index_list", curr_action_type_ind_list),
                 SlotSet("pers_input", require_input),

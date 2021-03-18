@@ -63,6 +63,10 @@ slots:
   message_formulation:
     type: text
     influence_conversation: false
+  # Persuasive reminder question in message sent to Prolific after session
+  reminder_formulation:
+    type: text
+    influence_conversation: false
   mood:
     type: text
     initial_value: ''
