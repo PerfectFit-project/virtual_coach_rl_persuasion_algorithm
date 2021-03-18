@@ -16,6 +16,7 @@ RUN pip install -r requirements-actions.txt
 # Copy actions code to working directory
 COPY ./actions /app/actions
 COPY all_messages.csv /app
+COPY all_reminders.csv /app
 COPY assignment.csv /app
 COPY Activities.csv /app
 COPY reminder_template_last_session.txt /app
