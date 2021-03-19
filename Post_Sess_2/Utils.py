@@ -6,8 +6,18 @@ import sqlite3
 import random
 from copy import deepcopy
 
-ATTENTION_CHECK_1_TRUE = 4
-ATTENTION_CHECK_2_TRUE = 0
+ATTENTION_CHECK_1_TRUE = [3, 4] # "agree" or "agree strongly"
+ATTENTION_CHECK_2_TRUE = [0, 1] # "disagree" or "disagree strongly"
+
+def pass_attention_checks(answer1, answer2):
+    """
+    Returns whether at least 1/2 attention checks were passed for a session.
+    
+    Args:
+        answer1: given answer for attention check 1
+        answer2: given answer for attention check 2
+    """
+    return answer1 in ATTENTION_CHECK_1_TRUE or answer2 in ATTENTION_CHECK_2_TRUE
 
 def feat_sel_num_blocks_avg_p_val(feat_not_sel, num_feat_not_sel, blocks, 
                                   t_tests_2, feat_sel, feat_sel_criteria):
@@ -219,16 +229,6 @@ def check_attention_checks_session(database_path, session_num):
             user_ids_failed.append(data_db[row][0]) 
     
     return user_ids_passed, user_ids_failed
-
-def pass_attention_checks(answer1, answer2):
-    """
-    Returns whether at least 1/2 attention checks were passed for a session.
-    
-    Args:
-        answer1: given answer for attention check 1
-        answer2: given answer for attention check 2
-    """
-    return answer1 == ATTENTION_CHECK_1_TRUE or answer2 == ATTENTION_CHECK_2_TRUE
 
 def gather_data_post_sess_5(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7]):
     """
