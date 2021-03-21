@@ -403,6 +403,14 @@ class ActionSetSession(Action):
             session_loaded = False
             print("NameError in action_set_session.")
         
+        except IndexError:
+            session_loaded = False
+            print("IndexError in action_set_session.")
+        
+        except Exception:
+            session_loaded = False
+            print("Some exception in action_set_session.")
+        
         return [SlotSet("activity_index_list", activity_index_list), 
                 SlotSet("action_index_list", action_index_list),
                 SlotSet("activity_verb_prev", activity_verb_prev),
