@@ -340,37 +340,37 @@ responses:
   utter_thank_you_activity_experience_last:
   - text: Okay, thanks for sharing!
   utter_repeat_activity_completion_answer:
-  - text: "This is what I got: {activity_experience}. Would you like to add or change anything?"
+  - text: "This is what I got: *{activity_experience}*\n\nWould you like to add or change anything?"
     buttons:
     - payload: /confirm
       title: Yes
     - payload: /deny
       title: No
-  - text: "I got this: {activity_experience}. Do you want to add or modify anything?"
+  - text: "I got this: *{activity_experience}*\n\nDo you want to add or modify anything?"
     buttons:
     - payload: /confirm
       title: Yes
     - payload: /deny
       title: No
-  - text: "I received this: {activity_experience}. Is there something that you'd like to add or change?"
+  - text: "I received this: *{activity_experience}*\n\nIs there something that you'd like to add or change?"
     buttons:
     - payload: /confirm
       title: Yes
     - payload: /deny
       title: No
-  - text: "This is what you told me: {activity_experience}. Is there anything that you want to add or alter?"
+  - text: "This is what you told me: *{activity_experience}*\n\nIs there anything that you want to add or alter?"
     buttons:
     - payload: /confirm
       title: Yes
     - payload: /deny
       title: No
-  - text: "I got this from you: {activity_experience}. Is there anything that I should add or modify about your response?"
+  - text: "I got this from you: *{activity_experience}*\n\nIs there anything that I should add or modify about your response?"
     buttons:
     - payload: /confirm
       title: Yes
     - payload: /deny
       title: No
-  - text: "This is the response I got: {activity_experience}. Do you want to add or change anything?"
+  - text: "This is the response I got: *{activity_experience}*\n\nDo you want to add or change anything?"
     buttons:
     - payload: /confirm
       title: Yes
