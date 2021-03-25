@@ -96,75 +96,81 @@ def gather_data_post_sess_2(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7
     # for each user that has completed at least 1 session
     for row in range(num_rows):
         
-        # Get first state
-        s0_arr = np.array([int(i) for i in data_db[row][20].split('|')])[feat_to_select]
-        s0 = list(s0_arr)
-        
-        # Test data that is still in the database and that does not have
-        # info for attention checks.
-        if data_db[row][16] is None or data_db[row][17] is None or data_db[row][16] == ' ':
-            passed_check_state = False
-        
-        else:
-            # Attention check question answers for first session
-            check_state_1 = [i for i in data_db[row][16].split('|')][0]
-            check_state_2 = [i for i in data_db[row][17].split('|')][0]
+        try:
+            # Get first state
+            s0_arr = np.array([int(i) for i in data_db[row][20].split('|')])[feat_to_select]
+            s0 = list(s0_arr)
             
-            # make sure that there is actual data for the attention checks, i.e. not 
-            # that the data saved in the database for this attention check is ''
-            if check_state_1 in AW_LIKERT_SCALE and check_state_2 in AW_LIKERT_SCALE:
-                # Whether the first session has passed enough attention checks
-                passed_check_state = pass_attention_checks(int(check_state_1), int(check_state_2))
-            # No true data for attention checks, so we do not use this sample.
-            else:
-                passed_check_state = False
-        
-        # needed to later compute the mean values per feature
-        if passed_check_state:
-            all_states.append(s0_arr)
-        
-        # Check if the user has completed a second session
-        if not data_db[row][21] == None:
-            
-            s1_arr = np.array([int(i) for i in data_db[row][21].split('|')])[feat_to_select]
-            s1 = list(s1_arr)
         
             # Test data that is still in the database and that does not have
-            # info for attention checks
+            # info for attention checks.
             if data_db[row][16] is None or data_db[row][17] is None or data_db[row][16] == ' ':
-                passed_check_next_state = False
+                passed_check_state = False
             
             else:
-                # attention check answers for second session
-                check_next_1 = [i for i in data_db[row][16].split('|')][1]
-                check_next_2 = [i for i in data_db[row][17].split('|')][1]
-            
+                # Attention check question answers for first session
+                check_state_1 = [i for i in data_db[row][16].split('|')][0]
+                check_state_2 = [i for i in data_db[row][17].split('|')][0]
+                
                 # make sure that there is actual data for the attention checks, i.e. not 
                 # that the data saved in the database for this attention check is ''
-                if check_next_1 in AW_LIKERT_SCALE and check_next_2 in AW_LIKERT_SCALE:
-                    # Whether the second session has passed enough attention checks
-                    passed_check_next_state = pass_attention_checks(int(check_next_1), int(check_next_2))
-                
+                if check_state_1 in AW_LIKERT_SCALE and check_state_2 in AW_LIKERT_SCALE:
+                    # Whether the first session has passed enough attention checks
+                    passed_check_state = pass_attention_checks(int(check_state_1), int(check_state_2))
                 # No true data for attention checks, so we do not use this sample.
                 else:
+                    passed_check_state = False
+            
+            # needed to later compute the mean values per feature
+            if passed_check_state:
+                all_states.append(s0_arr)
+            
+            # Check if the user has completed a second session
+            if not data_db[row][21] == None:
+                
+                s1_arr = np.array([int(i) for i in data_db[row][21].split('|')])[feat_to_select]
+                s1 = list(s1_arr)
+            
+                # Test data that is still in the database and that does not have
+                # info for attention checks
+                if data_db[row][16] is None or data_db[row][17] is None or data_db[row][16] == ' ':
                     passed_check_next_state = False
-        
-            # need to pass at least 1 out of 2 attention checks in each of the two sessions
-            passed_attention_checks = passed_check_state and passed_check_next_state
+                
+                else:
+                    # attention check answers for second session
+                    check_next_1 = [i for i in data_db[row][16].split('|')][1]
+                    check_next_2 = [i for i in data_db[row][17].split('|')][1]
+                
+                    # make sure that there is actual data for the attention checks, i.e. not 
+                    # that the data saved in the database for this attention check is ''
+                    if check_next_1 in AW_LIKERT_SCALE and check_next_2 in AW_LIKERT_SCALE:
+                        # Whether the second session has passed enough attention checks
+                        passed_check_next_state = pass_attention_checks(int(check_next_1), int(check_next_2))
+                    
+                    # No true data for attention checks, so we do not use this sample.
+                    else:
+                        passed_check_next_state = False
             
-            # the transition is not used if the attention check criteria are not met
-            if passed_attention_checks:
+                # need to pass at least 1 out of 2 attention checks in each of the two sessions
+                passed_attention_checks = passed_check_state and passed_check_next_state
+                
+                # the transition is not used if the attention check criteria are not met
+                if passed_attention_checks:
+                
+                    a = [int(i) for i in data_db[row][25].split('|')][0]
+                    r = [int(i) for i in data_db[row][7].split('|')][0]
+                
+                    data.append([s0, s1, a, r]) # save transition
+                    user_ids.append(data_db[row][0]) # save corresponding user ID
+                  
+                # Even if the transition is not used, a state may still be used to compute 
+                # mean values for the features
+                if passed_check_next_state:
+                    all_states.append(s1_arr)
             
-                a = [int(i) for i in data_db[row][25].split('|')][0]
-                r = [int(i) for i in data_db[row][7].split('|')][0]
-            
-                data.append([s0, s1, a, r]) # save transition
-                user_ids.append(data_db[row][0]) # save corresponding user ID
-              
-            # Even if the transition is not used, a state may still be used to compute 
-            # mean values for the features
-            if passed_check_next_state:
-                all_states.append(s1_arr)
+        # Incomplete data for this user -> cannot be used.
+        except Exception:
+            print("Incomplete data for user " + data_db[row][0] + ".")
     
     all_states = np.array(all_states)
         
@@ -302,60 +308,66 @@ def gather_data_post_sess_5(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7
         
             if not data_db[row][state] == None: # ensure current state is not None
             
-                s0_arr = np.array([int(i) for i in data_db[row][state].split('|')])[feat_to_select]
-                s0 = list(s0_arr)
+                try:
             
-                # Attention check question answers for first state of transition
-                check_state_1 = [i for i in data_db[row][16].split('|')][state_ind]
-                check_state_2 = [i for i in data_db[row][17].split('|')][state_ind]
+                    s0_arr = np.array([int(i) for i in data_db[row][state].split('|')])[feat_to_select]
+                    s0 = list(s0_arr)
                 
-                # make sure that there is actual data for the attention checks, i.e. not 
-                # that the data saved in the database for this attention check is ''
-                if check_state_1 in AW_LIKERT_SCALE and check_state_2 in AW_LIKERT_SCALE:
-                    passed_check_state = pass_attention_checks(int(check_state_1), int(check_state_2))
-                # something went wrong, i.e. some attention check data was not saved.
-                else:
-                    passed_check_state = False
-                
-                # needed to later compute the mean values per feature
-                # Make sure to add each state only once
-                if state_ind == 0 and passed_check_state:
-                    all_states.append(s0_arr)
-            
-                if not data_db[row][state + 1] == None: # ensure next state is not None
-                
-                    s1_arr = np.array([int(i) for i in data_db[row][state + 1].split('|')])[feat_to_select]
-                    s1 = list(s1_arr)
-                
-                    # Attention check question answers for second state of transition
-                    check_next_1 = [i for i in data_db[row][16].split('|')][state_ind + 1]
-                    check_next_2 = [i for i in data_db[row][17].split('|')][state_ind + 1]
+                    # Attention check question answers for first state of transition
+                    check_state_1 = [i for i in data_db[row][16].split('|')][state_ind]
+                    check_state_2 = [i for i in data_db[row][17].split('|')][state_ind]
                     
                     # make sure that there is actual data for the attention checks, i.e. not 
                     # that the data saved in the database for this attention check is ''
-                    if check_next_1 in AW_LIKERT_SCALE and check_next_2 in AW_LIKERT_SCALE:
-                        passed_check_next_state = pass_attention_checks(int(check_next_1), int(check_next_2))
+                    if check_state_1 in AW_LIKERT_SCALE and check_state_2 in AW_LIKERT_SCALE:
+                        passed_check_state = pass_attention_checks(int(check_state_1), int(check_state_2))
                     # something went wrong, i.e. some attention check data was not saved.
                     else:
-                        passed_check_next_state = False
+                        passed_check_state = False
                     
-                    # need to pass at least 1 out of 2 attention checks in each of the two sessions
-                    passed_attention_checks = passed_check_state and passed_check_next_state
-                    
-                    # the transition is not used if the attention check criteria are not met
-                    if passed_attention_checks:
-                        
-                        # get action and reward
-                        a = [int(i) for i in data_db[row][25].split('|')][state_ind]
-                        r = [int(i) for i in data_db[row][7].split('|')][state_ind]
-                    
-                        data.append([s0, s1, a, r]) # save transition
-                        user_ids.append(user_id_curr) # save corresponding user ID
-                        
                     # needed to later compute the mean values per feature
-                    if passed_check_next_state:
-                        all_states.append(s1_arr)
+                    # Make sure to add each state only once
+                    if state_ind == 0 and passed_check_state:
+                        all_states.append(s0_arr)
+                
+                    if not data_db[row][state + 1] == None: # ensure next state is not None
+                    
+                        s1_arr = np.array([int(i) for i in data_db[row][state + 1].split('|')])[feat_to_select]
+                        s1 = list(s1_arr)
+                    
+                        # Attention check question answers for second state of transition
+                        check_next_1 = [i for i in data_db[row][16].split('|')][state_ind + 1]
+                        check_next_2 = [i for i in data_db[row][17].split('|')][state_ind + 1]
                         
+                        # make sure that there is actual data for the attention checks, i.e. not 
+                        # that the data saved in the database for this attention check is ''
+                        if check_next_1 in AW_LIKERT_SCALE and check_next_2 in AW_LIKERT_SCALE:
+                            passed_check_next_state = pass_attention_checks(int(check_next_1), int(check_next_2))
+                        # something went wrong, i.e. some attention check data was not saved.
+                        else:
+                            passed_check_next_state = False
+                        
+                        # need to pass at least 1 out of 2 attention checks in each of the two sessions
+                        passed_attention_checks = passed_check_state and passed_check_next_state
+                        
+                        # the transition is not used if the attention check criteria are not met
+                        if passed_attention_checks:
+                            
+                            # get action and reward
+                            a = [int(i) for i in data_db[row][25].split('|')][state_ind]
+                            r = [int(i) for i in data_db[row][7].split('|')][state_ind]
+                        
+                            data.append([s0, s1, a, r]) # save transition
+                            user_ids.append(user_id_curr) # save corresponding user ID
+                            
+                        # needed to later compute the mean values per feature
+                        if passed_check_next_state:
+                            all_states.append(s1_arr)
+                    
+                except Exception:
+                    
+                    print("Incomplete data for user " + user_id_curr + ", state " + str(state_ind) + ".")
+                    
     all_states = np.array(all_states)
         
     # compute the mean value for each feature
