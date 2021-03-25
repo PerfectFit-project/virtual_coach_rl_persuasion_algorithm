@@ -9,6 +9,8 @@ from copy import deepcopy
 ATTENTION_CHECK_1_TRUE = [3, 4] # "agree" or "agree strongly"
 ATTENTION_CHECK_2_TRUE = [0, 1] # "disagree" or "disagree strongly"
 
+AW_LIKERT_SCALE = ['0', '1', '2', '3', '4'] # answer options for questions with 5-point Likert scale
+
 def pass_attention_checks(answer1, answer2):
     """
     Returns whether at least 1/2 attention checks were passed for a session.
@@ -99,17 +101,23 @@ def gather_data_post_sess_2(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7
         s0 = list(s0_arr)
         
         # Test data that is still in the database and that does not have
-        # info for attention checks
+        # info for attention checks.
         if data_db[row][16] is None or data_db[row][17] is None or data_db[row][16] == ' ':
             passed_check_state = False
         
         else:
             # Attention check question answers for first session
-            check_state_1 = [int(i) for i in data_db[row][16].split('|')][0]
-            check_state_2 = [int(i) for i in data_db[row][17].split('|')][0]
-        
-            # Whether the first session has passed enough attention checks
-            passed_check_state = pass_attention_checks(check_state_1, check_state_2)
+            check_state_1 = [i for i in data_db[row][16].split('|')][0]
+            check_state_2 = [i for i in data_db[row][17].split('|')][0]
+            
+            # make sure that there is actual data for the attention checks, i.e. not 
+            # that the data saved in the database for this attention check is ''
+            if check_state_1 in AW_LIKERT_SCALE and check_state_2 in AW_LIKERT_SCALE:
+                # Whether the first session has passed enough attention checks
+                passed_check_state = pass_attention_checks(int(check_state_1), int(check_state_2))
+            # No true data for attention checks, so we do not use this sample.
+            else:
+                passed_check_state = False
         
         # needed to later compute the mean values per feature
         if passed_check_state:
@@ -128,11 +136,18 @@ def gather_data_post_sess_2(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7
             
             else:
                 # attention check answers for second session
-                check_next_1 = [int(i) for i in data_db[row][16].split('|')][1]
-                check_next_2 = [int(i) for i in data_db[row][17].split('|')][1]
+                check_next_1 = [i for i in data_db[row][16].split('|')][1]
+                check_next_2 = [i for i in data_db[row][17].split('|')][1]
             
-                # Whether the second session has passed enough attention checks
-                passed_check_next_state = pass_attention_checks(check_next_1, check_next_2)
+                # make sure that there is actual data for the attention checks, i.e. not 
+                # that the data saved in the database for this attention check is ''
+                if check_next_1 in AW_LIKERT_SCALE and check_next_2 in AW_LIKERT_SCALE:
+                    # Whether the second session has passed enough attention checks
+                    passed_check_next_state = pass_attention_checks(int(check_next_1), int(check_next_2))
+                
+                # No true data for attention checks, so we do not use this sample.
+                else:
+                    passed_check_next_state = False
         
             # need to pass at least 1 out of 2 attention checks in each of the two sessions
             passed_attention_checks = passed_check_state and passed_check_next_state
@@ -201,6 +216,9 @@ def check_attention_checks_session(database_path, session_num):
     num_rows = len(data_db)
     user_ids_passed = []
     user_ids_failed = []
+    user_ids_error = [] # users where something went wrong, i.e. some but not all data has been saved
+    
+    session_error = False # whether something went wrong in a session, i.e. some but not all data was saved
     
     session_index = session_num - 1
     
@@ -216,19 +234,30 @@ def check_attention_checks_session(database_path, session_num):
         
         else:
             # Attention check question answers
-            check_state_1 = [int(i) for i in data_db[row][16].split('|')][session_index]
-            check_state_2 = [int(i) for i in data_db[row][17].split('|')][session_index]
+            check_state_1 = [i for i in data_db[row][16].split('|')][session_index]
+            check_state_2 = [i for i in data_db[row][17].split('|')][session_index]
             
-            # Whether the first session has passed enough attention checks
-            passed_check = pass_attention_checks(check_state_1, check_state_2)
+            # make sure that there is actual data for the attention checks, i.e. not 
+            # that the data saved in the database for this attention check is ''
+            if check_state_1 in AW_LIKERT_SCALE and check_state_2 in AW_LIKERT_SCALE:
+                # Whether the first session has passed enough attention checks
+                passed_check = pass_attention_checks(int(check_state_1), int(check_state_2))
+            # Something went wrong and not all attention check data has been collected.
+            # So can't use this sample.
+            else:
+                passed_check = False
+                session_error = True
        
         # save corresponding user ID
         if passed_check:
             user_ids_passed.append(data_db[row][0]) 
         else:
-            user_ids_failed.append(data_db[row][0]) 
+            if not session_error:
+                user_ids_failed.append(data_db[row][0]) 
+            else:
+                user_ids_error.append(data_db[row][0])
     
-    return user_ids_passed, user_ids_failed
+    return user_ids_passed, user_ids_failed, user_ids_error
 
 def gather_data_post_sess_5(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7]):
     """
@@ -277,9 +306,16 @@ def gather_data_post_sess_5(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7
                 s0 = list(s0_arr)
             
                 # Attention check question answers for first state of transition
-                check_state_1 = [int(i) for i in data_db[row][16].split('|')][state_ind]
-                check_state_2 = [int(i) for i in data_db[row][17].split('|')][state_ind]
-                passed_check_state = pass_attention_checks(check_state_1, check_state_2)
+                check_state_1 = [i for i in data_db[row][16].split('|')][state_ind]
+                check_state_2 = [i for i in data_db[row][17].split('|')][state_ind]
+                
+                # make sure that there is actual data for the attention checks, i.e. not 
+                # that the data saved in the database for this attention check is ''
+                if check_state_1 in AW_LIKERT_SCALE and check_state_2 in AW_LIKERT_SCALE:
+                    passed_check_state = pass_attention_checks(int(check_state_1), int(check_state_2))
+                # something went wrong, i.e. some attention check data was not saved.
+                else:
+                    passed_check_state = False
                 
                 # needed to later compute the mean values per feature
                 # Make sure to add each state only once
@@ -292,9 +328,16 @@ def gather_data_post_sess_5(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7
                     s1 = list(s1_arr)
                 
                     # Attention check question answers for second state of transition
-                    check_next_1 = [int(i) for i in data_db[row][16].split('|')][state_ind + 1]
-                    check_next_2 = [int(i) for i in data_db[row][17].split('|')][state_ind + 1]
-                    passed_check_next_state = pass_attention_checks(check_next_1, check_next_2)
+                    check_next_1 = [i for i in data_db[row][16].split('|')][state_ind + 1]
+                    check_next_2 = [i for i in data_db[row][17].split('|')][state_ind + 1]
+                    
+                    # make sure that there is actual data for the attention checks, i.e. not 
+                    # that the data saved in the database for this attention check is ''
+                    if check_next_1 in AW_LIKERT_SCALE and check_next_2 in AW_LIKERT_SCALE:
+                        passed_check_next_state = pass_attention_checks(int(check_next_1), int(check_next_2))
+                    # something went wrong, i.e. some attention check data was not saved.
+                    else:
+                        passed_check_next_state = False
                     
                     # need to pass at least 1 out of 2 attention checks in each of the two sessions
                     passed_attention_checks = passed_check_state and passed_check_next_state
