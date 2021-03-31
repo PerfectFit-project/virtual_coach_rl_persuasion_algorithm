@@ -753,7 +753,7 @@ responses:
     - payload: /state_answer{{"attention_check":"3"}}
       title: Agree
     - payload: /state_answer{{"attention_check":"4"}}
-      title: Agree 
+      title: Agree strongly
   - text: "5) I do NOT live in the state Camelot in Nepal."
     buttons:
     - payload: /state_answer{{"attention_check":"0"}}
@@ -1224,9 +1224,9 @@ responses:
   utter_prolific_link_last:
   - text: 'Here is your completion link: {prolific_link}.'
   utter_final_close_session:
-  - text: '*THIS IS THE END OF THIS SESSION. PLEASE CLOSE THIS WINDOW.*'
+  - text: '*THIS IS THE END OF THIS SESSION. PLEASE CLOSE THIS WINDOW.\n\nANY FURTHER TYPING IN THIS CHAT RENDERS THIS SESSION INVALID.\n\nIF YOU HAVE QUESTIONS, CONTACT THE RESEARCHER: n.albers@tudelft.nl.*'
   utter_error_close_session:
-  - text: '*PLEASE CLOSE THIS WINDOW.*'
+  - text: '*PLEASE CLOSE THIS WINDOW. ANY FURTHER TYPING IN THIS CHAT RENDERS THIS SESSION INVALID.*'
 actions:
 - action_answer_mood
 - action_choose_activity
