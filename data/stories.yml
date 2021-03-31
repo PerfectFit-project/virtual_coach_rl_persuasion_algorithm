@@ -328,6 +328,7 @@ stories:
   - action: utter_error_contact_researcher
   - action: utter_error_close_session
   
+# Session 4
 - story: start_session_4
   steps: 
   - intent: start_session4
@@ -349,6 +350,7 @@ stories:
   - intent: confirm
   - checkpoint: activity_completion
   
+# Session 4
 # People typed in chat rather than using buttons for first button-question
 # -> triggers "anything"-intent rather than "confirm"
 # -> Error message to contact researcher and close window
@@ -371,6 +373,7 @@ stories:
   - action: utter_error_contact_researcher
   - action: utter_error_close_session
 
+# Session 4
 # People typed in chat rather than using buttons for second button-question
 # -> triggers "anything"-intent rather than "confirm"
 # -> Error message to contact researcher and close window
