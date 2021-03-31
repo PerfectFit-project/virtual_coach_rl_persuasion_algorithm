@@ -1160,9 +1160,10 @@ responses:
   - text: Great, and thank you for joining!
   - text: Perfect, and thanks a lot for participating!
   utter_message_formulation_prep:
-  - text: After this and before the next session, please remember to {activity_verb}.
+  - text: After this and before the next session, I suggest that you {activity_verb}. Note that doing this activity is voluntary and does not impact your payment.
+  - text: After this and before the next session, I advise you to {activity_verb}. Please note that doing this activity is voluntary and does not impact your payment.
   utter_message_formulation_prep_last:
-  - text: After this session, please remember to {activity_verb}.
+  - text: After this session, I recommend that you {activity_verb}. Just as before, doing this activity is voluntary and does not impact your payment.
   utter_message_formulation:
   - text: '**{message_formulation}**'
   utter_reflective_question:
