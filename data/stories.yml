@@ -46,6 +46,7 @@ stories:
 #    - session_saved: False
 #  - action: action_send_email
 
+# Session 1
 - story: start_session_1
   steps:
   - intent: start_session1
@@ -74,6 +75,59 @@ stories:
   - action: utter_activity_clear_first
   - checkpoint: main_not_last
   
+- story: start_session_1_anything
+  steps:
+  - intent: start_session1
+  - action: utter_greet_first_time
+  - action: utter_ask_for_mood
+  - intent: mood_curr
+  - action: action_answer_mood
+  - action: utter_purpose
+  - action: utter_expertise
+  - intent: anything
+  - action: utter_error_contact_researcher
+  - action: utter_error_close_session
+  
+- story: start_session_1_confirm_anything
+  steps:
+  - intent: start_session1
+  - action: utter_greet_first_time
+  - action: utter_ask_for_mood
+  - intent: mood_curr
+  - action: action_answer_mood
+  - action: utter_purpose
+  - action: utter_expertise
+  - intent: confirm
+  - action: utter_prompt_usage
+  - action: utter_explain_usage
+  - intent: anything
+  - action: utter_error_contact_researcher
+  - action: utter_error_close_session
+  
+- story: start_session_1_confirm_confirm_anything
+  steps:
+  - intent: start_session1
+  - action: utter_greet_first_time
+  - action: utter_ask_for_mood
+  - intent: mood_curr
+  - action: action_answer_mood
+  - action: utter_purpose
+  - action: utter_expertise
+  - intent: confirm
+  - action: utter_prompt_usage
+  - action: utter_explain_usage
+  - intent: confirm
+  - action: utter_prompt_session_overview
+  - action: utter_explain_session_overview_1
+  - action: utter_explain_session_overview_2
+  - action: utter_explain_session_overview_3
+  - action: utter_explain_session_overview_4
+  - action: utter_explain_session_final
+  - intent: anything
+  - action: utter_error_contact_researcher
+  - action: utter_error_close_session
+  
+# Session 2
 - story: start_session_2
   steps: 
   - intent: start_session2
@@ -93,6 +147,45 @@ stories:
   - action: utter_explain_session_final
   - intent: confirm
   - checkpoint: activity_completion
+  
+- story: start_session_2_anything
+  steps: 
+  - intent: start_session2
+  - action: action_set_session
+  - slot_was_set:
+    - session_loaded: True
+  - action: utter_greet_not_first
+  - action: utter_ask_for_mood
+  - intent: mood_curr
+  - action: action_answer_mood
+  - action: utter_explain_session_24_1
+  - action: utter_explain_session_2_2
+  - action: utter_explain_session_2_3
+  - action: utter_explain_session_2_4
+  - intent: anything
+  - action: utter_error_contact_researcher
+  - action: utter_error_close_session
+  
+- story: start_session_2_confirm_anything
+  steps: 
+  - intent: start_session2
+  - action: action_set_session
+  - slot_was_set:
+    - session_loaded: True
+  - action: utter_greet_not_first
+  - action: utter_ask_for_mood
+  - intent: mood_curr
+  - action: action_answer_mood
+  - action: utter_explain_session_24_1
+  - action: utter_explain_session_2_2
+  - action: utter_explain_session_2_3
+  - action: utter_explain_session_2_4
+  - intent: confirm
+  - action: utter_explain_session_234_5
+  - action: utter_explain_session_final
+  - intent: anything
+  - action: utter_error_contact_researcher
+  - action: utter_error_close_session
   
 - story: start_session_2_error
   steps: 
@@ -210,6 +303,31 @@ stories:
   - intent: confirm
   - checkpoint: activity_completion
   
+- story: start_session_3_end_anything
+  steps:
+  - checkpoint: start_session_3_end
+  - action: utter_explain_session_3_1
+  - action: utter_explain_session_34_2
+  - action: utter_explain_session_345_3
+  - action: utter_explain_session_345_4
+  - intent: anything
+  - action: utter_error_contact_researcher
+  - action: utter_error_close_session
+  
+- story: start_session_3_end_confirm_anything
+  steps:
+  - checkpoint: start_session_3_end
+  - action: utter_explain_session_3_1
+  - action: utter_explain_session_34_2
+  - action: utter_explain_session_345_3
+  - action: utter_explain_session_345_4
+  - intent: confirm
+  - action: utter_explain_session_234_5
+  - action: utter_explain_session_final
+  - intent: anything
+  - action: utter_error_contact_researcher
+  - action: utter_error_close_session
+  
 - story: start_session_4
   steps: 
   - intent: start_session4
@@ -231,6 +349,55 @@ stories:
   - intent: confirm
   - checkpoint: activity_completion
   
+# People typed in chat rather than using buttons for first button-question
+# -> triggers "anything"-intent rather than "confirm"
+# -> Error message to contact researcher and close window
+- story: start_session_4_anything
+  steps: 
+  - intent: start_session4
+  - action: action_set_session
+  - slot_was_set:
+    - session_loaded: True
+  - action: action_get_group
+  - action: utter_greet_not_first
+  - action: utter_ask_for_mood
+  - intent: mood_curr
+  - action: action_answer_mood
+  - action: utter_explain_session_24_1
+  - action: utter_explain_session_34_2
+  - action: utter_explain_session_345_3
+  - action: utter_explain_session_345_4
+  - intent: anything
+  - action: utter_error_contact_researcher
+  - action: utter_error_close_session
+
+# People typed in chat rather than using buttons for second button-question
+# -> triggers "anything"-intent rather than "confirm"
+# -> Error message to contact researcher and close window
+- story: start_session_4_confirm_anything
+  steps: 
+  - intent: start_session4
+  - action: action_set_session
+  - slot_was_set:
+    - session_loaded: True
+  - action: action_get_group
+  - action: utter_greet_not_first
+  - action: utter_ask_for_mood
+  - intent: mood_curr
+  - action: action_answer_mood
+  - action: utter_explain_session_24_1
+  - action: utter_explain_session_34_2
+  - action: utter_explain_session_345_3
+  - action: utter_explain_session_345_4
+  - intent: confirm
+  - action: utter_explain_session_234_5
+  - action: utter_explain_session_final
+  - intent: anything
+  - action: utter_error_contact_researcher
+  - action: utter_error_close_session
+  
+# Session 4: Loading from database failed
+# -> Error message to contact researcher and close window
 - story: start_session_4_error
   steps: 
   - intent: start_session4
@@ -240,6 +407,8 @@ stories:
   - action: utter_error_contact_researcher
   - action: utter_error_close_session
   
+# Session 5: loading from database failed
+# -> Error message to contact researcher and close window
 - story: start_session_5_error
   steps: 
   - intent: start_session5
@@ -248,7 +417,7 @@ stories:
     - session_loaded: False
   - action: utter_error_contact_researcher
   - action: utter_error_close_session
-  
+
 - story: start_session_5 
   steps: 
   - intent: start_session5
@@ -269,6 +438,7 @@ stories:
     - intent: confirm
   - checkpoint: start_session_5_satis_received
   
+# Session 5: user entered satisfaction correctly
 - story: start_session_5_satisf_true
   steps: 
   - checkpoint: start_session_5_satis_received
@@ -278,6 +448,8 @@ stories:
   - action: utter_thank_satisfaction_last
   - checkpoint: start_session_5_end
   
+# Session 5: user entered satisfaction incorrectly first, but correctly at the 
+#            second attempt
 - story: start_session_5_satisf_false_true
   steps: 
   - checkpoint: start_session_5_satis_received
@@ -295,6 +467,7 @@ stories:
   - action: utter_thank_satisfaction_last
   - checkpoint: start_session_5_end
   
+# Session 5: user entered satisfaction false 3 times.
 - story: start_session_5_satisf_false_false_false
   steps: 
   - checkpoint: start_session_5_satis_received
@@ -320,6 +493,8 @@ stories:
   - action: utter_satisfaction_false_false_false_last
   - checkpoint: start_session_5_end
   
+# Session 5: user entered satisfaction incorrectly the first 2 times, but then
+#            correctly at the third attempt.
 - story: start_session_5_satisf_false_false_true
   steps: 
   - checkpoint: start_session_5_satis_received
@@ -345,6 +520,7 @@ stories:
   - action: utter_thank_satisfaction_last
   - checkpoint: start_session_5_end
   
+# Session 5: session explanation
 - story: start_session_5_end
   steps:
   - checkpoint: start_session_5_end
@@ -359,6 +535,36 @@ stories:
   - intent: confirm
   - checkpoint: activity_completion_last
   
+# Session 5: session explanation, user entered free text rather than using
+#            the buttons for the first button-question
+# -> triggers "anything"-intent rather than "confirm"
+# -> Error message to contact researcher and close window
+- story: start_session_5_end_anything
+  steps:
+  - checkpoint: start_session_5_end
+  - action: utter_explain_session_5_1
+  - action: utter_explain_session_5_2
+  - action: utter_explain_session_345_3
+  - action: utter_explain_session_345_4
+  - intent: anything
+  - action: utter_error_contact_researcher
+  - action: utter_error_close_session
+  
+- story: start_session_5_end_confirm_anything
+  steps:
+  - checkpoint: start_session_5_end
+  - action: utter_explain_session_5_1
+  - action: utter_explain_session_5_2
+  - action: utter_explain_session_345_3
+  - action: utter_explain_session_345_4
+  - intent: confirm
+  - action: utter_explain_session_5_5
+  - action: utter_explain_session_5_6
+  - action: utter_explain_session_final
+  - intent: anything
+  - action: utter_error_contact_researcher
+  - action: utter_error_close_session
+   
 - story: activity_completion_done_last
   steps:
   - checkpoint: activity_completion_last
