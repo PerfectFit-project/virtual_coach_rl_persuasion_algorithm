@@ -373,7 +373,6 @@ class ActionSetSession(Action):
         try:
             sqlite_connection = sqlite3.connect(DATABASE_PATH)
             cursor = sqlite_connection.cursor()
-            #print("Connection created for user ", user_id)
             sqlite_select_query = """SELECT * from users WHERE id = ?"""
             cursor.execute(sqlite_select_query, (user_id,))
             data = cursor.fetchall()
@@ -385,7 +384,6 @@ class ActionSetSession(Action):
         finally:
             if (sqlite_connection):
                 sqlite_connection.close()
-                #print("Connection closed for user ", user_id)
         
         activity_verb_prev = ""
         activity_index_list = []
@@ -395,7 +393,7 @@ class ActionSetSession(Action):
         try:
             # load data from previous sessions about activities and actions
             activity_index_list = [int(i) for i in data[0][18].split('|')]
-            activity_verb_prev = df_act.loc[activity_index_list[-1], "VerbYou"]
+            activity_verb_prev = df_act.loc[activity_index_list[-1], "Components"]
             action_index_list = [int (i) for i in data[0][19].split('|')]
             action_type_index_list = [int (i) for i in data[0][25].split('|')]
             
@@ -760,9 +758,8 @@ class ActionChoosePersuasionLast(Action):
             # Sample randomly from best persuasion types in state
             pers_type = random.choice(p[state[0]][state[1]][state[2]])
             
+        
         elif group == 2:
-            
-            #print("Persuasion level 3")
             
             with open('Post_Sess_2/Level_3_Optimal_Policy', 'rb') as f:
                 p = pickle.load(f)
@@ -785,9 +782,8 @@ class ActionChoosePersuasionLast(Action):
             # Sample randomly from best persuasion types
             pers_type = random.choice(p[state[0]][state[1]][state[2]])
             
+        # Persuasion level 4, i.e. highest weighted Q-value
         elif group == 3:
-            
-            #print("Persuasion level 4")
              
             # get user ID
             metadata = extract_metadata_from_tracker(tracker)
@@ -814,7 +810,7 @@ class ActionChoosePersuasionLast(Action):
             # Sample randomly from best persuasion types
             pers_type = random.choice(p[user_id][state[0]][state[1]][state[2]])
          
-        # Sessions 1 and 2: random 
+        # Sessions 1 and 2: random  persuasion
         else:
             if curr_action_ind_list is None:
                 curr_action_ind_list = []
@@ -897,7 +893,6 @@ class ActionSaveSession(Action):
         try:
             sqliteConnection = sqlite3.connect(DATABASE_PATH)
             cursor = sqliteConnection.cursor()
-            #print("Successfully connected to SQLite")
             sqlite_select_query = """SELECT * from users WHERE id = ?"""
             cursor.execute(sqlite_select_query, (user_id,))
             data = cursor.fetchall()
@@ -1047,6 +1042,7 @@ class ActionSaveSession(Action):
             if (sqliteConnection):
                 sqliteConnection.close()
                 print("The SQLite connection is closed")
+                
         # connection closed
         
         return [SlotSet("session_saved", session_saved),
