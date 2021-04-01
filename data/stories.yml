@@ -65,6 +65,7 @@ stories:
   - action: utter_explain_session_overview_2
   - action: utter_explain_session_overview_3
   - action: utter_explain_session_overview_4
+  - action: utter_explain_session_overview_5
   - action: utter_explain_session_final
   - intent: confirm
   - action: utter_great
@@ -144,6 +145,7 @@ stories:
   - action: utter_explain_session_2_4
   - intent: confirm
   - action: utter_explain_session_234_5
+  - action: utter_explain_session_234_6
   - action: utter_explain_session_final
   - intent: confirm
   - checkpoint: activity_completion
@@ -182,6 +184,7 @@ stories:
   - action: utter_explain_session_2_4
   - intent: confirm
   - action: utter_explain_session_234_5
+  - action: utter_explain_session_234_6
   - action: utter_explain_session_final
   - intent: anything
   - action: utter_error_contact_researcher
@@ -299,6 +302,7 @@ stories:
   - action: utter_explain_session_345_4
   - intent: confirm
   - action: utter_explain_session_234_5
+  - action: utter_explain_session_234_6
   - action: utter_explain_session_final
   - intent: confirm
   - checkpoint: activity_completion
@@ -323,6 +327,7 @@ stories:
   - action: utter_explain_session_345_4
   - intent: confirm
   - action: utter_explain_session_234_5
+  - action: utter_explain_session_234_6
   - action: utter_explain_session_final
   - intent: anything
   - action: utter_error_contact_researcher
@@ -346,6 +351,7 @@ stories:
   - action: utter_explain_session_345_4
   - intent: confirm
   - action: utter_explain_session_234_5
+  - action: utter_explain_session_234_6
   - action: utter_explain_session_final
   - intent: confirm
   - checkpoint: activity_completion
@@ -394,6 +400,7 @@ stories:
   - action: utter_explain_session_345_4
   - intent: confirm
   - action: utter_explain_session_234_5
+  - action: utter_explain_session_234_6
   - action: utter_explain_session_final
   - intent: anything
   - action: utter_error_contact_researcher
@@ -534,6 +541,7 @@ stories:
   - intent: confirm
   - action: utter_explain_session_5_5
   - action: utter_explain_session_5_6
+  - action: utter_explain_session_5_7
   - action: utter_explain_session_final
   - intent: confirm
   - checkpoint: activity_completion_last
@@ -696,7 +704,6 @@ stories:
   - action: utter_activity_clear
   - checkpoint: main_not_last
   
-
 - story: Main_not_last
   steps:
   - checkpoint: main_not_last

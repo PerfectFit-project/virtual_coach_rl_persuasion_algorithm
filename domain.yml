@@ -182,14 +182,16 @@ responses:
   utter_prompt_session_overview:
   - text: Now, let me tell you how this session works.
   utter_explain_session_overview_1:
-  - text: First, I'll use my knowledge to recommend you a preparation activity.
+  - text: "First, I'll use my knowledge to recommend you a preparation activity."
   utter_explain_session_overview_2:
   - text: Next, I'll ask you how you think about this activity. This will allow me
       to learn to better support you and other people like you.
   utter_explain_session_overview_3:
   - text: "In the end, I'll provide additional information on doing the activity."
   utter_explain_session_overview_4:
-  - text: And don't worry, I'll also send you your activity as a message in Prolific.
+  - text: "And don't worry, I'll also send you your activity as a message in Prolific."
+  utter_explain_session_overview_5:
+  - text: "Please note that doing this activity after this and before the next session is voluntary and does not impact your payment."
   utter_explain_session_final:
   - buttons:
     - payload: /confirm
@@ -198,10 +200,10 @@ responses:
       title: Yes!
     text: I hope this is clear. Ready to begin?
   utter_greet_not_first:
-  - text: Hi, nice to see you again!
-  - text: Hello there, welcome back!
+  - text: "Hi, nice to see you again!"
+  - text: "Hello there, welcome back!"
   - text: "Hello, it's great to see you again!"
-  - text: Hi there, welcome back!
+  - text: "Hi there, welcome back!"
   - text: "Hi, I'm happy to see you again!"
   utter_greet_session_3:
   - text: Hey there, welcome to your third conversation with me!
@@ -236,6 +238,13 @@ responses:
       Prolific.
   - text: "Cool! In the end, I'll also send you a message with your new activity in Prolific again."
   - text: "Perfect! At the end of this session, I'll also again send you a message with your new activity in Prolific."
+  utter_explain_session_234_6:
+  - text: Please remember that doing the activity after this is entirely up to you. Your payment does not depend on this.
+  - text: Don't forget that actually doing the activity after this session is voluntary. It is not required for you to get paid.
+  - text: Again, whether you do your recommended activity after this session is up to you. Your payment is not contingent on you doing the activity.
+  - text: It is still up to you whether you do your assigned activity after this session. It will not impact your payment.
+  - text: Recall that your payment does not depend on whether or not you do your advised activity after this session. Doing the activity is not required.
+  - text: Like before, you will get paid independent of whether or not you do your recommended activity after this session. Doing the activity is entirely volunatary.
   utter_explain_session_34_2:
   - text: Just as before, I'll first ask you about your experience (if any) with your
       activity from last time.
@@ -272,9 +281,9 @@ responses:
   - text: Finally, I'll ask you to tell me about your thoughts on this activity, and I'll tell you a little more about doing this activity. Sounds good?
     buttons:
     - payload: /confirm
-      title: Okay!
+      title: "Okay!"
     - payload: /confirm
-      title: Sure thing
+      title: "Sure thing"
   utter_explain_session_5_1:
   - text: "Before we start, let me quickly explain how this last session is structured."
   utter_explain_session_5_2:
@@ -284,7 +293,9 @@ responses:
   - text: Cool! Of course, since this is the last session, there won't be a next session
       in which I ask you about your experience with this activity.
   utter_explain_session_5_6:
-  - text: But I'll still send you a message with your new activity in Prolific.
+  - text: "But I'll still send you a message with your new activity in Prolific."
+  utter_explain_session_5_7:
+  - text: Just as before, doing this activity after this session is voluntary and does not impact your payment.
   utter_ask_activity_completion:
   - buttons:
     - payload: /reward_answer{{"reward":"1"}}
@@ -1160,10 +1171,10 @@ responses:
   - text: Great, and thank you for joining!
   - text: Perfect, and thanks a lot for participating!
   utter_message_formulation_prep:
-  - text: After this and before the next session, I suggest that you {activity_verb}. Note that doing this activity is voluntary and does not impact your payment.
-  - text: After this and before the next session, I advise you to {activity_verb}. Please note that doing this activity is voluntary and does not impact your payment.
+  - text: After this and before the next session, I suggest that you {activity_verb}.
+  - text: After this and before the next session, I advise you to {activity_verb}.
   utter_message_formulation_prep_last:
-  - text: After this session, I recommend that you {activity_verb}. Just as before, doing this activity is voluntary and does not impact your payment.
+  - text: After this session, I recommend that you {activity_verb}.
   utter_message_formulation:
   - text: '**{message_formulation}**'
   utter_reflective_question:
