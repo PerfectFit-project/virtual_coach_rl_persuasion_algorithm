@@ -27,9 +27,9 @@ pipeline:
 # https://rasa.com/docs/rasa/core/policies/
 policies:
   - name: MemoizationPolicy
-    max_history: 9
+    max_history: 11
   - name: TEDPolicy
-    max_history: 9
+    max_history: 11
     epochs: 10
     augmentation: 0 # newly added this to see if it reduces core training time
   #- name: FallbackPolicy

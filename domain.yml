@@ -191,7 +191,7 @@ responses:
   utter_explain_session_overview_4:
   - text: "And don't worry, I'll also send you your activity as a message in Prolific."
   utter_explain_session_overview_5:
-  - text: "Please note that doing this activity after this and before the next session is voluntary and does not impact your payment."
+  - text: "Please note that doing this activity after this session is voluntary and does not impact your payment."
   utter_explain_session_final:
   - buttons:
     - payload: /confirm
@@ -239,12 +239,12 @@ responses:
   - text: "Cool! In the end, I'll also send you a message with your new activity in Prolific again."
   - text: "Perfect! At the end of this session, I'll also again send you a message with your new activity in Prolific."
   utter_explain_session_234_6:
-  - text: Please remember that doing the activity after this is entirely up to you. Your payment does not depend on this.
+  - text: Please remember that doing the activity after this session is entirely up to you. Your payment does not depend on this.
   - text: Don't forget that actually doing the activity after this session is voluntary. It is not required for you to get paid.
   - text: Again, whether you do your recommended activity after this session is up to you. Your payment is not contingent on you doing the activity.
   - text: It is still up to you whether you do your assigned activity after this session. It will not impact your payment.
   - text: Recall that your payment does not depend on whether or not you do your advised activity after this session. Doing the activity is not required.
-  - text: Like before, you will get paid independent of whether or not you do your recommended activity after this session. Doing the activity is entirely volunatary.
+  - text: "Like before, you will get paid independent of whether or not you do your recommended activity after this session. Doing the activity is entirely volunatary."
   utter_explain_session_34_2:
   - text: Just as before, I'll first ask you about your experience (if any) with your
       activity from last time.
@@ -269,15 +269,15 @@ responses:
   - text: "Finally, I'll ask you about your thoughts and give some more information on this activity. Okay?"
     buttons:
     - payload: /confirm
-      title: Sounds good
+      title: "Sounds good"
     - payload: /confirm
-      title: No problem!
+      title: "No problem!"
   - text: At the end of this session, I'll ask you to tell me how you think about this activity, and I'll provide some additional information on this activity. Okay?
     buttons:
     - payload: /confirm
-      title: Alright!
+      title: "Alright!"
     - payload: /confirm
-      title: OK
+      title: "OK"
   - text: Finally, I'll ask you to tell me about your thoughts on this activity, and I'll tell you a little more about doing this activity. Sounds good?
     buttons:
     - payload: /confirm
@@ -295,28 +295,66 @@ responses:
   utter_explain_session_5_6:
   - text: "But I'll still send you a message with your new activity in Prolific."
   utter_explain_session_5_7:
-  - text: Just as before, doing this activity after this session is voluntary and does not impact your payment.
+  - text: "Remember, doing your activity after this session is voluntary and does not impact your payment."
   utter_ask_activity_completion:
   - buttons:
-    - payload: /reward_answer{{"reward":"1"}}
-      title: Yes
     - payload: /reward_answer{{"reward":"0"}}
-      title: No
-    text: Great! Last time I suggested you to {activity_verb_prev}. Did you complete
-      this activity?
+      title: "0 (nothing)"
+    - payload: /reward_answer{{"reward":"1"}}
+      title: "1"
+    - payload: /reward_answer{{"reward":"2"}}
+      title: "2 (weak)"
+    - payload: /reward_answer{{"reward":"3"}}
+      title: "3"
+    - payload: /reward_answer{{"reward":"4"}}
+      title: "4"
+    - payload: /reward_answer{{"reward":"5"}}
+      title: "5 (moderate)"
+    - payload: /reward_answer{{"reward":"6"}}
+      title: "6"
+    - payload: /reward_answer{{"reward":"7"}}
+      title: "7"
+    - payload: /reward_answer{{"reward":"8"}}
+      title: "8 (strong)"
+    - payload: /reward_answer{{"reward":"9"}}
+      title: "9"
+    - payload: /reward_answer{{"reward":"10"}}
+      title: "10 (extremely strong)"
+    text: "Please rate the overall effort you put into doing this activity. Recall that doing your activity is voluntary and that your answer to this question thus does **not** impact your payment."
+  utter_name_last_activity_components:
+  - text: "Great! Last time I suggested you to {activity_verb_prev}."
+  utter_name_last_activity_components_last:
+  - text: "Great! In the last session I suggested you to {activity_verb_prev}."
   utter_ask_activity_completion_last:
   - buttons:
-    - payload: /reward_answer{{"reward":"1"}}
-      title: Yes
     - payload: /reward_answer{{"reward":"0"}}
-      title: No
-    text: Great! Last time I suggested you to {activity_verb_prev}. Did you complete
-      this activity?
+      title: "0 (nothing)"
+    - payload: /reward_answer{{"reward":"1"}}
+      title: "1"
+    - payload: /reward_answer{{"reward":"2"}}
+      title: "2 (weak)"
+    - payload: /reward_answer{{"reward":"3"}}
+      title: "3"
+    - payload: /reward_answer{{"reward":"4"}}
+      title: "4"
+    - payload: /reward_answer{{"reward":"5"}}
+      title: "5 (moderate)"
+    - payload: /reward_answer{{"reward":"6"}}
+      title: "6"
+    - payload: /reward_answer{{"reward":"7"}}
+      title: "7"
+    - payload: /reward_answer{{"reward":"8"}}
+      title: "8 (strong)"
+    - payload: /reward_answer{{"reward":"9"}}
+      title: "9"
+    - payload: /reward_answer{{"reward":"10"}}
+      title: "10 (extremely strong)"
+    text: "Please rate the overall effort you put into doing this activity. Recall that doing your activity is voluntary and that your answer to this question thus does **not** impact your payment."
   utter_response_activity_completion_done:
-  - text: Yay, congrats!
-  - text: Nice, good job!
-  - text: Awesome, well done!
-  - text: Nice, congratulations!
+  - text: "Yay, congrats!"
+  - text: "Nice, good job!"
+  - text: "Awesome, well done!"
+  - text: "Nice, congratulations!"
   - text: "Excellent, way to go!"
   - text: "Yay, nice work!"
   utter_response_activity_completion_notDone:
@@ -1236,9 +1274,9 @@ responses:
   utter_prolific_link_last:
   - text: 'Here is your completion link: {prolific_link}.'
   utter_final_close_session:
-  - text: '*THIS IS THE END OF THIS SESSION. PLEASE CLOSE THIS WINDOW.\n\nANY FURTHER TYPING IN THIS CHAT RENDERS THIS SESSION INVALID.\n\nIF YOU HAVE QUESTIONS, CONTACT THE RESEARCHER: n.albers@tudelft.nl.*'
+  - text: "*THIS IS THE END OF THIS SESSION. PLEASE CLOSE THIS WINDOW*.\n\n*ANY FURTHER TYPING IN THIS CHAT RENDERS THIS SESSION INVALID.*\n\n*IF YOU HAVE QUESTIONS, CONTACT THE RESEARCHER: n.albers@tudelft.nl.*"
   utter_error_close_session:
-  - text: '*PLEASE CLOSE THIS WINDOW. ANY FURTHER TYPING IN THIS CHAT RENDERS THIS SESSION INVALID.*'
+  - text: "*PLEASE CLOSE THIS WINDOW. ANY FURTHER TYPING IN THIS CHAT RENDERS THIS SESSION INVALID.*"
 actions:
 - action_answer_mood
 - action_choose_activity

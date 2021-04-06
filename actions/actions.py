@@ -263,9 +263,11 @@ class ActionSetSlotReward(Action):
 
     async def run(self, dispatcher, tracker, domain):
 
-        reward = tracker.get_slot('reward')
+        reward = int(tracker.get_slot('reward'))
         success = True
-        if reward == "0":
+        # 5 denotes that people put a moderate amount of effort into doing the
+        # activity. Scale goes from 0 (nothing) to 10 (extremely strong)
+        if reward < 5:
             success = False
         
         return [SlotSet("action_success", success)]
