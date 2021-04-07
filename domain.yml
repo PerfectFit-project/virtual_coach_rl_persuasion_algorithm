@@ -21,8 +21,14 @@ slots:
     type: text
     initial_value: ''
     influence_conversation: false
+  # We distinguish 3 levels of action success based on our completion
+  # question. Originally, we had just 2 levels because we just asked 
+  # whether or not people did the activity. But now we ask for effort
+  # on a scale from 0 to 10.
   action_success:
-    type: bool
+    type: float
+    max_value: 2
+    min_value: 0
     influence_conversation: true
   action_type_index_list:
     type: list
@@ -240,9 +246,9 @@ responses:
   - text: "Perfect! At the end of this session, I'll also again send you a message with your new activity in Prolific."
   utter_explain_session_234_6:
   - text: Please remember that doing the activity after this session is entirely up to you. Your payment does not depend on this.
-  - text: Don't forget that actually doing the activity after this session is voluntary. It is not required for you to get paid.
+  - text: Don't forget that actually doing the activity after this session is voluntary. It's not required for you to get paid.
   - text: Again, whether you do your recommended activity after this session is up to you. Your payment is not contingent on you doing the activity.
-  - text: It is still up to you whether you do your assigned activity after this session. It will not impact your payment.
+  - text: It's still up to you whether you do your assigned activity after this session. It will not impact your payment.
   - text: Recall that your payment does not depend on whether or not you do your advised activity after this session. Doing the activity is not required.
   - text: "Like before, you will get paid independent of whether or not you do your recommended activity after this session. Doing the activity is entirely volunatary."
   utter_explain_session_34_2:
@@ -303,24 +309,24 @@ responses:
     - payload: /reward_answer{{"reward":"1"}}
       title: "1"
     - payload: /reward_answer{{"reward":"2"}}
-      title: "2 (weak)"
+      title: "2"
     - payload: /reward_answer{{"reward":"3"}}
       title: "3"
     - payload: /reward_answer{{"reward":"4"}}
       title: "4"
     - payload: /reward_answer{{"reward":"5"}}
-      title: "5 (moderate)"
+      title: "5"
     - payload: /reward_answer{{"reward":"6"}}
       title: "6"
     - payload: /reward_answer{{"reward":"7"}}
       title: "7"
     - payload: /reward_answer{{"reward":"8"}}
-      title: "8 (strong)"
+      title: "8"
     - payload: /reward_answer{{"reward":"9"}}
       title: "9"
     - payload: /reward_answer{{"reward":"10"}}
       title: "10 (extremely strong)"
-    text: "Please rate the overall effort you put into doing this activity. Recall that doing your activity is voluntary and that your answer to this question thus does **not** impact your payment."
+    text: "Please rate the overall effort you put into doing this activity.\n\nPlease answer honestly. Recall that doing your activity is voluntary and that your answer to this question thus does **not** impact your payment."
   utter_name_last_activity_components:
   - text: "Great! Last time I suggested you to {activity_verb_prev}."
   utter_name_last_activity_components_last:
@@ -332,24 +338,24 @@ responses:
     - payload: /reward_answer{{"reward":"1"}}
       title: "1"
     - payload: /reward_answer{{"reward":"2"}}
-      title: "2 (weak)"
+      title: "2"
     - payload: /reward_answer{{"reward":"3"}}
       title: "3"
     - payload: /reward_answer{{"reward":"4"}}
       title: "4"
     - payload: /reward_answer{{"reward":"5"}}
-      title: "5 (moderate)"
+      title: "5"
     - payload: /reward_answer{{"reward":"6"}}
       title: "6"
     - payload: /reward_answer{{"reward":"7"}}
       title: "7"
     - payload: /reward_answer{{"reward":"8"}}
-      title: "8 (strong)"
+      title: "8"
     - payload: /reward_answer{{"reward":"9"}}
       title: "9"
     - payload: /reward_answer{{"reward":"10"}}
       title: "10 (extremely strong)"
-    text: "Please rate the overall effort you put into doing this activity. Recall that doing your activity is voluntary and that your answer to this question thus does **not** impact your payment."
+    text: "Please rate the overall effort you put into doing this activity.\n\nPlease answer honestly. Recall that doing your activity is voluntary and that your answer to this question thus does **not** impact your payment."
   utter_response_activity_completion_done:
   - text: "Yay, congrats!"
   - text: "Nice, good job!"
@@ -357,18 +363,27 @@ responses:
   - text: "Nice, congratulations!"
   - text: "Excellent, way to go!"
   - text: "Yay, nice work!"
+  utter_response_activity_completion_doneMedium:
+  - text: "Nice that you gave it a try!"
+  - text: "Cool, I'm happy to hear that you worked on it."
+  - text: "Nice to hear that you tried the activity!"
+  - text: "Cool, it's nice that you gave it a shot!"
+  - text: "I'm happy to hear that you gave the activity a shot."
+  - text: "That's good to hear that you worked on the activity."
   utter_response_activity_completion_notDone:
-  - text: I'm sorry to hear that. I understand that it can be difficult.
-  - text: Hmm, that's a pity. Maybe you've been busy.
-  - text: Too bad. I know that it can be hard at first.
-  - text: That's too bad. This is not uncommon at the start.
-  - text: Ah that's a shame. This can happen at the beginning.
-  - text: I see, that's a pity. This can happen!
-  - text: Oh, what a shame. I see that this can be challenging sometimes.
+  - text: "I'm sorry to hear that. I understand that it can be difficult."
+  - text: "Hmm, that's a pity. Maybe you've been busy."
+  - text: "Too bad. I know that it can be hard at first."
+  - text: "That's too bad. This is not uncommon at the start."
+  - text: "Ah that's a shame. This can happen at the beginning."
+  - text: "I see, that's a pity. This can happen!"
+  - text: "Oh, what a shame. I see that this can be challenging sometimes."
   utter_response_activity_completion_done_last:
-  - text: Yay, nicely done!
+  - text: "Yay, nicely done!"
   utter_response_activity_completion_notDone_last:
   - text: "Ah that is unfortunate. I understand that it's not always easy."
+  utter_response_activity_completion_DoneMedium_last:
+  - text: "Nice, I'm glad that you tried the activity."
   utter_ask_activity_completion_details_yes:
   - text: How did you approach, do, or experience your assigned activity? Use the
       text field.
@@ -509,7 +524,7 @@ responses:
       Meanwhile, maybe this session can help to cheer you up a bit.
   - text: Aww it doesn't feel good to hear that. Hopefully you feel better soon!
   - text: Oh I'm so sorry that you're not having a good day. I hope it gets better soon and that I can cheer you up a little!
-  - text: That's a shame that you are not feeling well today. Hopefully you feel better
+  - text: That's a shame that you're not feeling well today. Hopefully you feel better
       soon!
   - text: "So sorry about that! Feel better soon - hopefully talking about preparing to quit smoking and becoming more physically active can help a bit."
   utter_mood_negative_valence_high_arousal_quadrant:
@@ -1182,7 +1197,7 @@ responses:
       title: Yes!
     - payload: /confirm
       title: Sounds good!
-  - text: And recall that you'll also get invited to another session with me. Sounds good?
+  - text: "And recall that you'll also get invited to another session with me. Sounds good?"
     buttons:
     - payload: /confirm
       title: Yes!
@@ -1257,7 +1272,7 @@ responses:
   utter_test:
   - text: This is a test.
   utter_default:
-  - text: 'Something went wrong, please contact the researcher: n.albers@tudelft.nl.'
+  - text: "Something went wrong, please contact the researcher: n.albers@tudelft.nl.\n\n*PLEASE CLOSE THIS WINDOW*."
   utter_implementation_intention_syntax_error:
   - text: Hmm, please formulate your rule in the form 'If <situation>, then <do activity>.'
   utter_implementation_intention_syntax_error_last:
@@ -1268,6 +1283,8 @@ responses:
   - text: "This still isn't the kind of rule I'm looking for. That's okay - I'll leave it to you to create a rule in your own time after this session."
   utter_error_contact_researcher:
   - text: 'Something went wrong, please contact the researcher: n.albers@tudelft.nl.'
+  utter_timeout_contact_researcher:
+  - text: "The session timed out, please contact the researcher: n.albers@tudelft.nl."
   utter_prolific_link:
   - text: 'Cool! Here is your completion link: {prolific_link}.'
   - text: 'Cool! And here is your completion link: {prolific_link}.'
