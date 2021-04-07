@@ -253,7 +253,7 @@ class ActionChooseActivityLast(Action):
         return [SlotSet("activity_formulation", df_act.loc[act_index, 'Formulation Chat']), 
                 SlotSet("activity_formulation_email", df_act.loc[act_index, 'Formulation Email']),
                 SlotSet("activity_index_list", curr_act_ind_list),
-                SlotSet("activity_verb", df_act.loc[act_index, "VerbYouShort"])]
+                SlotSet("activity_verb", df_act.loc[act_index, "VerbYou"])]
 
 # Set slot about whether the user completed the assigned activity    
 class ActionSetSlotReward(Action):
@@ -264,11 +264,14 @@ class ActionSetSlotReward(Action):
     async def run(self, dispatcher, tracker, domain):
 
         reward = int(tracker.get_slot('reward'))
-        success = True
-        # 5 denotes that people put a moderate amount of effort into doing the
-        # activity. Scale goes from 0 (nothing) to 10 (extremely strong)
-        if reward < 5:
-            success = False
+        success = 1 # answers 4-6 on the scale, i.e. medium effort
+        # Scale goes from 0 (nothing) to 10 (extremely strong).
+        # For now, we somewhat arbitrarily set the ranges. After the pilot,
+        # we might adapt what we consider "success" and what a failure.
+        if reward < 4:
+            success = 0 # answers 0-3 on scale, i.e. low effort
+        elif reward > 6:
+            success = 2 # answers 7-10 on scale, i.e. high effort
         
         return [SlotSet("action_success", success)]
     
