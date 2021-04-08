@@ -75,6 +75,17 @@ stories:
   - action: action_pause_five
   - action: utter_activity_clear_first
   - checkpoint: main_not_last
+
+# Session 1  
+# User did not wait for the mood question to appear but instead typed in the chat.
+# So we ask the user to contact the researcher and close the window.
+- story: start_session_1_mood_error
+  steps:
+  - intent: start_session1
+  - action: utter_greet_first_time
+  - intent: anything
+  - action: utter_error_contact_researcher
+  - action: utter_error_close_session
   
 - story: start_session_1_anything
   steps:
@@ -149,6 +160,20 @@ stories:
   - action: utter_explain_session_final
   - intent: confirm
   - checkpoint: activity_completion
+
+# Session 2
+# User did not wait for the mood question but instead typed in chat.
+# So we ask the user to contact the researcher and close the window.
+- story: start_session_2_mood_error
+  steps: 
+  - intent: start_session2
+  - action: action_set_session
+  - slot_was_set:
+    - session_loaded: True
+  - action: utter_greet_not_first
+  - intent: anything
+  - action: utter_error_contact_researcher
+  - action: utter_error_close_session
   
 - story: start_session_2_anything
   steps: 
@@ -584,7 +609,7 @@ stories:
   - intent: reward_answer
   - action: action_set_slot_reward
   - slot_was_set:
-    - action_success: True
+    - action_success: 2
   - action: utter_response_activity_completion_done_last
   - action: utter_ask_activity_completion_details_yes_last
   - checkpoint: activity_completion_details_last
@@ -597,9 +622,22 @@ stories:
   - intent: reward_answer
   - action: action_set_slot_reward
   - slot_was_set:
-    - action_success: False
+    - action_success: 0
   - action: utter_response_activity_completion_notDone_last
   - action: utter_ask_activity_completion_details_no_last
+  - checkpoint: activity_completion_details_last
+  
+- story: activity_completion_DoneMedium_last
+  steps:
+  - checkpoint: activity_completion_last
+  - action: utter_name_last_activity_components_last
+  - action: utter_ask_activity_completion_last
+  - intent: reward_answer
+  - action: action_set_slot_reward
+  - slot_was_set:
+    - action_success: 1
+  - action: utter_response_activity_completion_DoneMedium_last
+  - action: utter_ask_activity_completion_details_yes_last
   - checkpoint: activity_completion_details_last
   
 - story: activity_completion_details_last
@@ -638,6 +676,7 @@ stories:
   - action: utter_prepare_activity_proposal_session5
   - checkpoint: main_last
   
+# Person answered 7-10 on effort scale for completing activity -> high effort
 - story: activity_completion_done_notLast
   steps:
   - checkpoint: activity_completion
@@ -646,8 +685,22 @@ stories:
   - intent: reward_answer
   - action: action_set_slot_reward
   - slot_was_set:
-    - action_success: True
+    - action_success: 2
   - action: utter_response_activity_completion_done
+  - action: utter_ask_activity_completion_details_yes
+  - checkpoint: activity_completion_details
+  
+# Person answered 4-6 on effort scale for completing activity -> medium effort
+- story: activity_completion_DoneMedium_notLast
+  steps:
+  - checkpoint: activity_completion
+  - action: utter_name_last_activity_components
+  - action: utter_ask_activity_completion
+  - intent: reward_answer
+  - action: action_set_slot_reward
+  - slot_was_set:
+    - action_success: 1
+  - action: utter_response_activity_completion_doneMedium
   - action: utter_ask_activity_completion_details_yes
   - checkpoint: activity_completion_details
   
@@ -659,7 +712,7 @@ stories:
   - intent: reward_answer
   - action: action_set_slot_reward
   - slot_was_set:
-    - action_success: False
+    - action_success: 0
   - action: utter_response_activity_completion_notDone
   - action: utter_ask_activity_completion_details_no
   - checkpoint: activity_completion_details
