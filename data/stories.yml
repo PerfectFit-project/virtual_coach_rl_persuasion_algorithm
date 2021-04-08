@@ -83,6 +83,7 @@ stories:
   steps:
   - intent: start_session1
   - action: utter_greet_first_time
+  - action: utter_ask_for_mood
   - intent: anything
   - action: utter_error_contact_researcher
   - action: utter_error_close_session
@@ -171,6 +172,7 @@ stories:
   - slot_was_set:
     - session_loaded: True
   - action: utter_greet_not_first
+  - action: utter_ask_for_mood
   - intent: anything
   - action: utter_error_contact_researcher
   - action: utter_error_close_session
