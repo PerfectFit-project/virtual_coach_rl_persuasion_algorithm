@@ -60,13 +60,16 @@ def feat_sel_num_blocks_avg_p_val(feat_not_sel, num_feat_not_sel, blocks,
     
     return feat_sel, feat_sel_criteria
 
-def gather_data_post_sess_2(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7]):
+def gather_data_post_sess_2(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7],
+                            excluded_ids = [[], []]):
     """
     Gathers data from sqlite database after session 2.
     
     Args:
-        database_path: path to database
-        feat_to_select: which of the state features to consider
+        database_path (str): path to database
+        feat_to_select (list of int): which of the state features to consider
+        excluded_ids (list of list of str): list of IDs of people whose data we should 
+                                            not use for each of the 2 sessions.
     """
     num_select = len(feat_to_select)
     
@@ -96,6 +99,8 @@ def gather_data_post_sess_2(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7
     # for each user that has completed at least 1 session
     for row in range(num_rows):
         
+        user_id_curr = data_db[row][0]
+        
         try:
             # Get first state
             s0_arr = np.array([int(i) for i in data_db[row][20].split('|')])[feat_to_select]
@@ -105,6 +110,11 @@ def gather_data_post_sess_2(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7
             # Test data that is still in the database and that does not have
             # info for attention checks.
             if data_db[row][16] is None or data_db[row][17] is None or data_db[row][16] == ' ':
+                passed_check_state = False
+            
+            # only if the user's ID is not in the list of users whose data we
+            # should not use for the first session
+            elif user_id_curr in excluded_ids[0]:
                 passed_check_state = False
             
             else:
@@ -135,7 +145,10 @@ def gather_data_post_sess_2(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7
                 # info for attention checks
                 if data_db[row][16] is None or data_db[row][17] is None or data_db[row][16] == ' ':
                     passed_check_next_state = False
-                
+                # only if the user's ID is not in the list of users whose data we
+                # should not use for the second session
+                elif user_id_curr in excluded_ids[1]:
+                    passed_check_next_state = False
                 else:
                     # attention check answers for second session
                     check_next_1 = [i for i in data_db[row][16].split('|')][1]
@@ -161,7 +174,7 @@ def gather_data_post_sess_2(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7
                     r = [int(i) for i in data_db[row][7].split('|')][0]
                 
                     data.append([s0, s1, a, r]) # save transition
-                    user_ids.append(data_db[row][0]) # save corresponding user ID
+                    user_ids.append(user_id_curr) # save corresponding user ID
                   
                 # Even if the transition is not used, a state may still be used to compute 
                 # mean values for the features
@@ -171,7 +184,7 @@ def gather_data_post_sess_2(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7
         # Incomplete data for this user -> cannot be used.
         except Exception:
             print("Incomplete data for user " + data_db[row][0] + ".")
-    
+
     all_states = np.array(all_states)
         
     # compute the mean value for each feature
@@ -265,15 +278,19 @@ def check_attention_checks_session(database_path, session_num):
     
     return user_ids_passed, user_ids_failed, user_ids_error
 
-def gather_data_post_sess_5(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7]):
+def gather_data_post_sess_5(database_path, 
+                            feat_to_select = [0, 1, 2, 3, 4, 6, 7],
+                            excluded_ids = [[], [], [], [], []]):
     """
     Gathers data from sqlite database after session 5.
     Also considers whether 2/2 attention checks have been failed in a session
     and removes such samples.
     
     Args:
-        database_path: path to database
-        feat_to_select: which of the state features to consider
+        database_path (str): path to database
+        feat_to_select (list of int): which of the state features to consider
+        excluded_ids (list of list of str): list of IDs of people whose data we should 
+                                            not use for each of the 5 sessions.
     """
     num_select = len(feat_to_select)
     
@@ -317,9 +334,13 @@ def gather_data_post_sess_5(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7
                     check_state_1 = [i for i in data_db[row][16].split('|')][state_ind]
                     check_state_2 = [i for i in data_db[row][17].split('|')][state_ind]
                     
+                    # only if the user's ID is not in the list of users whose data we
+                    # should not use for this session
+                    if user_id_curr in excluded_ids[state_ind]:
+                        passed_check_state = False
                     # make sure that there is actual data for the attention checks, i.e. not 
                     # that the data saved in the database for this attention check is ''
-                    if check_state_1 in AW_LIKERT_SCALE and check_state_2 in AW_LIKERT_SCALE:
+                    elif check_state_1 in AW_LIKERT_SCALE and check_state_2 in AW_LIKERT_SCALE:
                         passed_check_state = pass_attention_checks(int(check_state_1), int(check_state_2))
                     # something went wrong, i.e. some attention check data was not saved.
                     else:
@@ -339,6 +360,10 @@ def gather_data_post_sess_5(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7
                         check_next_1 = [i for i in data_db[row][16].split('|')][state_ind + 1]
                         check_next_2 = [i for i in data_db[row][17].split('|')][state_ind + 1]
                         
+                        # only if the user's ID is not in the list of users whose data we
+                        # should not use for this session
+                        if user_id_curr in excluded_ids[state_ind + 1]:
+                            passed_check_next_state = False
                         # make sure that there is actual data for the attention checks, i.e. not 
                         # that the data saved in the database for this attention check is ''
                         if check_next_1 in AW_LIKERT_SCALE and check_next_2 in AW_LIKERT_SCALE:
