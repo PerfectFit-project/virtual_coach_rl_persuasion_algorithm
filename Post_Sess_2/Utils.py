@@ -222,15 +222,15 @@ def check_attention_checks_session(database_path, session_num):
     num_rows = len(data_db)
     user_ids_passed = []
     user_ids_failed = []
-    user_ids_error = [] # users where something went wrong, i.e. some but not all data has been saved
+    user_ids_error = [] # users where something went wrong, i.e. some data but not all attention check data was saved
     
-    session_error = False # whether something went wrong in a session, i.e. some but not all data was saved
+    session_error = False # whether something went wrong in a session, i.e. some data but not all attention check data was saved
     
     session_index = session_num - 1
     
     print("... Checking attention checks for session ", session_num)
     
-    # for each user that has completed at least 1 session
+    # for each user
     for row in range(num_rows):
         
         # Test data that is still in the database and that does not have
@@ -435,3 +435,83 @@ def get_Q_values_opt_policy(discount_factor, trans_func, reward_func):
         it += 1
     
     return q_vals, policy_new
+
+def get_planning_reflection_answers(database_path, session_num):
+    """
+    Returns IDs and planning/reflection answers for a specific session.
+    
+    Args:
+        database_path: path to database
+        session_num: which session to check for; from 1 to 5
+    """
+    # create db connection
+    try:
+        sqlite_connection = sqlite3.connect(database_path)
+        cursor = sqlite_connection.cursor()
+        print("Connection created")
+        if session_num == 1:
+            sqlite_select_query = """SELECT * from users WHERE state_0 IS NOT NULL"""
+        elif session_num == 2:
+            sqlite_select_query = """SELECT * from users WHERE state_1 IS NOT NULL"""
+        elif session_num == 3:
+            sqlite_select_query = """SELECT * from users WHERE state_2 IS NOT NULL"""
+        elif session_num == 4:
+            sqlite_select_query = """SELECT * from users WHERE state_3 IS NOT NULL"""
+        elif session_num == 5:
+            sqlite_select_query = """SELECT * from users WHERE state_4 IS NOT NULL"""
+        cursor.execute(sqlite_select_query)
+        data_db = cursor.fetchall()
+        cursor.close()
+
+    except sqlite3.Error as error:
+        print("Error while connecting to sqlite", error)
+    finally:
+        if (sqlite_connection):
+            sqlite_connection.close()
+            print("Connection closed")
+ 
+    num_rows = len(data_db)
+    user_ids = [] # user IDs
+    answers = [] # free-text responses given by users
+    activities = [] # activities that people were assigned
+    action_types = [] # persuasion types
+    
+    session_index = session_num - 1
+    
+    print("... Getting planning/reflection answers for session ", session_num)
+    
+    # for each user that has some saved data for this session
+    for row in range(num_rows):
+        
+        user_id = data_db[row][0]
+        
+        try:
+        
+            # session_index goes from 0 to 4
+            action_type = [i for i in data_db[row][25].split('|')][session_index]
+            activity = [i for i in data_db[row][18].split('|')][session_index]
+            
+            # reflection answer
+            if not action_type == "3":
+                answer = data_db[row][29 + session_index]
+            # planning answer
+            else:
+                if session_num < 5:
+                    answer = data_db[row][3 + session_index]
+                else:
+                    answer = data_db[row][34]
+                
+            user_ids.append(user_id)
+            answers.append(answer)
+            activities.append(activity)
+            action_types.append(action_type)
+        
+        except Exception:
+            # Some but not all data has been saved in the database for this user.
+            # This user's ID has already been collected in the list of error-IDs for 
+            # a specific session and the user's rejection/approval will be examined
+            # on a case-by-case basis. There is no need to save anything about this 
+            # user here.
+            print("Incomplete data for user " + user_id + ", session " + str(session_index) + ".")
+    
+    return user_ids, answers, activities, action_types
