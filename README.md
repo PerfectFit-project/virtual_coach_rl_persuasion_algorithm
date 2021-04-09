@@ -4,4 +4,4 @@ This is the code for a conversational agent that suggests preparatory activities
 
 ## Dialog Flow
 
-<img src = "Images/Hallway_Domain.PNG" width = "400" title="Dialog Flow">
+<img src = "Images/Dialog_Flow.PNG" width = "400" title="Dialog Flow">
