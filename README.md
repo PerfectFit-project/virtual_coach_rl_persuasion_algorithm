@@ -21,6 +21,8 @@ The figure below visualizes the structure of the 5 conversational sessions.
 ### Frontend
 The frontend is a simple html-page that makes use of [Rasa Webchat](https://github.com/botfront/rasa-webchat) 0.11.12.
 
+It is expected that the user ID is provided as a URL-parameter, e.g. http://<IP_address>:5005/?userid=JohnDoe. This user ID is extracted and sent to the backend to link multiple sessions of the same user.
+
 Files:
 - index.html: html-page if the conversational agent runs locally.
 - Frontend: contains the html-pages for the 5 sessions if the conversational agent runs on a server. The frontends are run within Docker containers. This folder also contains the necessary Dockerfile.
@@ -31,8 +33,10 @@ Files:
 
 ### Backend
 
+## Other Components
 
-### Activities
+### Preparatory Activities
+
 The preparatory activities are provided in the files "Activities.csv"/"Activities.xlsx." These files contain formulations of the activities for different places in the sessions. E.g. there is a different activity formulation for the reminder message that people receive in Prolific and the session itself.
 
 ### Persuasion
