@@ -556,7 +556,7 @@ responses:
   utter_prepare_activity_proposal_session5:
   - text: 'Here is the new activity that I expect to be useful for you:'
   utter_activity_formulation:
-  - text: '**{activity_formulation}**'
+  - text: "**{activity_formulation}**"
   utter_activity_clear_first:
   - text: "I'll continue when you're done reading about your first activity."
     buttons:
@@ -1229,11 +1229,11 @@ responses:
   utter_message_formulation_prep_last:
   - text: "*After* this session, I recommend that you {activity_verb}."
   utter_message_formulation:
-  - text: '**{message_formulation}**'
+  - text: "**{message_formulation}**"
   utter_reflective_question:
-  - text: '{reflective_question} Use the text field to answer.'
+  - text: "{reflective_question} Use the text field to answer."
   utter_reflective_question_last:
-  - text: '{reflective_question} Use the text field to answer.'
+  - text: "{reflective_question} Use the text field to answer."
   utter_ok:
   - buttons:
     - payload: /confirm
