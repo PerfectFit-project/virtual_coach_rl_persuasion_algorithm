@@ -15,7 +15,22 @@ feat_to_select = [0, 1, 2, 3, 4, 6, 7]
 data  = pd.read_csv('data_samples_post_sess_2.csv', converters={'s0': eval, 's1': eval})
 data = data.values.tolist()
 
-num_act = 4
+# All effort responses
+list_of_efforts = list(np.array(data)[:, 3].astype(int))
+# Mean value of effort responses
+with open("Post_Sess_2_Effort_Mean", "rb") as f:
+    effort_mean = pickle.load(f)
+# Map effort responses to rewards from 0 to 1, with the mean mapped to 0.5.
+map_to_rewards = util.get_map_effort_reward(effort_mean, output_lower_bound = 0, 
+                                            output_upper_bound = 1, 
+                                            input_lower_bound = 0, 
+                                            input_upper_bound = 10)
+reward_list = util.map_efforts_to_rewards(list_of_efforts, map_to_rewards)
+# now write these obtained reward values into "data"
+for i in range(len(reward_list)):
+    data[i][3] = reward_list[i]
+
+num_act = 4 # number of actions
 num_feat = len(feat_to_select)
 num_samples = len(data)
 
@@ -34,18 +49,27 @@ for f in range(num_feat):
    for data_index in range(num_samples): # for each data sample
         s = data[data_index][0][f]
         a = data[data_index][2]
-        r = int(data[data_index][3])
-             
+        r = data[data_index][3]
+        
         rewards[f][s][a] += r
         trials[f][s][a] += 1
     
-   # t-test based on success-rates
-   success_rate_0 = np.divide(rewards[f][0], trials[f][0], out=np.zeros_like(rewards[f][0]), where=trials[f][0]!=0)
-   success_rate_1 = np.divide(rewards[f][1], trials[f][1], out=np.zeros_like(rewards[f][1]), where=trials[f][1]!=0)
-   t_tests[f] = stats.ttest_ind(success_rate_0, success_rate_1)[0]
+   # Compute success rate or rather average reward
+   success_rate_0_ff = np.divide(rewards[f][0], trials[f][0], out=np.zeros_like(rewards[f][0]), where=trials[f][0]!=0)
+   success_rate_1_ff = np.divide(rewards[f][1], trials[f][1], out=np.zeros_like(rewards[f][1]), where=trials[f][1]!=0)
+   
+   # If an action has not been tried, we assign an avg reward of 0.5
+   # This means that in absence of any observations, we expect the outcome of an action to be 
+   # the mean effort response
+   success_rate_0_ff = [success_rate_0_ff[sr0_idx] if trials[f][0][sr0_idx] > 0 else 0.5 for sr0_idx in range(num_act)]
+   success_rate_1_ff = [success_rate_1_ff[sr1_idx] if trials[f][1][sr1_idx] > 0 else 0.5 for sr1_idx in range(num_act)]
+   
+   # Here we use Welch's t-test, which does not assume equal variances (i.e. we set equal_var to False)
+   t_tests[f] = stats.ttest_ind(success_rate_0_ff, success_rate_1_ff, equal_var = False)[1]
 
-min_p_val = min(abs(t_tests)) # minimum p-value for t-test
-feat_sel_options = [i for i in range(num_feat) if abs(t_tests[i]) == min_p_val]
+# minimum p-value for t-test, ignoring nan-values
+min_p_val = np.nanmin(t_tests)
+feat_sel_options = [i for i in range(num_feat) if t_tests[i] == min_p_val]
 feat_sel = [random.choice(feat_sel_options)] # choose randomly if there are multiple best features
 criterion = "First feature -> min. p-value: " + str(round(min_p_val, 4))
 if len(feat_sel_options) > 1:
@@ -77,20 +101,30 @@ for j in range(num_feat_to_select - 1):
                 if list(s_b) == block:
                     
                     a = data[data_index][2]
-                    r = int(data[data_index][3])
+                    r = data[data_index][3]
                                
                     # save reward
                     rewards_2[b_ind][f_ind][s][a] += r
                     trials_2[b_ind][f_ind][s][a] += 1
+                    
             
-            success_rate_1  = np.divide(rewards_2[b_ind][f_ind][0], trials_2[b_ind][f_ind][0],
+            success_rate_0  = np.divide(rewards_2[b_ind][f_ind][0], trials_2[b_ind][f_ind][0],
                                         out = np.zeros_like(rewards_2[b_ind][f_ind][0]),
                                         where=trials_2[b_ind][f_ind][0]!=0)
             success_rate_1  = np.divide(rewards_2[b_ind][f_ind][1], trials_2[b_ind][f_ind][1],
                                         out = np.zeros_like(rewards_2[b_ind][f_ind][1]),
                                         where=trials_2[b_ind][f_ind][1]!=0)
+            
+            # If an action has not been tried, we assign an avg reward of 0.5
+            # This means that in absence of any observations, we expect the outcome of an action to be 
+            # the mean effort response
+            success_rate_0 = [success_rate_0[sr0_idx] if trials_2[b_ind][f_ind][0][sr0_idx] > 0 else 0.5 for sr0_idx in range(num_act)]
+            success_rate_1 = [success_rate_1[sr1_idx] if trials_2[b_ind][f_ind][1][sr1_idx] > 0 else 0.5 for sr1_idx in range(num_act)]
+            
             # t-test
-            t_tests_2[b_ind, f_ind] = stats.ttest_ind(success_rate_0, success_rate_1)[0]
+            # Here we use Welch's t-test, which does not assume equal variances (i.e. we set equal_var to False)
+            t_tests_2[b_ind, f_ind] = stats.ttest_ind(success_rate_0, success_rate_1, 
+                                                      equal_var = False)[1]
     
     # Select next feature
     feat_sel, feat_sel_criteria = util.feat_sel_num_blocks_avg_p_val(feat_not_sel, num_feat_not_sel, 

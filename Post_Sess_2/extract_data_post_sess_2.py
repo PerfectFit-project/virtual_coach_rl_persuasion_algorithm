@@ -9,7 +9,7 @@ import pandas as pd
 import pickle
 
 feat_to_select = [0, 1, 2, 3, 4, 6, 7] # candidate features we consider 
-database_path = "W:/staff-umbrella/perfectfit/Exp0/2021_04_01_Pilot_chatbot.db"
+database_path = "W:/staff-umbrella/perfectfit/Exp0/2021_04_14_Pilot2_chatbot_temp.db"
 
 # People who gave clearly nonsensical planning/reflection answers in session 2 or 1
 # We do not want to include their data

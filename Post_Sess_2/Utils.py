@@ -5,6 +5,7 @@ import numpy as np
 import sqlite3
 import random
 from copy import deepcopy
+import math
 
 ATTENTION_CHECK_1_TRUE = [3, 4] # "agree" or "agree strongly"
 ATTENTION_CHECK_2_TRUE = [0, 1] # "disagree" or "disagree strongly"
@@ -103,14 +104,22 @@ def feat_sel_num_blocks_avg_p_val(feat_not_sel, num_feat_not_sel, blocks,
     num_best_per_feat = np.zeros(num_feat_not_sel) # num. of blocks in which each feat is best
     p_val_per_feat = np.zeros(num_feat_not_sel)
     for b_ind, block in enumerate(blocks):
-        min_value = min(abs(t_tests_2[b_ind]))
-        best_indices = [i for i in range(len(t_tests_2[b_ind])) if abs(t_tests_2[b_ind][i]) == min_value]
+        min_value = np.nanmin(t_tests_2[b_ind]) # ignore nan-values
+        best_indices = [i for i in range(len(t_tests_2[b_ind])) if t_tests_2[b_ind][i] == min_value]
+        # if the min-value is nan, then the p-values for all features are nan
+        # Then we consider all features to be the best.
+        # And we set the corresponding p-value to 1, i.e. we are not very sure.
+        if math.isnan(min_value):
+            print("Warning: For block", block, "the p-values for all features are nan.")
+            best_indices = [i for i in range(len(t_tests_2[b_ind]))]
+            min_value = 1
         num_best_indices = len(best_indices)
         for best_index in best_indices:
             num_best_per_feat[best_index] += 1 / num_best_indices
-            p_val_per_feat[best_index] += min_value / num_best_indices
+            p_val_per_feat[best_index] += min_value
             print("Best feature if", feat_sel, "=", block, ":", feat_not_sel[best_index], "with p-value", np.round(min_value, 4))
     
+    # Get the features that are best in the highest number of blocks.
     max_num_blocks = max(num_best_per_feat)
     criterion = "Max. num blocks with lowest p-value -> " + str(round(max_num_blocks, 4)) + " blocks"
     best_feature_indices = [i for i in range(num_feat_not_sel) if num_best_per_feat[i] == max_num_blocks]
@@ -118,7 +127,8 @@ def feat_sel_num_blocks_avg_p_val(feat_not_sel, num_feat_not_sel, blocks,
     best_feature_indices_features = [feat_not_sel[i] for i in best_feature_indices]
     if len(best_feature_indices) == 1:
         feat_sel.append(best_feature_indices_features[0])
-        
+    
+    # There are multiple features that are best in the highest number of blocks
     else:
         best_features_avg_p_vals = [p_val_per_feat[i]/num_best_per_feat[i] for i in best_feature_indices]
         min_avg_p_val = min(best_features_avg_p_vals)

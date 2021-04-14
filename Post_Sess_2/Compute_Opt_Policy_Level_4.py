@@ -16,6 +16,21 @@ feat_to_select = [0, 1, 2, 3, 4, 6, 7]
 data  = pd.read_csv('data_samples_post_sess_2.csv', converters={'s0': eval, 's1': eval})
 data = data.values.tolist()
 
+# All effort responses
+list_of_efforts = list(np.array(data)[:, 3].astype(int))
+# Mean value of effort responses
+with open("Post_Sess_2_Effort_Mean", "rb") as f:
+    effort_mean = pickle.load(f)
+# Map effort responses to rewards from -1 to 1, with the mean mapped to 1.
+map_to_rewards = util.get_map_effort_reward(effort_mean, output_lower_bound = -1, 
+                                            output_upper_bound = 1, 
+                                            input_lower_bound = 0, 
+                                            input_upper_bound = 10)
+reward_list = util.map_efforts_to_rewards(list_of_efforts, map_to_rewards)
+# now write these obtained reward values into "data"
+for i in range(len(reward_list)):
+    data[i][3] = reward_list[i]
+
 with open('Level_3_G_algorithm_chosen_features', 'rb') as f:
     feat_sel = pickle.load(f)
 
@@ -26,7 +41,7 @@ with open('IDs', 'rb') as f:
 # TODO: adapt path in the end
 df_group_ass = pd.read_csv("c:/users/nele2/CA/assignment.csv", dtype={'ID':'string'})
 
-num_act = 4
+num_act = 4 # number of actions
 num_feat = len(feat_to_select)
 num_samples = len(data)
 num_traits = 6 # Personality (5 dim.) and TTM-phase for PA
@@ -122,9 +137,7 @@ for p1 in range(num_samples):
             for data_index in range(num_samples):
                 if list(np.take(np.array(data[data_index][0]), feat_sel)) == s:
                     trans_func[s_ind, data[data_index][2], abstract_states.index(list(np.take(data[data_index][1], feat_sel)))] += 1
-                    r = int(data[data_index][3])
-                    if r == 0:
-                        r = -1
+                    r = data[data_index][3]
                     reward_func[s_ind, data[data_index][2]] += r
                     reward_func_count[s_ind, data[data_index][2]] += 1
            

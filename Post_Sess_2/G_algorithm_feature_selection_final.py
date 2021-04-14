@@ -16,7 +16,22 @@ feat_to_select = [0, 1, 2, 3, 4, 6, 7]
 data  = pd.read_csv('data_samples_post_sess_2.csv', converters={'s0': eval, 's1': eval})
 data = data.values.tolist()
 
-num_act = 4
+# All effort responses
+list_of_efforts = list(np.array(data)[:, 3].astype(int))
+# Mean value of effort responses
+with open("Post_Sess_2_Effort_Mean", "rb") as f:
+    effort_mean = pickle.load(f)
+# Map effort responses to rewards from -1 to 1, with the mean mapped to 1.
+map_to_rewards = util.get_map_effort_reward(effort_mean, output_lower_bound = -1, 
+                                            output_upper_bound = 1, 
+                                            input_lower_bound = 0, 
+                                            input_upper_bound = 10)
+reward_list = util.map_efforts_to_rewards(list_of_efforts, map_to_rewards)
+# now write these obtained reward values into "data"
+for i in range(len(reward_list)):
+    data[i][3] = reward_list[i]
+
+num_act = 4 # number of actions
 num_feat = len(feat_to_select)
 num_samples = len(data)
 
@@ -44,9 +59,7 @@ for f in range(num_feat):
         s = data[data_index][0][f]
         s_prime = data[data_index][1][f]
         a = data[data_index][2]
-        r = int(data[data_index][3])
-        if r == 0:
-            r = -1
+        r = data[data_index][3]
                    
         # TD Update 
         best_next_action = np.argmax(q_values[f, s_prime])     
@@ -54,11 +67,13 @@ for f in range(num_feat):
         td_delta = td_target - q_values[f][s][a] 
         q_values[f][s][a] += alpha * td_delta 
     
-    # t-test
-    t_tests[f] = stats.ttest_ind(q_values[f][0], q_values[f][1])[0]
+    # t-test -> get p-value
+    # By setting equal_var = True, we compute Welch's t-test, which does not
+    # assume equal variances.
+    t_tests[f] = stats.ttest_ind(q_values[f][0], q_values[f][1], equal_var = False)[1]
 
-min_p_val = min(abs(t_tests)) # minimum p-value for t-test
-feat_sel_options = [i for i in range(num_feat) if abs(t_tests[i]) == min_p_val]
+min_p_val = np.nanmin(t_tests) # minimum p-value for t-test, ignoring nan-values
+feat_sel_options = [i for i in range(num_feat) if t_tests[i] == min_p_val]
 feat_sel = [random.choice(feat_sel_options)] # choose randomly if there are multiple best features
 criterion = "First feature -> min. p-value: " + str(round(min_p_val, 4))
 if len(feat_sel_options) > 1:
@@ -90,10 +105,9 @@ for j in range(num_feat_to_select - 1):
                 # both s and s' must be in the current block
                 if list(s_b) == block and list(s_prime_b) == block:
                     
+                    # get the action and reward
                     a = data[data_index][2]
-                    r = int(data[data_index][3])
-                    if r == 0:
-                        r = -1
+                    r = data[data_index][3]
                                
                     # TD Update 
                     best_next_action = np.argmax(q_values_2[b_ind, f_ind, s_prime])     
@@ -101,8 +115,15 @@ for j in range(num_feat_to_select - 1):
                     td_delta = td_target - q_values_2[b_ind, f_ind, s, a] 
                     q_values_2[b_ind][f_ind][s][a] += alpha * td_delta 
             
-            # t-test
-            t_value = stats.ttest_ind(q_values_2[b_ind][f_ind][0], q_values_2[b_ind][f_ind][1])[0]
+            # t-test -> get the p-value.
+            # This t-test function returns an array with 2 values. The first value is the 
+            # t-statistic, the second value is the p-value.
+            # By setting equal_var = False, we compute Welch's t-test, which does not assume
+            # equal variances.
+            t_value = stats.ttest_ind(q_values_2[b_ind][f_ind][0], q_values_2[b_ind][f_ind][1],
+                                      equal_var = False)[1]
+            # If the two arrays passed to the t-test are equal, the p-value will be nan.
+            # So then we set the p-value to 1 (i.e. very high).
             if math.isnan(t_value):
                 t_value = 1
             t_tests_2[b_ind, f_ind] = t_value
