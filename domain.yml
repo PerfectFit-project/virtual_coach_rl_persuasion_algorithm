@@ -533,8 +533,7 @@ responses:
   - text: Oh that's a shame that you're not having a good day. I hope it gets better soon and that I can distract you a bit.
   - text: I hate to hear that today isn't a good day for you. Hopefully you feel better
       soon and that it's okay to proceed with this session!
-  - text: Awww what a shame. Hopefully you feel less {mood}
-      soon!
+  - text: "Awww what a shame. Hopefully you feel less {mood} soon!"
   utter_mood_neutral:
   - text: "I see, I guess that's not too bad."
   - text: "Ah, sounds like you're having a pretty average day."

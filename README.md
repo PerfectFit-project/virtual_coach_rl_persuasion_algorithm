@@ -49,4 +49,5 @@ There are multiple components to persuading people to do their suggested prepara
 ## License
 
 Copyright (C) 2021 Delft University of Technology.
+
 Licensed under the Apache License, version 2.0. See LICENSE for details.

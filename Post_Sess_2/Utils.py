@@ -1,5 +1,5 @@
 '''
-Common functions
+Common functions.
 '''
 import numpy as np
 import sqlite3
@@ -11,13 +11,87 @@ ATTENTION_CHECK_2_TRUE = [0, 1] # "disagree" or "disagree strongly"
 
 AW_LIKERT_SCALE = ['0', '1', '2', '3', '4'] # answer options for questions with 5-point Likert scale
 
+def get_map_effort_reward(effort_mean, output_lower_bound, 
+                          output_upper_bound = 1, input_lower_bound = 0, 
+                          input_upper_bound = 10):
+    """
+    Computes a mapping from effort responses to rewards.
+    
+    Args:
+        effort_mean (float): mean effort response, to be mapped to halfway 
+                             between output_lower_bound and output_upper_bound
+        output_lower_bound (float): lowest value on output scale
+        output_upper_bound (float, default 1): highest value on output scale
+        input_lower_bound (int, default 0): lowest value on input scale, to 
+                                            be mapped to output_lower_bound
+        input_upper_bound (int, default 10): highest value on input scale, 
+                                             to be mapped to output_upper_bound
+                                             
+    Returns:
+        dictionary: maps effort responses (integers) to output scale values (float)
+    """
+    map_to_rew = {}
+    
+    # We can already map the endpoints of the input scale to the output scale
+    map_to_rew[input_lower_bound] = output_lower_bound
+    map_to_rew[input_upper_bound] = output_upper_bound
+    
+    # The mean value on the output scale
+    mean_output = (output_upper_bound - output_lower_bound)/2 + output_lower_bound
+    output_length_half = mean_output - output_lower_bound
+    
+    input_length_lower_half = effort_mean - input_lower_bound
+    input_length_upper_half = input_upper_bound - effort_mean
+    
+    inc_lower_half = output_length_half / input_length_lower_half
+    inc_upper_half = output_length_half / input_length_upper_half
+    
+    # Compute output scale values for input scale below mean.
+    idx = 1
+    for i in range(input_lower_bound + 1, int(np.ceil(effort_mean))):
+        map_to_rew[i] = output_lower_bound + idx * inc_lower_half
+        idx += 1
+    
+    # Compute output scale values for input scale above mean.
+    idx = 1
+    for i in range(input_upper_bound - 1, int(np.floor(effort_mean)), -1):
+        map_to_rew[i] = output_upper_bound - idx * inc_upper_half
+        idx += 1
+    
+    if np.floor(effort_mean) == effort_mean:
+        map_to_rew[effort_mean] = mean_output
+    
+    # Need to check whether effort_mean is an integer that we need to map
+    # to mean_output on the output scale.
+    return map_to_rew
+
+def map_efforts_to_rewards(list_of_efforts, map_to_rewards):
+    """
+    Maps effort responses to rewards.
+    
+    Args:
+        list_of_efforts (list of int): effort responses to be mapped
+        map_to_rewards (dictionary): maps effort responses to reward values (float)
+    
+    Returns:
+        list (float): resulting reward values
+    """
+    rewards = []
+    for e in list_of_efforts:
+        rewards.append(map_to_rewards[e])
+    
+    return rewards
+    
 def pass_attention_checks(answer1, answer2):
     """
-    Returns whether at least 1/2 attention checks were passed for a session.
+    Computes whether at least 1/2 attention checks were passed for a session.
     
     Args:
         answer1: given answer for attention check 1
         answer2: given answer for attention check 2
+    
+    Returns:
+        bool: whether at least 1 of 2 attention checks were passed.
     """
     return answer1 in ATTENTION_CHECK_1_TRUE or answer2 in ATTENTION_CHECK_2_TRUE
 
@@ -70,6 +144,12 @@ def gather_data_post_sess_2(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7
         feat_to_select (list of int): which of the state features to consider
         excluded_ids (list of list of str): list of IDs of people whose data we should 
                                             not use for each of the 2 sessions.
+                                            
+    Returns:
+        list: (s, s_prime, a, r)-samples
+        list: mean value for each feature in feat_to_select
+        list: user ID for (s, s_prime, a, r)-sample
+        float: mean value of the effort responses
     """
     num_select = len(feat_to_select)
     
@@ -194,8 +274,11 @@ def gather_data_post_sess_2(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7
     for row in range(len(data)):
         data[row][0] = [1 if data[row][0][i] >= feat_means[i] else 0 for i in range(num_select)]
         data[row][1] = [1 if data[row][1][i] >= feat_means[i] else 0 for i in range(num_select)]
+        
+    # Compute the mean of the effort responses
+    reward_mean = np.mean(np.array(data)[:, 3])
     
-    return data, feat_means, user_ids
+    return data, feat_means, user_ids, reward_mean
 
 def check_attention_checks_session(database_path, session_num):
     """
@@ -291,6 +374,12 @@ def gather_data_post_sess_5(database_path,
         feat_to_select (list of int): which of the state features to consider
         excluded_ids (list of list of str): list of IDs of people whose data we should 
                                             not use for each of the 5 sessions.
+                                            
+    Returns:
+        list: (s, s_prime, a, r)-samples
+        list: mean value for each feature in feat_to_select
+        list: user ID for (s, s_prime, a, r)-sample
+        float: mean value of the effort responses
     """
     num_select = len(feat_to_select)
     
@@ -402,8 +491,11 @@ def gather_data_post_sess_5(database_path,
     for row in range(len(data)):
         data[row][0] = [1 if data[row][0][i] >= feat_means[i] else 0 for i in range(num_select)]
         data[row][1] = [1 if data[row][1][i] >= feat_means[i] else 0 for i in range(num_select)]
+        
+    # Compute the mean of the effort responses
+    reward_mean = np.mean(np.array(data)[:, 3])
     
-    return data, feat_means, user_ids
+    return data, feat_means, user_ids, reward_mean
 
 def policy_evaluation(observation_space_size, discount_factor, trans_func,
                       reward_func, policy, q_vals, 
