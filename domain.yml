@@ -216,8 +216,6 @@ responses:
   utter_greet_last:
   - text: Hi there, welcome to your last session!
   utter_explain_session_3_1:
-  - text: "Now let me give you a quick overview of what this session looks like."
-  - text: Now let me quickly give you an overview of what this session looks like.
   - text: Now let me quickly tell you what this session looks like.
   utter_explain_session_24_1:
   - text: Before we start, let me give you a quick overview of what this session looks
@@ -291,7 +289,7 @@ responses:
     - payload: /confirm
       title: "Sure thing"
   utter_explain_session_5_1:
-  - text: "Before we start, let me quickly explain how this last session is structured."
+  - text: "Before we start, let me briefly explain how this last session is structured."
   utter_explain_session_5_2:
   - text: Just as before, I'll first ask you about your experience (if any) with your
       activity from last time.
