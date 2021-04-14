@@ -45,3 +45,7 @@ There are multiple components to persuading people to do their suggested prepara
 - In each session, a persuasive message is sent. Persuasive messages differ based on the persuasion type (Commitment, Consensus, Authority, Action Planning) as well as the preparatory activity they are used for. Moreover, there are multiple different messages for each combination of persuasion type and preparatory activity. All persuasive messages are in the file "all_messages.csv."
 - In the case of the Commitment, Consensus and Authority persuasion types, a person is subsequently asked a reflective question. These reflective questions are given in the file "reflective_questions.csv."
 - After each session, people receive a reminder message in Prolific. This message contains the formulation of the assigned activity, as well as a reminder question that depends on the persuasion type. All reminder questions can be found in the file "all_reminders.csv." The templates for the reminder messages for the first 4 and the last session are in the files "reminder_template.txt" and "reminder_template_last_session.csv," respectively.
+
+<p align="center"> ## License </p>
+
+Licensed under the Apache License, version 2.0. See LICENSE for details.
