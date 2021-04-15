@@ -1052,3 +1052,85 @@ class ActionSaveSession(Action):
         
         return [SlotSet("session_saved", session_saved),
                 SlotSet("prolific_link", link)]
+
+# To save data gathered until the effort response
+# Only for sessions 2-5
+class ActionSaveSessionEffort(Action):
+    def name(self):
+        return "action_save_session_effort"
+
+    async def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+        # get user ID
+        metadata = extract_metadata_from_tracker(tracker)
+        user_id = metadata['userid']
+        
+        # Load slot values
+        mood = tracker.get_slot('mood')
+        
+        # create db connection
+        try:
+            sqliteConnection = sqlite3.connect(DATABASE_PATH)
+            cursor = sqliteConnection.cursor()
+            sqlite_select_query = """SELECT * from users WHERE id = ?"""
+            cursor.execute(sqlite_select_query, (user_id,))
+            data = cursor.fetchall()
+            
+            # we are in session 2
+            if data[0][1] == 1:
+                
+                mood_list = '|'.join([data[0][2], mood])
+                reward = tracker.get_slot('reward')
+                data_tuple = (mood_list, reward, user_id)
+                
+                sqlite_query = """UPDATE users SET mood_list = ?, reward_list = ? WHERE id = ?"""
+            
+            # we are in session 3
+            elif data[0][1] == 2:
+                mood_list = data[0][2].split('|')
+                mood_list.append(mood)
+                mood_list = '|'.join(mood_list)
+                reward_list = '|'.join([data[0][7], tracker.get_slot('reward')])
+                satisf = tracker.get_slot('user_satisfaction')
+                data_tuple = (mood_list, reward_list, satisf, user_id)
+                
+                sqlite_query = """UPDATE users SET mood_list = ?, reward_list = ?, user_satisfaction2 = ? WHERE id = ?"""
+            
+            # we are in session 4
+            elif data[0][1] == 3:
+                mood_list = data[0][2].split('|')
+                mood_list.append(mood)
+                mood_list = '|'.join(mood_list)
+                reward_list = data[0][7].split('|')
+                reward_list.append(tracker.get_slot('reward'))
+                reward_list = '|'.join(reward_list)
+                data_tuple = (mood_list, reward_list, user_id)
+                sqlite_query = """UPDATE users SET mood_list = ?, reward_list = ?, WHERE id = ?"""
+                
+            # we are in session 5, i.e. the last session
+            elif data[0][1] == 4:
+                satisf = tracker.get_slot('user_satisfaction')
+                mood_list = data[0][2].split('|')
+                mood_list.append(mood)
+                mood_list = '|'.join(mood_list)
+                reward_list = data[0][7].split('|')
+                reward_list.append(tracker.get_slot('reward'))
+                reward_list = '|'.join(reward_list)
+                data_tuple = (mood_list, reward_list, satisf, user_id)
+                sqlite_query = """UPDATE users SET mood_list = ?, reward_list = ?, user_satisfaction4 = ? WHERE id = ?"""
+            
+            cursor.execute(sqlite_query, data_tuple)
+            sqliteConnection.commit()
+            cursor.close()
+
+        except sqlite3.Error as error:
+            print("Error while connecting to sqlite when saving after effort response", error)
+        finally:
+            if (sqliteConnection):
+                sqliteConnection.close()
+                print("The SQLite connection is closed")
+                
+        # connection closed
+        return []

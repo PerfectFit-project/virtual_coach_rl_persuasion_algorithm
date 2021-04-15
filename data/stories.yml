@@ -613,6 +613,7 @@ stories:
   - slot_was_set:
     - action_success: 2
   - action: utter_response_activity_completion_done_last
+  - action: action_save_session_effort # save the data gathered until now in the database
   - action: utter_ask_activity_completion_details_yes_last
   - checkpoint: activity_completion_details_last
   
@@ -626,6 +627,7 @@ stories:
   - slot_was_set:
     - action_success: 0
   - action: utter_response_activity_completion_notDone_last
+  - action: action_save_session_effort # save the data gathered until now in the database
   - action: utter_ask_activity_completion_details_no_last
   - checkpoint: activity_completion_details_last
   
@@ -639,6 +641,7 @@ stories:
   - slot_was_set:
     - action_success: 1
   - action: utter_response_activity_completion_DoneMedium_last
+  - action: action_save_session_effort # save the data gathered until now in the database
   - action: utter_ask_activity_completion_details_yes_last
   - checkpoint: activity_completion_details_last
   
@@ -689,6 +692,7 @@ stories:
   - slot_was_set:
     - action_success: 2
   - action: utter_response_activity_completion_done
+  - action: action_save_session_effort # save the data gathered until now in the database
   - action: utter_ask_activity_completion_details_yes
   - checkpoint: activity_completion_details
   
@@ -703,6 +707,7 @@ stories:
   - slot_was_set:
     - action_success: 1
   - action: utter_response_activity_completion_doneMedium
+  - action: action_save_session_effort # save the data gathered until now in the database
   - action: utter_ask_activity_completion_details_yes
   - checkpoint: activity_completion_details
   
@@ -716,6 +721,7 @@ stories:
   - slot_was_set:
     - action_success: 0
   - action: utter_response_activity_completion_notDone
+  - action: action_save_session_effort # save the data gathered until now in the database
   - action: utter_ask_activity_completion_details_no
   - checkpoint: activity_completion_details
   

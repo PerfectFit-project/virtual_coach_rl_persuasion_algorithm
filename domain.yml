@@ -1299,6 +1299,7 @@ actions:
 - action_choose_persuasion_last
 - action_freetext
 - action_save_session
+- action_save_session_effort
 - action_freetext_activity_comp
 - action_freetext_activity_mod
 - action_set_slot_reward
