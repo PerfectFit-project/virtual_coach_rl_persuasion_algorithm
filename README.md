@@ -25,11 +25,12 @@ It is expected that the user ID is provided as a URL-parameter, e.g. http://<IP_
 
 Files:
 - index.html: html-page if the conversational agent runs locally.
+- index_c.html: html-page if the conversational agent runs locally with a different styling. The styling is described in the file "style.css."
 - Frontend: contains the html-pages for the 5 sessions if the conversational agent runs on a server. The frontends are run within Docker containers. This folder also contains the necessary Dockerfile. After building a Docker image for a frontend, a Docker container can be run via `docker run -d -p <port, e.g. 5005>:80 <imageName>`.
 - connectors: contains the file "socketChannel.py." This file is needed to connect the frontend to the backend.
 
 ### Database
-An sqlite database is created within the custom action container. The database initialization script is in the "db_scripts"-folder and can be run via `python init_db.py` from within the running custom action container. This will create the database ":/tmp/chatbot.db" in the container.
+An sqlite database (sqlite3) is created within the custom action container. The database initialization script is in the "db_scripts"-folder and can be run via `python init_db.py` from within the running custom action container. This will create the database ":/tmp/chatbot.db" in the container.
 
 There are several custom actions (in "actions.py") that read/write from/to this database.
 
