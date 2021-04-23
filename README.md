@@ -29,7 +29,11 @@ Files:
 - connectors: contains the file socketChannel.py. This file is needed to connect the frontend to the backend.
 
 ### Database
+An sqlite database is created within the custom action container. The database initialization script is in the "db_scripts"-folder and can be run via `python init_db.py` from within the running custom action container. This will create the database ":/tmp/chatbot.db" in the container.
 
+There are several custom actions (in "actions.py") that read/write from/to this database.
+
+Please note that the database is destroyed if one stops the custom action container, e.g. via `docker-compose down`. To save the database beyond the lifetime of the custom action container, copy it outside the container before stopping the container.
 
 ### Backend
 
