@@ -21,12 +21,12 @@ The figure below visualizes the structure of the 5 conversational sessions.
 ### Frontend
 The frontend is a simple html-page that makes use of [Rasa Webchat](https://github.com/botfront/rasa-webchat) 0.11.12.
 
-It is expected that the user ID is provided as a URL-parameter, e.g. http://<IP_address>:5005/?userid=JohnDoe. This user ID is extracted and sent to the backend to link multiple sessions of the same user.
+It is expected that the user ID is provided as a URL-parameter, e.g. http://<IP_address>:5005/?userid=JohnDoe if the frontend is running on port 5005. This user ID is extracted and sent to the backend to link multiple sessions of the same user.
 
 Files:
 - index.html: html-page if the conversational agent runs locally.
-- Frontend: contains the html-pages for the 5 sessions if the conversational agent runs on a server. The frontends are run within Docker containers. This folder also contains the necessary Dockerfile.
-- connectors: contains the file socketChannel.py. This file is needed to connect the frontend to the backend.
+- Frontend: contains the html-pages for the 5 sessions if the conversational agent runs on a server. The frontends are run within Docker containers. This folder also contains the necessary Dockerfile. After building a Docker image for a frontend, a Docker container can be run via `docker run -d -p <port, e.g. 5005>:80 <imageName>`.
+- connectors: contains the file "socketChannel.py." This file is needed to connect the frontend to the backend.
 
 ### Database
 An sqlite database is created within the custom action container. The database initialization script is in the "db_scripts"-folder and can be run via `python init_db.py` from within the running custom action container. This will create the database ":/tmp/chatbot.db" in the container.
