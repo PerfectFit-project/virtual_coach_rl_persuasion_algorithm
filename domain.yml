@@ -17,6 +17,8 @@ slots:
   action_index_list:
     type: list
     influence_conversation: false
+  # The answer people give if they are asked to create an implementation intention or
+  # action plan
   action_planning_answer:
     type: text
     initial_value: ''
@@ -81,6 +83,10 @@ slots:
     type: bool
     influence_conversation: true
   plan_correct:
+    type: bool
+    influence_conversation: true
+  # Persuasion type number 4 is to send no persuasive message
+  pers_type_four:
     type: bool
     influence_conversation: true
   prolific_link:
@@ -622,7 +628,7 @@ responses:
   - text: "Alright! I'd like to now ask you to tell me about your thoughts on this activity."
     buttons:
     - payload: /confirm
-      title: I'd love to
+      title: "I'd love to"
     - payload: /confirm
       title: Sure
   utter_questions_state_intro_2:
@@ -633,7 +639,7 @@ responses:
   - text: "Thank you! Kindly rate the 12 statements that I'll send you:"
   - text: "Thank you! Please rate the 12 statements that you'll now see one by one:"
   utter_ask_satisfaction_prep:
-  - text: Before we start, I'd like to ask you for some feedback.
+  - text: "Before we start, I'd like to ask you for some feedback."
   utter_ask_satisfaction_explain:
   - text: Please answer the following question by typing a number between -10 and
       10, -10 being 'Very negative', 0 being 'Neutral' and +10 being 'Very positive.'
@@ -891,7 +897,7 @@ responses:
       title: Agree strongly
     text: '6) I feel that I want to do the activity.'
   utter_question_state_6_prep:
-  - text: Nice, now we're halfway! Ready for the rest?
+  - text: "Nice, now we're halfway! Ready for the rest?"
     buttons:
     - payload: /confirm
       title: Yes, let's go!
@@ -1202,7 +1208,7 @@ responses:
   - text: "And remember to look out for the invitation to your next conversation with me. Alright?"
     buttons:
     - payload: /confirm
-      title: Sure!
+      title: "Sure!"
     - payload: /confirm
       title: Okay!
   utter_remind_post_questionnaire:

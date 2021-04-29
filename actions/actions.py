@@ -562,9 +562,8 @@ class ActionChoosePersuasion(Action):
         if len(group) > 0:
             group = int(group)
         
+        # We send the best persuasion type overall
         if group == 0:
-            
-            #print("Persuasion level 1")
         
             # Load pre-computed list with best actions
             with open('Post_Sess_2/Level_1_Optimal_Policy', 'rb') as f:
@@ -572,10 +571,9 @@ class ActionChoosePersuasion(Action):
             
             # Select a persuasion type randomly (there could be multiple best ones)
             pers_type = random.choice(p)
-            
+           
+        # we send the most successful persuasion type in the current user's state
         elif group == 1:
-            
-            #print("Persuasion level 2")
             
             with open('Post_Sess_2/Level_2_Optimal_Policy', 'rb') as f:
                 p = pickle.load(f)
@@ -601,8 +599,6 @@ class ActionChoosePersuasion(Action):
             
         elif group == 2:
             
-            #print("Persuasion level 3")
-            
             with open('Post_Sess_2/Level_3_Optimal_Policy', 'rb') as f:
                 p = pickle.load(f)
             
@@ -625,8 +621,6 @@ class ActionChoosePersuasion(Action):
             pers_type = random.choice(p[state[0]][state[1]][state[2]])
             
         elif group == 3:
-            
-            #print("Persuasion level 4")
              
             # get user ID
             metadata = extract_metadata_from_tracker(tracker)
@@ -653,10 +647,8 @@ class ActionChoosePersuasion(Action):
             # Sample randomly from best persuasion types
             pers_type = random.choice(p[user_id][state[0]][state[1]][state[2]])
          
-        # Sessions 1 and 2: random 
+        # Random persuasion type (e.g. in session 1 and session 2) 
         else:
-            
-            #print("Random persuasion")
             
             if curr_action_ind_list is None:
                 curr_action_ind_list = []
@@ -676,29 +668,41 @@ class ActionChoosePersuasion(Action):
         if pers_type == 3:
             require_input = True
         
-        # Choose message randomly among messages selected the lowest number of times 
-        # for this persuasion type
-        counts = [curr_action_ind_list.count(i) for i in range(sum(num_mess_per_type[0:pers_type]), sum(num_mess_per_type[0:pers_type + 1]))]
-        min_messages = [i for i in range(num_mess_per_type[pers_type]) if counts[i] == min(counts)]
-        message_ind = random.choice(min_messages) + sum(num_mess_per_type[0:pers_type])
-        curr_action_ind_list.append(message_ind)
+        # Not for persuasion type 4, which is to not send any persuasive message.
+        if not pers_type == 4:
+            
+            pers_type_four = False
         
-        # Determine reflective question (only for persuasion types 0-2)
-        ref_type = ref_dict[message_ind]
-        ref_question = ""
-        if ref_type >= 0:
-            # Always pick smoking-related reflective question
-            ref_question = df_ref.loc[ref_type, 'QuestionS']
-           
-        # Determine message and reminder
-        message = df_mess.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Message']
-        reminder = df_rem.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Question']
+            # Choose message randomly among messages selected the lowest number of times 
+            # for this persuasion type
+            counts = [curr_action_ind_list.count(i) for i in range(sum(num_mess_per_type[0:pers_type]), sum(num_mess_per_type[0:pers_type + 1]))]
+            min_messages = [i for i in range(num_mess_per_type[pers_type]) if counts[i] == min(counts)]
+            message_ind = random.choice(min_messages) + sum(num_mess_per_type[0:pers_type])
+            curr_action_ind_list.append(message_ind)
+            
+            # Determine reflective question (only for persuasion types 0-2)
+            ref_type = ref_dict[message_ind]
+            ref_question = ""
+            if ref_type >= 0:
+                # Always pick smoking-related reflective question
+                ref_question = df_ref.loc[ref_type, 'QuestionS']
+               
+            # Determine message and reminder (to be sent in email)
+            message = df_mess.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Message']
+            reminder = df_rem.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Question']
+        
+        else:
+            message = ""
+            reminder = ""
+            ref_question = ""
+            pers_type_four = True
         
         return [SlotSet("message_formulation", message), 
                 SlotSet("reminder_formulation", reminder),
                 SlotSet("action_index_list", curr_action_ind_list),
                 SlotSet("action_type_index_list", curr_action_type_ind_list),
                 SlotSet("pers_input", require_input),
+                SlotSet("pers_type_four", pers_type_four),
                 SlotSet("reflective_question", ref_question)]
     
 # Return best (based on group) or random persuasion
@@ -834,32 +838,46 @@ class ActionChoosePersuasionLast(Action):
         require_input = False
         if pers_type == 3:
             require_input = True
+            
+        # For persuastion type number 4, we do not send any persuasive message
+        if not pers_type == 4:
+            
+            # our persuastion type is not number 4
+            pers_type_four = False
         
-        # Choose message randomly among messages selected the lowest number of times 
-        # for this persuasion type
-        counts = [curr_action_ind_list.count(i) for i in range(sum(num_mess_per_type[0:pers_type]), sum(num_mess_per_type[0:pers_type + 1]))]
-        min_messages = [i for i in range(num_mess_per_type[pers_type]) if counts[i] == min(counts)]
-        message_ind = random.choice(min_messages) + sum(num_mess_per_type[0:pers_type])
-        curr_action_ind_list.append(message_ind)
+            # Choose message randomly among messages selected the lowest number of times 
+            # for this persuasion type
+            counts = [curr_action_ind_list.count(i) for i in range(sum(num_mess_per_type[0:pers_type]), sum(num_mess_per_type[0:pers_type + 1]))]
+            min_messages = [i for i in range(num_mess_per_type[pers_type]) if counts[i] == min(counts)]
+            message_ind = random.choice(min_messages) + sum(num_mess_per_type[0:pers_type])
+            curr_action_ind_list.append(message_ind)
+            
+            # Determine reflective question (only for persuasion types 0-2)
+            ref_type = ref_dict[message_ind]
+            ref_question = ""
+            if ref_type >= 0:
+                # Always pick smoking-related reflective question
+                ref_question = df_ref.loc[ref_type, 'QuestionS']
+               
+            # Determine message and reminder
+            message = df_mess.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Message']
+            reminder = df_rem.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Question']
+            
+            # There is no next session after session 5, so need to adapt action planning messages
+            if pers_type == 3:
+                message = message.replace("before the next session?", "after this session?")
+                message = message.replace("and before the next session", "session")
+                reminder = reminder.replace("before the next session?", "after this session?")
         
-        # Determine reflective question (only for persuasion types 0-2)
-        ref_type = ref_dict[message_ind]
-        ref_question = ""
-        if ref_type >= 0:
-            # Always pick smoking-related reflective question
-            ref_question = df_ref.loc[ref_type, 'QuestionS']
-           
-        # Determine message and reminder
-        message = df_mess.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Message']
-        reminder = df_rem.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Question']
-        
-        # There is no next session after session 5, so need to adapt action planning messages
-        if pers_type == 3:
-            message = message.replace("before the next session?", "after this session?")
-            message = message.replace("and before the next session", "session")
-            reminder = reminder.replace("before the next session?", "after this session?")
+        # For persuasion type number 4, we do not send any persuasive message
+        else:
+            message = ""
+            reminder = ""
+            ref_question = ""
+            pers_type_four = True
         
         return [SlotSet("message_formulation", message), 
+                SlotSet("pers_type_four", pers_type_four),
                 SlotSet("reminder_formulation", reminder),
                 SlotSet("action_index_list", curr_action_ind_list),
                 SlotSet("action_type_index_list", curr_action_type_ind_list),

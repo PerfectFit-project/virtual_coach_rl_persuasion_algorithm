@@ -849,11 +849,22 @@ stories:
   - action: utter_message_formulation_prep_last
   - checkpoint: choose_persuasion_last
   
+# Persuasion type 4 was chosen, which is to send no persuasive message or
+# reflective question
+- story: persuasion_no_persuasion
+  steps:
+  - checkpoint: choose_persuasion
+  - action: action_choose_persuasion
+  - slot_was_set:
+    - pers_type_four: True
+  - checkpoint: end_not_last
+  
 - story: persuasion_no_input
   steps:
   - checkpoint: choose_persuasion
   - action: action_choose_persuasion
   - slot_was_set:
+    - pers_type_four: False
     - pers_input: False
   - action: utter_message_formulation
   - action: action_pause_five
@@ -871,6 +882,7 @@ stories:
   - checkpoint: choose_persuasion
   - action: action_choose_persuasion
   - slot_was_set:
+    - pers_type_four: False
     - pers_input: True
   - action: utter_message_formulation
   - or:
@@ -919,6 +931,17 @@ stories:
     - plan_correct: False
   - action: utter_implementation_intention_syntax_error_rep
   - checkpoint: end_not_last
+  
+# Session 5
+# Persuasion type 4 was chosen, which is to send no persuasive message or
+# reflective question.
+- story: persuasion_no_persuasion_last
+  steps:
+  - checkpoint: choose_persuasion_last
+  - action: action_choose_persuasion_last
+  - slot_was_set:
+    - pers_type_four: True
+  - checkpoint: end_last
   
 - story: persuasion_no_input_last
   steps:
