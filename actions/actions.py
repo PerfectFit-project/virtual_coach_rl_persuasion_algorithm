@@ -441,8 +441,6 @@ class ActionSendEmail(Action):
             email = f.read()
         user_email = user_id + "@email.prolific.co"
         
-        with open('reminder_template.txt', 'r', encoding='utf-8') as template_file:
-            message_template = Template(template_file.read())
         context = ssl.create_default_context()
     
         # set up the SMTP server
@@ -451,10 +449,23 @@ class ActionSendEmail(Action):
         
             msg = MIMEMultipart() # create a message
             
-            # add in the actual person name to the message template
-            message = message_template.substitute(PERSON_NAME ="Study Participant",
-                                                  ACTIVITY= tracker.get_slot('activity_formulation_email'),
-                                                  PERSUASION = tracker.get_slot('reminder_formulation'))
+            # our persuasion type is not to send no persuasive message
+            if not tracker.get_slot('pers_type_four'):
+                with open('reminder_template.txt', 'r', encoding='utf-8') as template_file:
+                    message_template = Template(template_file.read())
+            
+                # add in the actual info to the message template
+                message = message_template.substitute(PERSON_NAME ="Study Participant",
+                                                      ACTIVITY= tracker.get_slot('activity_formulation_email'),
+                                                      PERSUASION = tracker.get_slot('reminder_formulation'))
+                
+            else:
+                with open('reminder_template_noPers.txt', 'r', encoding='utf-8') as template_file:
+                    message_template = Template(template_file.read())
+            
+                # add in the actual info to the message template
+                message = message_template.substitute(PERSON_NAME ="Study Participant",
+                                                      ACTIVITY= tracker.get_slot('activity_formulation_email'))
         
             # setup the parameters of the message
             msg['From'] = email
@@ -490,8 +501,6 @@ class ActionSendEmailLast(Action):
             email = f.read()
         user_email = user_id + "@email.prolific.co"
         
-        with open('reminder_template_last_session.txt', 'r', encoding='utf-8') as template_file:
-            message_template = Template(template_file.read())
         context = ssl.create_default_context()
         
         # set up the SMTP server
@@ -500,11 +509,23 @@ class ActionSendEmailLast(Action):
         
             msg = MIMEMultipart() # create a message
             
-            # add in the actual person name to the message template
-            message = message_template.substitute(PERSON_NAME="Study Participant",
+            # Our persuasion type is not to send no persuasive message
+            if not tracker.get_slot('pers_type_four'):
+                with open('reminder_template_last_session.txt', 'r', encoding='utf-8') as template_file:
+                    message_template = Template(template_file.read())
+            
+                # add in the actual information to the message template
+                message = message_template.substitute(PERSON_NAME="Study Participant",
                                                   ACTIVITY= tracker.get_slot('activity_formulation_email'),
                                                   PERSUASION = tracker.get_slot('reminder_formulation'))
-        
+            else:
+                with open('reminder_template_last_session_noPers.txt', 'r', encoding='utf-8') as template_file:
+                    message_template = Template(template_file.read())
+            
+                # add in the actual information to the message template
+                message = message_template.substitute(PERSON_NAME="Study Participant",
+                                                  ACTIVITY= tracker.get_slot('activity_formulation_email'))
+                
             # setup the parameters of the message
             msg['From'] = email
             msg['To']=  user_email

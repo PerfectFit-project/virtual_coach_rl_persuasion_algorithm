@@ -1,0 +1,14 @@
+Dear ${PERSON_NAME}, 
+
+
+This is a mesage to remind you of your suggested preparation activity:
+
+${ACTIVITY}
+
+
+See you in your next session!
+
+
+Best regards,
+
+Your Virtual Coach Sam
