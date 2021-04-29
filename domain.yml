@@ -294,8 +294,7 @@ responses:
   - text: Just as before, I'll first ask you about your experience (if any) with your
       activity from last time.
   utter_explain_session_5_5:
-  - text: Cool! Of course, since this is the last session, there won't be a next session
-      in which I ask you about your experience with this activity.
+  - text: "Cool! Since this is the last session, you'll be asked about your experience (if any) with this activity in the post-questionnaire rather than a next session with me."
   utter_explain_session_5_6:
   - text: "But I'll still send you a message with your new activity in Prolific."
   utter_explain_session_5_7:
