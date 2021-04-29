@@ -882,7 +882,6 @@ class ActionSaveSession(Action):
         session_saved = True
         
         # Load slot values
-        mood = tracker.get_slot('mood')
         attention_check = tracker.get_slot('attention_check')
         attention_check_2 = tracker.get_slot('attention_check_2')
         activity_index_list  = '|'.join([str(i) for i in tracker.get_slot('activity_index_list')])
@@ -905,9 +904,12 @@ class ActionSaveSession(Action):
             sessions_done = 0
             link = ""
             
-            # save data after first session
+            # Save data after first session.
+            # we still need to save the mood, since we have not saved anything
+            # yet in this conversation.
             if not data:
                 sessions_done = 1
+                mood = tracker.get_slot('mood') # already saved earlier in all other sessions
                 action_planning_answer = tracker.get_slot('action_planning_answer')
                 reflection_answer = tracker.get_slot('reflection_answer')
                 data_tuple = (user_id, sessions_done, mood, action_planning_answer, 
@@ -916,13 +918,14 @@ class ActionSaveSession(Action):
                               reflection_answer)
                 sqlite_query = """INSERT INTO users (id, sessions_done, mood_list, action_planning_answer0, attention_check_list, attention_check_2_list, activity_index_list, action_index_list, state_0, action_type_index_list, reflection_answer0) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
                 link = "https://app.prolific.co/submissions/complete?cc=6C5C40DA"
-                
+            
             # save data after second session
+            # do not need to save the reward and mood anymore.
+            # These have already been saved earlier in the conversation.
             elif data[0][1] == 1:
                 sessions_done = 2
                 action_planning_answer = tracker.get_slot('action_planning_answer')
                 reflection_answer = tracker.get_slot('reflection_answer')
-                mood_list = '|'.join([data[0][2], mood])
                 attention_check_list = data[0][16].split('|')
                 attention_check_list.append(attention_check)
                 attention_check_list = '|'.join(attention_check_list)
@@ -931,26 +934,23 @@ class ActionSaveSession(Action):
                 attention_check_2_list = '|'.join(attention_check_2_list)
                 activity_experience = tracker.get_slot('activity_experience')
                 activity_experience_mod = tracker.get_slot('activity_experience_mod')
-                reward = tracker.get_slot('reward')
-                data_tuple = (sessions_done, mood_list, action_planning_answer, 
-                              attention_check_list, attention_check_2_list, activity_index_list,
+                data_tuple = (sessions_done, action_planning_answer, 
+                              attention_check_list, attention_check_2_list, 
+                              activity_index_list,
                               action_index_list, state, activity_experience, 
-                              activity_experience_mod, reward, action_type_index_list, 
+                              activity_experience_mod, action_type_index_list, 
                               reflection_answer, user_id)
                 
-                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer1 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_1 = ?, activity_experience1 = ?, activity_experience_mod1 = ?, reward_list = ?, action_type_index_list = ?, reflection_answer1 = ? WHERE id = ?"""
+                sqlite_query = """UPDATE users SET sessions_done = ?, action_planning_answer1 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_1 = ?, activity_experience1 = ?, activity_experience_mod1 = ?, action_type_index_list = ?, reflection_answer1 = ? WHERE id = ?"""
                 link = "https://app.prolific.co/submissions/complete?cc=5AC5F859"
                 
-                
+            # do not need to save the reward, mood, and satisfaction anymore.
+            # These have already been saved earlier.
             elif data[0][1] == 2:
                 sessions_done = 3
                 action_planning_answer = tracker.get_slot('action_planning_answer')
                 reflection_answer = tracker.get_slot('reflection_answer')
-                satisf = tracker.get_slot('user_satisfaction')
                 group = int(tracker.get_slot('study_group'))
-                mood_list = data[0][2].split('|')
-                mood_list.append(mood)
-                mood_list = '|'.join(mood_list)
                 attention_check_list = data[0][16].split('|')
                 attention_check_list.append(attention_check)
                 attention_check_list = '|'.join(attention_check_list)
@@ -959,25 +959,22 @@ class ActionSaveSession(Action):
                 attention_check_2_list = '|'.join(attention_check_2_list)
                 activity_experience = tracker.get_slot('activity_experience')
                 activity_experience_mod = tracker.get_slot('activity_experience_mod')
-                reward_list = '|'.join([data[0][7], tracker.get_slot('reward')])
-                data_tuple = (sessions_done, mood_list, action_planning_answer, 
+                data_tuple = (sessions_done, action_planning_answer, 
                               attention_check_list, attention_check_2_list, activity_index_list,
                               action_index_list, state, activity_experience, 
-                              activity_experience_mod, reward_list, 
-                              action_type_index_list, group, satisf, 
+                              activity_experience_mod, 
+                              action_type_index_list, group, 
                               reflection_answer, user_id)
                 
-                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer2 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_2 = ?, activity_experience2 = ?, activity_experience_mod2 = ?, reward_list = ?, action_type_index_list = ?, study_group = ?, user_satisfaction2 = ?, reflection_answer2 = ? WHERE id = ?"""
+                sqlite_query = """UPDATE users SET sessions_done = ?, action_planning_answer2 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_2 = ?, activity_experience2 = ?, activity_experience_mod2 = ?, action_type_index_list = ?, study_group = ?, reflection_answer2 = ? WHERE id = ?"""
                 link = "https://app.prolific.co/submissions/complete?cc=5C9794E1"
                
-            
+            # do not need to save the reward and mood anymore.
+            # These have already been saved earlier in the conversation.
             elif data[0][1] == 3:
                 sessions_done = 4
                 action_planning_answer = tracker.get_slot('action_planning_answer')
                 reflection_answer = tracker.get_slot('reflection_answer')
-                mood_list = data[0][2].split('|')
-                mood_list.append(mood)
-                mood_list = '|'.join(mood_list)
                 attention_check_list = data[0][16].split('|')
                 attention_check_list.append(attention_check)
                 attention_check_list = '|'.join(attention_check_list)
@@ -986,27 +983,22 @@ class ActionSaveSession(Action):
                 attention_check_2_list = '|'.join(attention_check_2_list)
                 activity_experience = tracker.get_slot('activity_experience')
                 activity_experience_mod = tracker.get_slot('activity_experience_mod')
-                reward_list = data[0][7].split('|')
-                reward_list.append(tracker.get_slot('reward'))
-                reward_list = '|'.join(reward_list)
-                data_tuple = (sessions_done, mood_list, action_planning_answer, 
+                data_tuple = (sessions_done, action_planning_answer, 
                               attention_check_list, attention_check_2_list, activity_index_list,
                               action_index_list, state, activity_experience, 
-                              activity_experience_mod, reward_list, 
+                              activity_experience_mod,
                               action_type_index_list, 
                               reflection_answer, user_id)
-                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer3 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_3 = ?, activity_experience3 = ?, activity_experience_mod3 = ?, reward_list = ?, action_type_index_list = ?, reflection_answer3 = ? WHERE id = ?"""
+                sqlite_query = """UPDATE users SET sessions_done = ?, action_planning_answer3 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_3 = ?, activity_experience3 = ?, activity_experience_mod3 = ?, action_type_index_list = ?, reflection_answer3 = ? WHERE id = ?"""
                 link = "https://app.prolific.co/submissions/complete?cc=4DB200E7"
                 
             # save data after last session
+            # do not need to save the reward, mood, and satisfaction anymore.
+            # These have already been saved earlier.
             elif data[0][1] == 4:
                 sessions_done = 5
                 action_planning_answer = tracker.get_slot('action_planning_answer')
                 reflection_answer = tracker.get_slot('reflection_answer')
-                satisf = tracker.get_slot('user_satisfaction')
-                mood_list = data[0][2].split('|')
-                mood_list.append(mood)
-                mood_list = '|'.join(mood_list)
                 attention_check_list = data[0][16].split('|')
                 attention_check_list.append(attention_check)
                 attention_check_list = '|'.join(attention_check_list)
@@ -1015,16 +1007,13 @@ class ActionSaveSession(Action):
                 attention_check_2_list = '|'.join(attention_check_2_list)
                 activity_experience = tracker.get_slot('activity_experience')
                 activity_experience_mod = tracker.get_slot('activity_experience_mod')
-                reward_list = data[0][7].split('|')
-                reward_list.append(tracker.get_slot('reward'))
-                reward_list = '|'.join(reward_list)
-                data_tuple = (sessions_done, mood_list,
+                data_tuple = (sessions_done,
                               attention_check_list, attention_check_2_list, activity_index_list,
                               action_index_list, state, activity_experience, 
-                              activity_experience_mod, reward_list, 
-                              action_type_index_list, satisf, action_planning_answer, 
+                              activity_experience_mod,
+                              action_type_index_list, action_planning_answer, 
                               reflection_answer, user_id)
-                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_4 = ?, activity_experience4 = ?, activity_experience_mod4 = ?, reward_list = ?, action_type_index_list = ?, user_satisfaction4 = ?, action_planning_answer4 = ?, reflection_answer4 = ? WHERE id = ?"""
+                sqlite_query = """UPDATE users SET sessions_done = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_4 = ?, activity_experience4 = ?, activity_experience_mod4 = ?, action_type_index_list = ?, action_planning_answer4 = ?, reflection_answer4 = ? WHERE id = ?"""
                 link = "https://app.prolific.co/submissions/complete?cc=3B91AA04"
                 
            
@@ -1054,6 +1043,8 @@ class ActionSaveSession(Action):
                 SlotSet("prolific_link", link)]
 
 # To save data gathered until the effort response
+# This means the mood and the effort answer are saved as well
+# as the user satisfaction in sessions 3 and 5.
 # Only for sessions 2-5
 class ActionSaveSessionEffort(Action):
     def name(self):
