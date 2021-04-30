@@ -39,10 +39,10 @@ with open('IDs', 'rb') as f:
 
 # Get group assignments 
 # TODO: adapt path in the end
-df_group_ass = pd.read_csv("c:/users/nele2/CA/assignment.csv", dtype={'ID':'string'})
+df_group_ass = pd.read_csv("c:/users/nele2/CAS/assignment.csv", dtype={'ID':'string'})
 
-num_act = 4 # number of actions
-num_feat = len(feat_to_select)
+num_act = 5 # number of actions
+num_feat = len(feat_sel) # number of selected features that we now consider
 num_samples = len(data)
 num_traits = 6 # Personality (5 dim.) and TTM-phase for PA
 
@@ -51,14 +51,11 @@ q_num_iter = 100000 * num_samples # num_samples = num people after session 2
 discount_factor = 0.85
 alpha = 0.01
 
-# TODO: uncomment lines below
-# traits = pd.read_csv('pers_PA-TTM_gender.csv')
-# traits_ids = traits['PROLIFIC_PID'].tolist()
-# traits = traits[['PA-TTM', 'Extraversion', 'Agreeableness', 'Conscientiousness', 'ES', 'OE']]
-# traits = traits.to_numpy()
-traits = np.ones((num_samples, num_traits)) # TODO: remove this line in the end
-traits_ids = user_ids # TODO: remove this line in the end
-traits[0, 0] = 5 # TODO: remove this line in the end
+# TODO: add correct file path
+traits = pd.read_csv("W:/staff-umbrella/perfectfit/Exp0/Extract_Data/Pilot2_pers_PA-TTM_gender.csv")
+traits_ids = traits['PROLIFIC_PID'].tolist()
+traits = traits[['PA-TTM', 'Extraversion', 'Agreeableness', 'Conscientiousness', 'ES', 'OE']]
+traits = traits.to_numpy()
 
 opt_policies = {}
 
@@ -67,7 +64,7 @@ for p1 in range(num_samples):
     
     # TODO: change to only people that belong to Group 4 (group numbers go from 0 to 3)
     # Right now we have more groups here due to the limited test samples we have.
-    if str(df_group_ass[df_group_ass['ID'] == user_ids[p1]]["Group"].tolist()[0]) in ["3", "1", "2"]:
+    if str(df_group_ass[df_group_ass['ID'] == user_ids[p1]]["Group"].tolist()[0]) in ["3", "1", "2", "5"]:
     
         # Get index of traits for this person
         trait_index_p1 = traits_ids.index(user_ids[p1])
@@ -93,6 +90,7 @@ for p1 in range(num_samples):
         for p2 in range(num_samples):
             d_E[p2] = (sum_E - d_E[p2]) / sum_E
         
+    
         # need to compute the sum again since we want all weights to add up to 1 in the end
         sum_E = sum(d_E)
         
@@ -104,7 +102,7 @@ for p1 in range(num_samples):
             # that we already had in our dataset. So we throw away no data.
             for w in range(weight - 1):
                 data_p.append(data[p2])
-                
+            
         num_samples_p = len(data_p)
         
         '''
@@ -134,18 +132,21 @@ for p1 in range(num_samples):
         reward_func = np.zeros((int(2 ** num_feat), num_act))
         reward_func_count = np.zeros((int(2 ** num_feat), num_act))
         for s_ind, s in enumerate(abstract_states):
-            for data_index in range(num_samples):
-                if list(np.take(np.array(data[data_index][0]), feat_sel)) == s:
-                    trans_func[s_ind, data[data_index][2], abstract_states.index(list(np.take(data[data_index][1], feat_sel)))] += 1
-                    r = data[data_index][3]
-                    reward_func[s_ind, data[data_index][2]] += r
-                    reward_func_count[s_ind, data[data_index][2]] += 1
+            for data_index in range(num_samples_p):
+                if list(np.take(np.array(data_p[data_index][0]), feat_sel)) == s:
+                    trans_func[s_ind, data_p[data_index][2], abstract_states.index(list(np.take(data_p[data_index][1], feat_sel)))] += 1
+                    r = data_p[data_index][3]
+                    reward_func[s_ind, data_p[data_index][2]] += r
+                    reward_func_count[s_ind, data_p[data_index][2]] += 1
            
             # Normalize
             for a in range(num_act):
                 summed = sum(trans_func[s_ind, a])
                 if summed > 0:
                     trans_func[s_ind, a] /= summed
+                # if we have not data on a state-action combination, we assume equal probability of transitioning to each other state
+                else:
+                    trans_func[s_ind, a] = np.ones(int(2 ** num_feat)) / (2 ** num_feat)
                 if reward_func_count[s_ind, a] > 0:
                     reward_func[s_ind, a] /= reward_func_count[s_ind, a]
         

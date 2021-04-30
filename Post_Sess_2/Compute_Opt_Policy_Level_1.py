@@ -24,7 +24,9 @@ map_to_rewards = util.get_map_effort_reward(effort_mean, output_lower_bound = 0,
 reward_list = util.map_efforts_to_rewards(list_of_efforts, map_to_rewards)
 
 # number of actions
-num_act = 4
+# we have 5, 4 actions that persuade, and the last action is to
+# not persuade people
+num_act = 5
 
 rewards = np.zeros(num_act)
 trials = np.zeros(num_act)

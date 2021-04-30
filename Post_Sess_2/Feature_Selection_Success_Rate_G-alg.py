@@ -30,7 +30,7 @@ reward_list = util.map_efforts_to_rewards(list_of_efforts, map_to_rewards)
 for i in range(len(reward_list)):
     data[i][3] = reward_list[i]
 
-num_act = 4 # number of actions
+num_act = 5 # number of actions
 num_feat = len(feat_to_select)
 num_samples = len(data)
 
@@ -154,6 +154,9 @@ for data_index in range(num_samples): # for each data sample
 success_rates = np.divide(total_reward, total_trial,
                           out = np.zeros_like(total_reward),
                           where=total_trial!=0)
+
+# If we did not try an action in a state, we assume a default success rate of 0.5, which is halfway between 0 and 1.
+success_rates = np.array([[[[success_rates[i][j][k][l] if total_trial[i][j][k][l] > 0 else 0.5 for l in range(num_act)] for k in range(2)] for j in range(2)] for i in range(2)])
 
 optimal_policy = [[[[a for a in range(num_act) if success_rates[i, j, k, a] == max(success_rates[i, j, k])] for k in range(2)] for j in range(2)] for i in range(2)]
 

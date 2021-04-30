@@ -31,7 +31,7 @@ reward_list = util.map_efforts_to_rewards(list_of_efforts, map_to_rewards)
 for i in range(len(reward_list)):
     data[i][3] = reward_list[i]
 
-num_act = 4 # number of actions
+num_act = 5 # number of actions
 num_feat = len(feat_to_select)
 num_samples = len(data)
 
@@ -174,9 +174,7 @@ for s_ind, s in enumerate(abstract_states):
     for data_index in range(num_samples):
         if list(np.take(np.array(data[data_index][0]), feat_sel)) == s:
             trans_func[s_ind, data[data_index][2], abstract_states.index(list(np.take(data[data_index][1], feat_sel)))] += 1
-            r = int(data[data_index][3])
-            if r == 0:
-                r = -1
+            r = data[data_index][3]
             reward_func[s_ind, data[data_index][2]] += r
             reward_func_count[s_ind, data[data_index][2]] += 1
    
@@ -185,6 +183,9 @@ for s_ind, s in enumerate(abstract_states):
         summed = sum(trans_func[s_ind, a])
         if summed > 0:
             trans_func[s_ind, a] /= summed
+        # if we have no data on a state-action combination, we assume equal probability of transitioning to each other state
+        else:
+            trans_func[s_ind, a] = np.ones(int(2 ** num_feat_to_select)) / (2 ** num_feat_to_select)
         if reward_func_count[s_ind, a] > 0:
             reward_func[s_ind, a] /= reward_func_count[s_ind, a]
 
