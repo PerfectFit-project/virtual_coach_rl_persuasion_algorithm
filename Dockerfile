@@ -21,6 +21,8 @@ COPY assignment.csv /app
 COPY Activities.csv /app
 COPY reminder_template_last_session.txt /app
 COPY reminder_template.txt /app
+COPY reminder_template_noPers.txt /app
+COPY reminder_template_last_session_noPers.txt /app
 COPY reflective_questions.csv /app
 COPY x.txt /app
 COPY email.txt /app
