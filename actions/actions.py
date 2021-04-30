@@ -51,8 +51,11 @@ for m in [14, 15, 16, 17, 18]: # Planning
 # Persuasive messages and reminder questions
 df_mess = pd.read_csv("all_messages.csv")
 df_rem = pd.read_csv("all_reminders.csv")
-num_mess_per_type = [6, 4, 4, 5]
-NUM_PERS_TYPES = 4
+
+# number of messages per persuasion type in which we send messages
+num_mess_per_type = [6, 4, 4, 5] 
+# number of persuasion types in which we send a persuasive message
+NUM_PERS_TYPES = len(num_mess_per_type)
 
 # Moods, sorted by quadrant w.r.t. valence and arousal
 moods_ha_lv = ["afraid", "alarmed", "annoyed", "distressed", "angry", 
@@ -673,8 +676,9 @@ class ActionChoosePersuasion(Action):
             if curr_action_type_ind_list is None:
                 curr_action_type_ind_list = []
             
-            # Choose persuasion type randomly
-            pers_type = random.choice([i for i in range(NUM_PERS_TYPES)])
+            # Choose persuasion type randomly, including the option
+            # not to send a persuasive message
+            pers_type = random.choice([i for i in range(NUM_PERS_TYPES + 1)])
             
         curr_action_type_ind_list.append(pers_type)
         
@@ -844,8 +848,9 @@ class ActionChoosePersuasionLast(Action):
             if curr_action_type_ind_list is None:
                 curr_action_type_ind_list = []
             
-            # Choose persuasion type randomly
-            pers_type = random.choice([i for i in range(NUM_PERS_TYPES)])
+            # Choose persuasion type randomly, including the option
+            # not to send a persuasive message
+            pers_type = random.choice([i for i in range(NUM_PERS_TYPES + 1)])
             
         curr_action_type_ind_list.append(pers_type)
         
