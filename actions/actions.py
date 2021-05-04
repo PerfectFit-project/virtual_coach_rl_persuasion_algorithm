@@ -152,7 +152,7 @@ class ActionChooseActivity(Action):
         for i in remaining_indices:
             preq = [j for j in df_act.loc[i, 'Prerequisite'] if not int('0' + j) in curr_act_ind_list and not len(j) == 0]
             if len(preq) > 0:
-                excluded.append(i)
+                excluded.append(str(i))
             
         # get activities that also meet the prerequisites
         remaining_indices = [i for i in remaining_indices if not str(i) in excluded]
@@ -216,7 +216,7 @@ class ActionChooseActivityLast(Action):
         for i in remaining_indices:
             preq = [j for j in df_act.loc[i, 'Prerequisite'] if not int('0' + j) in curr_act_ind_list and not len(j) == 0]
             if len(preq) > 0:
-                excluded.append(i)
+                excluded.append(str(i))
             
         # get activities that also meet the prerequisites
         remaining_indices = [i for i in remaining_indices if not str(i) in excluded]
