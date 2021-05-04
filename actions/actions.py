@@ -150,7 +150,7 @@ class ActionChooseActivity(Action):
             
         # Check if prerequisites for remaining activities are met
         for i in remaining_indices:
-            preq = [j for j in df_act.loc[i, 'Prerequisite'] if not str(j) in curr_act_ind_list]
+            preq = [j for j in df_act.loc[i, 'Prerequisite'] if not int('0' + j) in curr_act_ind_list and not len(j) == 0]
             if len(preq) > 0:
                 excluded.append(i)
             
@@ -214,7 +214,7 @@ class ActionChooseActivityLast(Action):
             
         # Check if prerequisites for remaining activities are met
         for i in remaining_indices:
-            preq = [j for j in df_act.loc[i, 'Prerequisite'] if not str(j) in curr_act_ind_list]
+            preq = [j for j in df_act.loc[i, 'Prerequisite'] if not int('0' + j) in curr_act_ind_list and not len(j) == 0]
             if len(preq) > 0:
                 excluded.append(i)
             
@@ -718,6 +718,7 @@ class ActionChoosePersuasion(Action):
             reminder = ""
             ref_question = ""
             pers_type_four = True
+            curr_action_ind_list.append(-1) # we send no message, so append a -1.
         
         return [SlotSet("message_formulation", message), 
                 SlotSet("reminder_formulation", reminder),
@@ -898,6 +899,7 @@ class ActionChoosePersuasionLast(Action):
             reminder = ""
             ref_question = ""
             pers_type_four = True
+            curr_action_ind_list.append(-1) # we send no message, so append a -1.
         
         return [SlotSet("message_formulation", message), 
                 SlotSet("pers_type_four", pers_type_four),
