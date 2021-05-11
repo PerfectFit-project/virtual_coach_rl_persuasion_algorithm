@@ -9,7 +9,7 @@ reject and no further invite such people.
 import Utils as util
 import pandas as pd
 
-database_path = "W:/staff-umbrella/perfectfit/Exp0/2021_04_01_Pilot_chatbot.db"
+database_path = "W:/staff-umbrella/perfectfit/Exp0/Pilot2/2021_04_21_Pilot2_chatbot.db"
 
 # For sessions 1 through 5 with the conversational agent
 for session_num in range(1, 6):

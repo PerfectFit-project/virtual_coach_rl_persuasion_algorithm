@@ -857,6 +857,7 @@ stories:
   - action: action_choose_persuasion
   - slot_was_set:
     - pers_type_four: True
+    - pers_input: False
   - checkpoint: end_not_last
   
 - story: persuasion_no_input
@@ -941,6 +942,7 @@ stories:
   - action: action_choose_persuasion_last
   - slot_was_set:
     - pers_type_four: True
+    - pers_input: False
   - checkpoint: end_last
   
 - story: persuasion_no_input_last
@@ -949,6 +951,7 @@ stories:
   - action: action_choose_persuasion_last
   - slot_was_set:
     - pers_input: False
+    - pers_type_four: False
   - action: utter_message_formulation
   - action: action_pause_five
   - action: utter_reflective_question_last
@@ -966,6 +969,7 @@ stories:
   - action: action_choose_persuasion_last
   - slot_was_set:
     - pers_input: True
+    - pers_type_four: False
   - action: utter_message_formulation
   - or:
     - intent: anything
