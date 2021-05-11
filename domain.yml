@@ -205,12 +205,32 @@ responses:
   utter_explain_session_overview_5:
   - text: "Please note that doing this activity after this session is voluntary and does not impact your payment."
   utter_explain_session_final:
-  - buttons:
+  - text: I hope this is clear. Ready to begin?
+    buttons:
     - payload: /confirm
-      title: Yes, let's get started!
+      title: "Yes, let's get started!"
     - payload: /confirm
       title: Yes!
-    text: I hope this is clear. Ready to begin?
+  - text: "Now you should know what to expect. Let's get started?"
+    buttons:
+    - payload: /confirm
+      title: "Sure"
+    - payload: /confirm
+      title: Yes!
+  - text: "Hopefully this was easy to follow. Let me know once you're ready to start."
+    buttons:
+    - payload: /confirm
+      title: "I'm ready now"
+  - text: "I hope you could follow me. Just use the button below to tell me when to proceed."
+    buttons:
+    - payload: /confirm
+      title: "Let's start"
+  - text: "I've now told you what to expect from this session. Let's start this session?"
+    buttons:
+    - payload: /confirm
+      title: "Okay"
+    - payload: /confirm
+      title: "Sure!"
   utter_greet_not_first:
   - text: "Hi, nice to see you again!"
   - text: "Hello there, welcome back!"
