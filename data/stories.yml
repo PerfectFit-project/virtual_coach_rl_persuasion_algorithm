@@ -598,6 +598,7 @@ stories:
   - intent: confirm
   - action: utter_explain_session_5_5
   - action: utter_explain_session_5_6
+  - action: utter_explain_session_5_7
   - action: utter_explain_session_final
   - intent: anything
   - action: utter_error_contact_researcher
