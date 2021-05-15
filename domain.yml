@@ -274,7 +274,7 @@ responses:
   - text: Again, whether you do your recommended activity after this session is up to you. Your payment is not contingent on you doing the activity.
   - text: It's still up to you whether you do your assigned activity after this session. It will not impact your payment.
   - text: Recall that your payment does not depend on whether or not you do your advised activity after this session. Doing the activity is not required.
-  - text: "Like before, you will get paid independent of whether or not you do your recommended activity after this session. Doing the activity is entirely volunatary."
+  - text: "Like before, you will get paid independent of whether or not you do your recommended activity after this session. Doing the activity is entirely voluntary."
   utter_explain_session_34_2:
   - text: Just as before, I'll first ask you about your experience (if any) with your
       activity from last time.
@@ -388,7 +388,7 @@ responses:
   - text: "Yay, nice work!"
   utter_response_activity_completion_doneMedium:
   - text: "Nice that you gave it a try!"
-  - text: "Cool, I'm happy to hear that you worked on it."
+  - text: "Cool, I'm happy to hear that you worked on the activity."
   - text: "Nice to hear that you tried the activity!"
   - text: "Cool, it's nice that you gave it a shot!"
   - text: "I'm happy to hear that you gave the activity a shot."
