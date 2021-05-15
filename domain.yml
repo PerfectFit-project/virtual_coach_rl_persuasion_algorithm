@@ -170,7 +170,7 @@ responses:
   - text: Hey there, I'm Sam. It's nice to meet you!
   utter_purpose:
   - text: "I've mentioned my name, but I haven't yet told you what I do: I'm here\
-      \ to prepare you for quiting smoking. Becoming more physically active may help\
+      \ to prepare you for quitting smoking. Becoming more physically active may help\
       \ to quit smoking, so I'll also prepare you to become more physically active."
   utter_expertise:
   - buttons:
