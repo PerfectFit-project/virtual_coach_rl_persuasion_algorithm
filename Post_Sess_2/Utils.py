@@ -113,7 +113,7 @@ def feat_sel_num_blocks_avg_p_val(feat_not_sel, num_feat_not_sel, blocks,
             print("Warning: For block", block, "the p-values for all features are nan.")
             best_indices = [i for i in range(len(t_tests_2[b_ind]))]
             min_value = 1
-        num_best_indices = len(best_indices)
+        num_best_indices = len(best_indices) # number of features that are best
         for best_index in best_indices:
             num_best_per_feat[best_index] += 1 / num_best_indices
             p_val_per_feat[best_index] += min_value

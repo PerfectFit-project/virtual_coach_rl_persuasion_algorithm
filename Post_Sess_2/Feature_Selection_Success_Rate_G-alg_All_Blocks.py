@@ -1,7 +1,8 @@
 '''
 Feature selection as in G-algorithm but with success rates.
 To be run after session 2.
-We use one-sample t-tests.
+We use a one-sample t-test.
+This time we comopute the t-test based on all blocks at once.
 '''
 import numpy as np
 import itertools
@@ -91,11 +92,15 @@ for j in range(num_feat_to_select - 1):
     blocks = [list(i) for i in itertools.product([0, 1], repeat = num_feat_sel)]
     rewards_2 = np.zeros((num_blocks, num_feat_not_sel, 2, num_act))
     trials_2 = np.zeros((num_blocks, num_feat_not_sel, 2, num_act))
-    t_tests_2 = np.zeros((num_blocks, num_feat_not_sel))
+    t_tests_2 = np.zeros(num_feat_not_sel)
     
     # Compute t-test based on success-rates
-    for b_ind, block in enumerate(blocks): # for each block
-        for f_ind, f in enumerate(feat_not_sel): # for each not yet selected feature
+    for f_ind, f in enumerate(feat_not_sel): # for each not yet selected feature
+    
+        success_rate_all_blocks_0 = []
+        success_rate_all_blocks_1 = []
+        
+        for b_ind, block in enumerate(blocks): # for each block
             for data_index in range(num_samples): # for each data sample
                 
                 s = data[data_index][0][f]
@@ -125,17 +130,28 @@ for j in range(num_feat_to_select - 1):
             success_rate_0 = [success_rate_0[sr0_idx] if trials_2[b_ind][f_ind][0][sr0_idx] > 0 else 0.5 for sr0_idx in range(num_act)]
             success_rate_1 = [success_rate_1[sr1_idx] if trials_2[b_ind][f_ind][1][sr1_idx] > 0 else 0.5 for sr1_idx in range(num_act)]
             
-            # t-test
-            # one-sample: compare difference to a mean of 0
-            # we take the absolute value of the difference
-            # Otherwise, comparing values [0, -1, 1] to the mean 0 leads to a p-value of 1
-            t_tests_2[b_ind, f_ind] = stats.ttest_1samp(np.abs(np.array(success_rate_0) - np.array(success_rate_1)), 0)[1]
-    
+            success_rate_all_blocks_0 += success_rate_0
+            success_rate_all_blocks_1 += success_rate_1
+            
+        # t-test
+        # one-sample: compare difference to a mean of 0
+        # we take the absolute value of the difference
+        # Otherwise, comparing values [0, -1, 1] to the mean 0 leads to a p-value of 1
+        t_tests_2[f_ind] = stats.ttest_1samp(np.abs(np.array(success_rate_all_blocks_0) - np.array(success_rate_all_blocks_1)), 0)[1]
+        # account for nan-values (e.g. when all differences are 0) -> assign high p-value
+        if np.isnan(t_tests_2[f_ind]):
+            t_tests_2[f_ind] = 1
+        
     # Select next feature
-    feat_sel, feat_sel_criteria = util.feat_sel_num_blocks_avg_p_val(feat_not_sel, num_feat_not_sel, 
-                                                                     blocks, 
-                                                                     t_tests_2, feat_sel,
-                                                                     feat_sel_criteria)
+    min_val_curr = min(t_tests_2)
+    feat_min_p_val = [i for i in range(num_feat_not_sel) if t_tests_2[i] == min_val_curr]
+    if len(feat_min_p_val) == 1:
+        feat_sel.append(feat_not_sel[feat_min_p_val[0]])
+        feat_sel_criteria.append("Min p-value: " + str(round(min_val_curr, 4)))
+    # multiple best features -> choose one randomly
+    else:
+        feat_sel.append(feat_not_sel[random.choice(feat_min_p_val)])
+        feat_sel_criteria.append("Min p-value: " + str(round(min_val_curr, 4)) + " random from " + str(feat_min_p_val))
         
     print("Feature selected:", feat_sel[-1])
     print("Criterion:", feat_sel_criteria[-1])

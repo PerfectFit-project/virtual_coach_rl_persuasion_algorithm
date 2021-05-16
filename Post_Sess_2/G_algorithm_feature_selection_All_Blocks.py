@@ -1,6 +1,7 @@
 '''
 Final version of feature selection based on G-algorithm for experiment.
 To be run after session 2
+This time we compute one-sample t-tests across all blocks.
 '''
 import numpy as np
 import itertools
@@ -41,7 +42,7 @@ actions = [i for i in range(num_act)]
 states = list(map(list, itertools.product([0, 1], repeat = num_feat)))
 
 # Settings for calculation of Q-values
-q_num_iter = 1000 * num_samples # num_samples = num people after session 2
+q_num_iter = 50000 * num_samples # num_samples = num people after session 2
 q_num_iter_final = 100000 * num_samples # num_samples = num people after session 2
 discount_factor = 0.85
 alpha = 0.01
@@ -89,10 +90,14 @@ for j in range(num_feat_to_select - 1):
     num_blocks = 2 ** num_feat_sel
     blocks = [list(i) for i in itertools.product([0, 1], repeat = num_feat_sel)]
     q_values_2 = np.zeros((num_blocks, num_feat_not_sel, 2, num_act))
-    t_tests_2 = np.zeros((num_blocks, num_feat_not_sel))
+    t_tests_2 = np.zeros(num_feat_not_sel)
     
-    for b_ind, block in enumerate(blocks): # for each block
-        for f_ind, f in enumerate(feat_not_sel): # for each not yet selected feature
+    for f_ind, f in enumerate(feat_not_sel): # for each not yet selected feature
+    
+        q_values_all_blocks_0 = []
+        q_values_all_blocks_1 = []
+    
+        for b_ind, block in enumerate(blocks): # for each block
             for t in range(q_num_iter):
                 
                 data_index = np.random.randint(0, num_samples) # data sample
@@ -114,22 +119,27 @@ for j in range(num_feat_to_select - 1):
                     td_delta = td_target - q_values_2[b_ind, f_ind, s, a] 
                     q_values_2[b_ind][f_ind][s][a] += alpha * td_delta 
             
-            # t-test -> get the p-value.
-            # This t-test function returns an array with 2 values. The first value is the 
-            # t-statistic, the second value is the p-value.
-            # Paired t-test
-            t_value = stats.ttest_1samp(np.abs(np.array(q_values_2[b_ind][f_ind][0]) - np.array(q_values_2[b_ind][f_ind][1])), 0)[1]
-            # If the two arrays passed to the t-test are equal, the p-value will be nan.
-            # So then we set the p-value to 1 (i.e. very high).
-            if math.isnan(t_value):
-                t_value = 1
-            t_tests_2[b_ind, f_ind] = t_value
+            # append data from this block to data from previous blocks
+            q_values_all_blocks_0 += list(q_values_2[b_ind][f_ind][0])
+            q_values_all_blocks_1 += list(q_values_2[b_ind][f_ind][1])
+        
+        # Now that we have the data on all blocks, we run a one-sample t-test
+        t_value = stats.ttest_1samp(np.abs(np.array(q_values_all_blocks_0) - np.array(q_values_all_blocks_1)), 0)[1]
+        # If all differences are 0, the p-value will be nan -> so set the p-value high, i.e. 1
+        if math.isnan(t_value):
+            t_value = 1
+        t_tests_2[f_ind] = t_value
     
     # Select next feature
-    feat_sel, feat_sel_criteria = util.feat_sel_num_blocks_avg_p_val(feat_not_sel, num_feat_not_sel, 
-                                                                     blocks, 
-                                                                     t_tests_2, feat_sel,
-                                                                     feat_sel_criteria)
+    min_val_curr = min(t_tests_2)
+    feat_min_p_val = [i for i in range(num_feat_not_sel) if t_tests_2[i] == min_val_curr]
+    if len(feat_min_p_val) == 1:
+        feat_sel.append(feat_not_sel[feat_min_p_val[0]])
+        feat_sel_criteria.append("Min p-value: " + str(round(min_val_curr, 4)))
+    # multiple best features -> choose one randomly
+    else:
+        feat_sel.append(feat_not_sel[random.choice(feat_min_p_val)])
+        feat_sel_criteria.append("Min p-value: " + str(round(min_val_curr, 4)) + " random from " + str(feat_min_p_val))
         
     print("Feature selected:", feat_sel[-1])
     print("Criterion:", feat_sel_criteria[-1])
