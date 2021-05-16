@@ -1,6 +1,7 @@
 '''
 Feature selection as in G-algorithm but with success rates.
 To be run after session 2.
+We use paired t-tests.
 '''
 import numpy as np
 import itertools
@@ -64,10 +65,13 @@ for f in range(num_feat):
    success_rate_0_ff = [success_rate_0_ff[sr0_idx] if trials[f][0][sr0_idx] > 0 else 0.5 for sr0_idx in range(num_act)]
    success_rate_1_ff = [success_rate_1_ff[sr1_idx] if trials[f][1][sr1_idx] > 0 else 0.5 for sr1_idx in range(num_act)]
    
-   # Here we use Welch's t-test, which does not assume equal variances (i.e. we set equal_var to False)
-   t_tests[f] = stats.ttest_ind(success_rate_0_ff, success_rate_1_ff, equal_var = False)[1]
+   # Paired t-test
+   t_tests[f] = stats.ttest_rel(success_rate_0_ff, success_rate_1_ff)[1]
 
 # minimum p-value for t-test, ignoring nan-values
+# we always have the same number of observations, so a larger effect size
+# corresponds to a lower p-value. So we do not need to consider both
+# the effect size and the p-value separately somehow.
 min_p_val = np.nanmin(t_tests)
 feat_sel_options = [i for i in range(num_feat) if t_tests[i] == min_p_val]
 feat_sel = [random.choice(feat_sel_options)] # choose randomly if there are multiple best features
@@ -122,9 +126,8 @@ for j in range(num_feat_to_select - 1):
             success_rate_1 = [success_rate_1[sr1_idx] if trials_2[b_ind][f_ind][1][sr1_idx] > 0 else 0.5 for sr1_idx in range(num_act)]
             
             # t-test
-            # Here we use Welch's t-test, which does not assume equal variances (i.e. we set equal_var to False)
-            t_tests_2[b_ind, f_ind] = stats.ttest_ind(success_rate_0, success_rate_1, 
-                                                      equal_var = False)[1]
+            # paired t-test
+            t_tests_2[b_ind, f_ind] = stats.ttest_rel(success_rate_0, success_rate_1)[1]
     
     # Select next feature
     feat_sel, feat_sel_criteria = util.feat_sel_num_blocks_avg_p_val(feat_not_sel, num_feat_not_sel, 

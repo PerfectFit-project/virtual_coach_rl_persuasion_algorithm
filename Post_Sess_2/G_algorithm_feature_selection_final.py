@@ -68,9 +68,8 @@ for f in range(num_feat):
         q_values[f][s][a] += alpha * td_delta 
     
     # t-test -> get p-value
-    # By setting equal_var = True, we compute Welch's t-test, which does not
-    # assume equal variances.
-    t_tests[f] = stats.ttest_ind(q_values[f][0], q_values[f][1], equal_var = False)[1]
+    # paired t-tiest
+    t_tests[f] = stats.ttest_rel(q_values[f][0], q_values[f][1])[1]
 
 min_p_val = np.nanmin(t_tests) # minimum p-value for t-test, ignoring nan-values
 feat_sel_options = [i for i in range(num_feat) if t_tests[i] == min_p_val]
@@ -118,10 +117,8 @@ for j in range(num_feat_to_select - 1):
             # t-test -> get the p-value.
             # This t-test function returns an array with 2 values. The first value is the 
             # t-statistic, the second value is the p-value.
-            # By setting equal_var = False, we compute Welch's t-test, which does not assume
-            # equal variances.
-            t_value = stats.ttest_ind(q_values_2[b_ind][f_ind][0], q_values_2[b_ind][f_ind][1],
-                                      equal_var = False)[1]
+            # Paired t-test
+            t_value = stats.ttest_rel(q_values_2[b_ind][f_ind][0], q_values_2[b_ind][f_ind][1])[1]
             # If the two arrays passed to the t-test are equal, the p-value will be nan.
             # So then we set the p-value to 1 (i.e. very high).
             if math.isnan(t_value):
