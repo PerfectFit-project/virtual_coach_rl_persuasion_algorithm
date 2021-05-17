@@ -21,7 +21,7 @@ list_of_efforts = list(np.array(data)[:, 3].astype(int))
 # Mean value of effort responses
 with open("Post_Sess_2_Effort_Mean", "rb") as f:
     effort_mean = pickle.load(f)
-# Map effort responses to rewards from -1 to 1, with the mean mapped to 1.
+# Map effort responses to rewards from -1 to 1, with the mean mapped to 0.
 map_to_rewards = util.get_map_effort_reward(effort_mean, output_lower_bound = -1, 
                                             output_upper_bound = 1, 
                                             input_lower_bound = 0, 
@@ -62,6 +62,8 @@ opt_policies = {}
 # for each person
 for p1 in range(num_samples):
     
+    print("Person index:", p1)
+    
     # TODO: change to only people that belong to Group 4 (group numbers go from 0 to 3)
     # Right now we have more groups here due to the limited test samples we have.
     if str(df_group_ass[df_group_ass['ID'] == user_ids[p1]]["Group"].tolist()[0]) in ["3", "1", "2", "5"]:
@@ -81,7 +83,7 @@ for p1 in range(num_samples):
             trait_index_p2 = traits_ids.index(user_ids[p2])
             
             d_E[p2] = np.linalg.norm(traits[trait_index_p1] - traits[trait_index_p2])
-        
+            
         sum_E = sum(d_E) # sum of Euclidean distances
         
         # Intermediate weights of samples based on Euclidean distances
@@ -100,6 +102,7 @@ for p1 in range(num_samples):
           
             # Note that if a sample's weight is 0, we still keep the single sample
             # that we already had in our dataset. So we throw away no data.
+            # We have weight - 1 here since we already have 1 sample in the dataset
             for w in range(weight - 1):
                 data_p.append(data[p2])
             
@@ -127,7 +130,7 @@ for p1 in range(num_samples):
         '''
         abstract_states = [list(i) for i in itertools.product([0, 1], repeat = 3)]
 
-        # Compute transition function and reward function
+        # Compute approximate transition function and reward function
         trans_func = np.zeros((int(2 ** num_feat), num_act, int(2 ** num_feat)))
         reward_func = np.zeros((int(2 ** num_feat), num_act))
         reward_func_count = np.zeros((int(2 ** num_feat), num_act))
@@ -144,7 +147,7 @@ for p1 in range(num_samples):
                 summed = sum(trans_func[s_ind, a])
                 if summed > 0:
                     trans_func[s_ind, a] /= summed
-                # if we have not data on a state-action combination, we assume equal probability of transitioning to each other state
+                # if we have no data on a state-action combination, we assume equal probability of transitioning to each other state
                 else:
                     trans_func[s_ind, a] = np.ones(int(2 ** num_feat)) / (2 ** num_feat)
                 if reward_func_count[s_ind, a] > 0:

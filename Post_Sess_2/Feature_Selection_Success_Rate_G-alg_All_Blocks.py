@@ -106,7 +106,7 @@ for j in range(num_feat_to_select - 1):
                 s = data[data_index][0][f]
                 s_b = np.take(data[data_index][0], feat_sel)
                 
-                # both s must be in the current block
+                # s must be in the current block
                 if list(s_b) == block:
                     
                     a = data[data_index][2]
