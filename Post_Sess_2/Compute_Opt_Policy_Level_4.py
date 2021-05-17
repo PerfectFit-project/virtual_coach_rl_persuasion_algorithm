@@ -12,7 +12,6 @@ import Utils as util
 import itertools
 
 # load data. Data has <s, s', a, r> samples.
-feat_to_select = [0, 1, 2, 3, 4, 6, 7]
 data  = pd.read_csv('data_samples_post_sess_2.csv', converters={'s0': eval, 's1': eval})
 data = data.values.tolist()
 
