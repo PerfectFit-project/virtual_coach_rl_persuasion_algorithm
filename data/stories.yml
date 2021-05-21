@@ -135,6 +135,7 @@ stories:
   - action: utter_explain_session_overview_2
   - action: utter_explain_session_overview_3
   - action: utter_explain_session_overview_4
+  - action: utter_explain_session_overview_5
   - action: utter_explain_session_final
   - intent: anything
   - action: utter_error_contact_researcher
