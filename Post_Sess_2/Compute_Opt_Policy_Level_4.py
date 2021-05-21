@@ -136,17 +136,22 @@ for p1 in range(num_assigned):
 
     # Compute approximate transition function and reward function
     trans_func = np.zeros((int(2 ** num_feat), num_act, int(2 ** num_feat)))
-    reward_func = np.zeros((int(2 ** num_feat), num_act))
-    reward_func_count = np.zeros((int(2 ** num_feat), num_act))
+    reward_func = np.zeros((int(2 ** num_feat), num_act, int(2 ** num_feat)))
+    reward_func_count = np.zeros((int(2 ** num_feat), num_act, int(2 ** num_feat)))
+    
     for s_ind, s in enumerate(abstract_states):
-        for data_index in range(num_samples_p):
+        for data_index in range(num_samples_p): # for each data sample
             if list(np.take(np.array(data_p[data_index][0]), feat_sel)) == s:
-                trans_func[s_ind, data_p[data_index][2], abstract_states.index(list(np.take(data_p[data_index][1], feat_sel)))] += 1
+                
+                a = data_p[data_index][2] # action
                 r = data_p[data_index][3]
-                reward_func[s_ind, data_p[data_index][2]] += r
-                reward_func_count[s_ind, data_p[data_index][2]] += 1
+                next_state_index = abstract_states.index(list(np.take(data_p[data_index][1], feat_sel)))
+                
+                trans_func[s_ind, a, next_state_index] += 1
+                reward_func[s_ind, a, next_state_index] += r
+                reward_func_count[s_ind, a, next_state_index] += 1
        
-        # Normalize
+        # Normalize reward and transition functions
         for a in range(num_act):
             summed = sum(trans_func[s_ind, a])
             if summed > 0:
@@ -154,11 +159,15 @@ for p1 in range(num_assigned):
             # if we have no data on a state-action combination, we assume equal probability of transitioning to each other state
             else:
                 trans_func[s_ind, a] = np.ones(int(2 ** num_feat)) / (2 ** num_feat)
-            if reward_func_count[s_ind, a] > 0:
-                reward_func[s_ind, a] /= reward_func_count[s_ind, a]
+            
+            for s_prime_ind in range(len(abstract_states)):
+                if reward_func_count[s_ind, a, s_prime_ind] > 0:
+                    reward_func[s_ind, a, s_prime_ind] /= reward_func_count[s_ind, a, s_prime_ind]
     
-    # Value iteration        
-    q_values_exact, _ = util.get_Q_values_opt_policy(discount_factor, trans_func, reward_func)
+    # Value iteration; reward depends also on next state
+    q_values_exact, _ = util.get_Q_values_opt_policy(discount_factor, trans_func,
+                                                     reward_func, 
+                                                     reward_dep_next_state = True)
     # Optimal policy, can give multiple best actions in a state
     opt_policy = [[[[a for a in range(num_act) if q_values_exact[abstract_states.index([i, j, k])][a] == max(q_values_exact[abstract_states.index([i, j, k])])] for k in range(2)] for j in range(2)] for i in range(2)]
     

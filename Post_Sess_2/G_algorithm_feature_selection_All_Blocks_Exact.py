@@ -44,10 +44,7 @@ actions = [i for i in range(num_act)]
 states = list(map(list, itertools.product([0, 1], repeat = num_feat)))
 
 # Settings for calculation of Q-values
-q_num_iter = 1000 * num_samples # num_samples = num people after session 2
-q_num_iter_final = 100000 * num_samples # num_samples = num people after session 2
 discount_factor = 0.85
-alpha = 0.01
 
 num_feat_to_select = 3 # number of features to select
         
@@ -61,12 +58,16 @@ for f in range(num_feat):
     reward_func = np.zeros((2, num_act, 2))
     reward_func_count = np.zeros((2, num_act, 2))
     for s in range(2): # i.e. if feature is 0 and if feature is 1
-        for data_index in range(num_samples):
+        for data_index in range(num_samples): # for each data sample
             if data[data_index][0][f] == s:
-                trans_func[s, data[data_index][2], data[data_index][1][f]] += 1
+                a = data[data_index][2]
+                s_prime = data[data_index][1][f] # feature value of next state
                 r = data[data_index][3]
-                reward_func[s, data[data_index][2], data[data_index][1][f]] += r
-                reward_func_count[s, data[data_index][2], data[data_index][1][f]] += 1
+                
+                # update statistics
+                trans_func[s, a, s_prime] += 1
+                reward_func[s, a, s_prime] += r
+                reward_func_count[s, a, s_prime] += 1
    
         # Normalize transition and reward function for current value of feature
         for a in range(num_act):
@@ -109,24 +110,23 @@ for j in range(num_feat_to_select - 1):
     blocks = [list(i) for i in itertools.product([0, 1], repeat = num_feat_sel)]
     # all abstract states including the new feature
     blocks_plus_1 = [list(i) for i in itertools.product([0, 1], repeat = num_feat_sel + 1)]
-    q_values_2 = np.zeros((num_feat_not_sel, len(blocks_plus_1), num_act))
+    num_blocks_plus_1 = len(blocks_plus_1)
+    
+    q_values_2 = np.zeros((num_feat_not_sel, num_blocks_plus_1, num_act))
     t_tests_2 = np.zeros(num_feat_not_sel)
     
     for f_ind, f in enumerate(feat_not_sel): # for each not yet selected feature
     
-        trans_func = np.zeros((int(2 ** (num_feat_sel + 1)), num_act, int(2 ** (num_feat_sel + 1))))
-        reward_func = np.zeros((int(2 ** (num_feat_sel + 1)), num_act, int(2 ** (num_feat_sel + 1))))
-        reward_func_count = np.zeros((int(2 ** (num_feat_sel + 1)), num_act, int(2 ** (num_feat_sel + 1))))
-    
-        q_values_all_blocks_0 = []
-        q_values_all_blocks_1 = []
+        trans_func = np.zeros((num_blocks_plus_1, num_act, num_blocks_plus_1))
+        reward_func = np.zeros((num_blocks_plus_1, num_act, num_blocks_plus_1))
+        reward_func_count = np.zeros((num_blocks_plus_1, num_act, num_blocks_plus_1))
     
         for b_ind, block in enumerate(blocks): # for each block based on so far selected features
         
             for data_index in range(num_samples): # for each data sample
                 
-                s = data[data_index][0][f]
-                s_b = np.take(data[data_index][0], feat_sel)
+                s = data[data_index][0][f] # value for current feature 
+                s_b = np.take(data[data_index][0], feat_sel) # values for already selected features
                 
                 # the start state must be in the current block
                 if list(s_b) == block:
@@ -145,15 +145,15 @@ for j in range(num_feat_to_select - 1):
         
         # Now need to normalize the reward and transition functions
         # For each block including the current candidate feature
-        for b_ind in range(len(blocks_plus_1)):  
+        for b_ind in range(num_blocks_plus_1):  
             for a in range(num_act): # for each action
                 summed = sum(trans_func[b_ind, a])
                 if summed > 0:
                     trans_func[b_ind, a] /= summed
                 # if we have no data on a state-action combination, we assume equal probability of transitioning to each other state
                 else:
-                    trans_func[b_ind, a] = np.ones(len(blocks_plus_1)) / len(blocks_plus_1) # i.e. 0.5 probability of transitioning to each state
-                for b_prime in range(len(blocks_plus_1)):
+                    trans_func[b_ind, a] = np.ones(num_blocks_plus_1) / num_blocks_plus_1 # i.e. 0.5 probability of transitioning to each state
+                for b_prime in range(num_blocks_plus_1):
                     if reward_func_count[b_ind, a, b_prime] > 0:
                         reward_func[b_ind, a, b_prime] /= reward_func_count[b_ind, a, b_prime]
            
@@ -161,7 +161,7 @@ for j in range(num_feat_to_select - 1):
         # Value iteration for current feature    
         q_values_2[f_ind], _ = util.get_Q_values_opt_policy(discount_factor, trans_func, reward_func, 
                                                             reward_dep_next_state = True)
-            
+        
         # separate Q-values based on whether current candidate feature is 0 or 1
         q_values_all_blocks_0 = np.array([q_values_2[f_ind][b_ind_even] for b_ind_even in range(0, len(blocks_plus_1), 2)]).flatten()
         q_values_all_blocks_1 = np.array([q_values_2[f_ind][b_ind_odd] for b_ind_odd in range(1, len(blocks_plus_1), 2)]).flatten()
