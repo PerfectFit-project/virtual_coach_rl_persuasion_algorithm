@@ -459,7 +459,8 @@ def gather_data_post_sess_5(database_path,
 
 def policy_evaluation(observation_space_size, discount_factor, trans_func,
                       reward_func, policy, q_vals, 
-                      update_tolerance = 0.000000001):
+                      update_tolerance = 0.000000001,
+                      reward_dep_next_state = False):
     """
     Returns the q-values for a specific policy.
     
@@ -470,22 +471,37 @@ def policy_evaluation(observation_space_size, discount_factor, trans_func,
         reward_func: reward function
         policy: policy to compute q-values for
         update_tolerance: precision
+        reward_dep_next_state (boolean, default: False): whether reward depends also on the next state
     """
     q_vals_new = deepcopy(q_vals)
     num_act = len(trans_func[0])
+    
+    update = 1 # max. change in Q-value in one iteration
    
-    update = 1
-    while update > update_tolerance:
-        update = 0
-        for s in range(observation_space_size):
-            for a in range(num_act):
-                q_vals_new[s, a] = reward_func[s, a] + discount_factor * sum([trans_func[s, a, s_prime] * q_vals[s_prime, int(policy[s_prime])] for s_prime in range(observation_space_size)])
-                update = max(update, abs(q_vals[s, a] - q_vals_new[s, a]))
-        q_vals = deepcopy(q_vals_new)
+    if not reward_dep_next_state: # reward does not also depend on next state
+        while update > update_tolerance:
+            update = 0
+            for s in range(observation_space_size):
+                for a in range(num_act):
+                    q_vals_new[s, a] = reward_func[s, a] + discount_factor * sum([trans_func[s, a, s_prime] * q_vals[s_prime, int(policy[s_prime])] for s_prime in range(observation_space_size)])
+                    update = max(update, abs(q_vals[s, a] - q_vals_new[s, a]))
+            q_vals = deepcopy(q_vals_new)
+    
+    else: # reward does also depend on the next state
+        while update > update_tolerance:
+            update = 0
+            for s in range(observation_space_size):
+               
+                for a in range(num_act):
+                    q_vals_new[s, a] = sum([trans_func[s, a, s_prime] * (discount_factor * q_vals[s_prime, int(policy[s_prime])] + reward_func[s, a, s_prime]) for s_prime in range(observation_space_size)])
+                    
+                    update = max(update, abs(q_vals[s, a] - q_vals_new[s, a]))
+            q_vals = deepcopy(q_vals_new)
         
     return q_vals_new
 
-def get_Q_values_opt_policy(discount_factor, trans_func, reward_func):
+def get_Q_values_opt_policy(discount_factor, trans_func, reward_func,
+                            reward_dep_next_state = False):
     """
     Returns the Q-values for each state under the optimal policy.
     
@@ -493,6 +509,7 @@ def get_Q_values_opt_policy(discount_factor, trans_func, reward_func):
         discount_factor: discount factor of MDP
         trans_func: transition function (dim.: num_states x num_actions x num_states)
         reward_func: reward function (dim.: num_states x num_actions)
+        reward_dep_next_state (boolean, default: False): whether reward depends also on the next state
     """
     min_iterations = 100
     num_states = len(trans_func)
@@ -503,9 +520,10 @@ def get_Q_values_opt_policy(discount_factor, trans_func, reward_func):
     policy_new = np.ones(num_states)
     it = 0
     
-    while not np.array_equal(policy, policy_new) or it < min_iterations:
+    while (not np.array_equal(policy, policy_new)) or it < min_iterations:
         q_vals = policy_evaluation(num_states, discount_factor, 
-                                   trans_func, reward_func, policy, q_vals)
+                                   trans_func, reward_func, policy, q_vals,
+                                   reward_dep_next_state = reward_dep_next_state)
         policy = policy_new
         policy_new = np.array([np.argmax(q_vals[s]) for s in range(num_states)])
         it += 1
