@@ -10,15 +10,16 @@ import pandas as pd
 import copy
 import Utils as util
 import itertools
+from sklearn.preprocessing import MinMaxScaler
 
 # load data. Data has <s, s', a, r> samples.
-data  = pd.read_csv('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_26_0757_data_samples_post_sess_2.csv', converters={'s0': eval, 's1': eval})
+data  = pd.read_csv('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_27_1401_data_samples_post_sess_2.csv', converters={'s0': eval, 's1': eval})
 data = data.values.tolist()
 
 # All effort responses
 list_of_efforts = list(np.array(data)[:, 3].astype(int))
 # Mean value of effort responses
-with open("W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_26_0757_Post_Sess_2_Effort_Mean", "rb") as f:
+with open("W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_27_1401_Post_Sess_2_Effort_Mean", "rb") as f:
     effort_mean = pickle.load(f)
 # Map effort responses to rewards from -1 to 1, with the mean mapped to 0.
 map_to_rewards = util.get_map_effort_reward(effort_mean, output_lower_bound = -1, 
@@ -33,12 +34,12 @@ for i in range(len(reward_list)):
 with open('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/Level_3_G_algorithm_chosen_features', 'rb') as f:
     feat_sel = pickle.load(f)
 
-with open('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/IDs', 'rb') as f:
+with open('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_27_1401_IDs', 'rb') as f:
     user_ids = pickle.load(f)
 
 # Get group assignments 
 # TODO: adapt path in the end
-df_group_ass = pd.read_csv("c:/users/nele2/CAS/assignment.csv", dtype={'ID':'string'})
+df_group_ass = pd.read_csv("W:/staff-umbrella/perfectfit/Exp0/assignment.csv", dtype={'ID':'string'})
 # TODO: use only group 4 (i.e. index-value of 3) in the end
 df_group_ass_group_4 = df_group_ass[df_group_ass["Group"].isin(["3"])]
 user_ids_assigned = df_group_ass_group_4['ID'].tolist()
@@ -55,7 +56,7 @@ discount_factor = 0.85
 alpha = 0.01
 
 # TODO: add correct file path
-traits = pd.read_csv("W:/staff-umbrella/perfectfit/Exp0/Extract_Data/Pilot2_pers_PA-TTM_gender.csv")
+traits = pd.read_csv("W:/staff-umbrella/perfectfit/Exp0/Extract_Data/pers_PA-TTM_gender_MergedAll_1846.csv")
 traits_ids = traits['PROLIFIC_PID'].tolist()
 traits = traits[['PA-TTM', 'Extraversion', 'Agreeableness', 'Conscientiousness', 'ES', 'OE']]
 traits = traits.to_numpy()
@@ -94,16 +95,24 @@ for p1 in range(num_assigned):
     # Intermediate weights of samples based on Euclidean distances
     # So if Euclidean distance is 0, then now the weight is 1.
     # If the Euclidean distance is higher than 0, then now the weight is less than 1.
-    for p2 in range(num_samples):
-        d_E[p2] = (sum_E - d_E[p2]) / sum_E
+    #for p2 in range(num_samples):
+        #d_E[p2] = (sum_E - d_E[p2]) / sum_E
     
-
+    # We first used the above approach. But that does not work well with many samples
+    # we use min-max scaling, and afterwards take the absolute value to inverse the weights.
+    scaler = MinMaxScaler(feature_range = (-1, 0))
+    scaler.fit([[d_E_val] for d_E_val in d_E])
+    d_E = scaler.transform([[d_E_val] for d_E_val in d_E])
+    # we take the absolute value to reverse the weights compared to the Euclidean distance
+    # i.e. a large Euclidean distance should mean a low weight
+    d_E = [np.abs(d_E_val[0]) for d_E_val in d_E]
+    
     # need to compute the sum again since we want all weights to add up to 1 in the end
     sum_E = sum(d_E)
     
     # increase frequency of samples based on Euclidean distances
     for p2 in range(num_samples):
-        weight = int(round(d_E[p2]/sum_E, 3) * 1000) # increase sample size by factor of 1000
+        weight = int(round(d_E[p2]/sum_E, 4) * 10000) # increase sample size by a certain factor (e.g. 1000)
         # Note that if a sample's weight is 0, we still keep the single sample
         # that we already had in our dataset. So we throw away no data.
         # We have weight - 1 here since we already have 1 sample in the dataset
