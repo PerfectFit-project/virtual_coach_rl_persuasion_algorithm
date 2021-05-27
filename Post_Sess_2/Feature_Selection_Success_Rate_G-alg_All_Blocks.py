@@ -14,13 +14,13 @@ import random
 
 # load data. Data has <s, s', a, r> samples.
 feat_to_select = [0, 1, 2, 3, 4, 6, 7]
-data  = pd.read_csv('data_samples_post_sess_2.csv', converters={'s0': eval, 's1': eval})
+data  = pd.read_csv('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_27_1401_data_samples_post_sess_2.csv', converters={'s0': eval, 's1': eval})
 data = data.values.tolist()
 
 # All effort responses
 list_of_efforts = list(np.array(data)[:, 3].astype(int))
 # Mean value of effort responses
-with open("Post_Sess_2_Effort_Mean", "rb") as f:
+with open("W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_27_1401_Post_Sess_2_Effort_Mean", "rb") as f:
     effort_mean = pickle.load(f)
 # Map effort responses to rewards from 0 to 1, with the mean mapped to 0.5.
 map_to_rewards = util.get_map_effort_reward(effort_mean, output_lower_bound = 0, 
@@ -74,13 +74,14 @@ for f in range(num_feat):
 # corresponds to a lower p-value. So we do not need to consider both
 # the effect size and the p-value separately somehow.
 min_p_val = np.nanmin(t_tests)
+print("All p-values for first selection:", t_tests)
 feat_sel_options = [i for i in range(num_feat) if t_tests[i] == min_p_val]
 feat_sel = [random.choice(feat_sel_options)] # choose randomly if there are multiple best features
-criterion = "First feature -> min. p-value: " + str(round(min_p_val, 4))
+criterion = "First feature -> min. p-value: " + str(round(min_p_val, 6))
 if len(feat_sel_options) > 1:
     criterion += " random from " + str(feat_sel_options)
 feat_sel_criteria = [criterion]
-print("First feature selected:", feat_sel[0], criterion)
+print("First feature selected:", feat_sel[0], criterion, "\n")
 
 # Select remaining features
 for j in range(num_feat_to_select - 1):
@@ -144,22 +145,23 @@ for j in range(num_feat_to_select - 1):
         
     # Select next feature
     min_val_curr = min(t_tests_2)
+    print("All p-values for next selection:", t_tests_2)
     feat_min_p_val = [i for i in range(num_feat_not_sel) if t_tests_2[i] == min_val_curr]
     if len(feat_min_p_val) == 1:
         feat_sel.append(feat_not_sel[feat_min_p_val[0]])
-        feat_sel_criteria.append("Min p-value: " + str(round(min_val_curr, 4)))
+        feat_sel_criteria.append("Min p-value: " + str(round(min_val_curr, 6)))
     # multiple best features -> choose one randomly
     else:
         feat_sel.append(feat_not_sel[random.choice(feat_min_p_val)])
-        feat_sel_criteria.append("Min p-value: " + str(round(min_val_curr, 4)) + " random from " + str(feat_min_p_val))
+        feat_sel_criteria.append("Min p-value: " + str(round(min_val_curr, 6)) + " random from " + str(feat_min_p_val))
         
     print("Feature selected:", feat_sel[-1])
-    print("Criterion:", feat_sel_criteria[-1])
+    print("Criterion:", feat_sel_criteria[-1], "\n")
 
 # Store selected features
-with open('Level_2_G_algorithm_chosen_features', 'wb') as f:
+with open('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/Level_2_G_algorithm_chosen_features', 'wb') as f:
     pickle.dump(feat_sel, f)
-with open("Level_2_G_algorithm_chosen_features_criteria", 'wb') as f:
+with open("W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/Level_2_G_algorithm_chosen_features_criteria", 'wb') as f:
     pickle.dump(feat_sel_criteria, f)
     
 # Compute best action per state in chosen representation
@@ -168,7 +170,7 @@ total_trial = np.zeros((2, 2, 2, num_act))
 
 for data_index in range(num_samples): # for each data sample
     s_b = np.take(data[data_index][0], feat_sel)
-    index = list(s_b) + [data[data_index][2]]
+    index = list(s_b) + [data[data_index][2]] # state and action form the index
     total_reward[index[0], index[1], index[2], index[3]] += data[data_index][3]
     total_trial[index[0], index[1], index[2], index[3]] += 1
     
@@ -181,5 +183,5 @@ success_rates = np.array([[[[success_rates[i][j][k][l] if total_trial[i][j][k][l
 
 optimal_policy = [[[[a for a in range(num_act) if success_rates[i, j, k, a] == max(success_rates[i, j, k])] for k in range(2)] for j in range(2)] for i in range(2)]
 
-with open('Level_2_Optimal_Policy', 'wb') as f:
+with open('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/Level_2_Optimal_Policy', 'wb') as f:
     pickle.dump(optimal_policy, f)

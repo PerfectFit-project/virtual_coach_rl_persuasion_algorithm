@@ -7,14 +7,16 @@ import pickle
 import Utils as util
 
 # Load data extracted from database
-data  = pd.read_csv('data_samples_post_sess_2.csv', converters={'s0': eval, 's1': eval})
+# TODO: use correct path
+data  = pd.read_csv('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_27_1401_data_samples_post_sess_2.csv', converters={'s0': eval, 's1': eval})
 data = data.values.tolist()
 num_samples = len(data)
 
 # All effort responses
 list_of_efforts = list(np.array(data)[:, 3].astype(int))
 # Mean value of effort responses
-with open("Post_Sess_2_Effort_Mean", "rb") as f:
+# TODO: use correct path
+with open("W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_27_1401_Post_Sess_2_Effort_Mean", "rb") as f:
     effort_mean = pickle.load(f)
 # Map effort responses to rewards from 0 to 1, with the mean mapped to 0.5.
 map_to_rewards = util.get_map_effort_reward(effort_mean, output_lower_bound = 0, 
@@ -43,5 +45,5 @@ avg_reward = np.divide(rewards, trials,
 # Get as optimal policy the actions with highest average reward
 opt_policy = [i for i in range(num_act) if avg_reward[i] == max(avg_reward)]
 
-with open('Level_1_Optimal_Policy', 'wb') as f:
+with open('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/Level_1_Optimal_Policy', 'wb') as f:
     pickle.dump(opt_policy, f)

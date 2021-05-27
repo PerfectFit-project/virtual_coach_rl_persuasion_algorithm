@@ -12,13 +12,13 @@ import Utils as util
 import itertools
 
 # load data. Data has <s, s', a, r> samples.
-data  = pd.read_csv('data_samples_post_sess_2.csv', converters={'s0': eval, 's1': eval})
+data  = pd.read_csv('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_26_0757_data_samples_post_sess_2.csv', converters={'s0': eval, 's1': eval})
 data = data.values.tolist()
 
 # All effort responses
 list_of_efforts = list(np.array(data)[:, 3].astype(int))
 # Mean value of effort responses
-with open("Post_Sess_2_Effort_Mean", "rb") as f:
+with open("W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_26_0757_Post_Sess_2_Effort_Mean", "rb") as f:
     effort_mean = pickle.load(f)
 # Map effort responses to rewards from -1 to 1, with the mean mapped to 0.
 map_to_rewards = util.get_map_effort_reward(effort_mean, output_lower_bound = -1, 
@@ -30,10 +30,10 @@ reward_list = util.map_efforts_to_rewards(list_of_efforts, map_to_rewards)
 for i in range(len(reward_list)):
     data[i][3] = reward_list[i]
 
-with open('Level_3_G_algorithm_chosen_features', 'rb') as f:
+with open('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/Level_3_G_algorithm_chosen_features', 'rb') as f:
     feat_sel = pickle.load(f)
 
-with open('IDs', 'rb') as f:
+with open('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/IDs', 'rb') as f:
     user_ids = pickle.load(f)
 
 # Get group assignments 

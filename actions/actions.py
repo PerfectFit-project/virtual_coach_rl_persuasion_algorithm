@@ -608,9 +608,8 @@ class ActionChoosePersuasion(Action):
             
             state = [int(tracker.get_slot('state_1')), int(tracker.get_slot('state_2')), 
                      int(tracker.get_slot('state_3')), int(tracker.get_slot('state_4')),
-                     int(tracker.get_slot('state_5')), int(tracker.get_slot('state_6')),
-                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8')),
-                     int(tracker.get_slot('state_9')), int(tracker.get_slot('state_10'))]
+                     int(tracker.get_slot('state_5')),
+                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8'))]
             
             state = [1 if state[i] >= feat_means[i] else 0 for i in range(7)] # make binary
             state = np.take(np.array(state), feat) # take only selected 3 features
@@ -631,9 +630,8 @@ class ActionChoosePersuasion(Action):
             
             state = [int(tracker.get_slot('state_1')), int(tracker.get_slot('state_2')), 
                      int(tracker.get_slot('state_3')), int(tracker.get_slot('state_4')),
-                     int(tracker.get_slot('state_5')), int(tracker.get_slot('state_6')),
-                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8')),
-                     int(tracker.get_slot('state_9')), int(tracker.get_slot('state_10'))]
+                     int(tracker.get_slot('state_5')),
+                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8'))]
             
             state = [1 if state[i] >= feat_means[i] else 0 for i in range(7)] # make binary
             state = np.take(np.array(state), feat) # take only selected 3 features
@@ -658,9 +656,8 @@ class ActionChoosePersuasion(Action):
             
             state = [int(tracker.get_slot('state_1')), int(tracker.get_slot('state_2')), 
                      int(tracker.get_slot('state_3')), int(tracker.get_slot('state_4')),
-                     int(tracker.get_slot('state_5')), int(tracker.get_slot('state_6')),
-                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8')),
-                     int(tracker.get_slot('state_9')), int(tracker.get_slot('state_10'))]
+                     int(tracker.get_slot('state_5')), 
+                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8'))]
             
             state = [1 if state[i] >= feat_means[i] else 0 for i in range(7)] # make binary
             state = np.take(np.array(state), feat) # take only selected features
@@ -780,9 +777,8 @@ class ActionChoosePersuasionLast(Action):
             
             state = [int(tracker.get_slot('state_1')), int(tracker.get_slot('state_2')), 
                      int(tracker.get_slot('state_3')), int(tracker.get_slot('state_4')),
-                     int(tracker.get_slot('state_5')), int(tracker.get_slot('state_6')),
-                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8')),
-                     int(tracker.get_slot('state_9')), int(tracker.get_slot('state_10'))]
+                     int(tracker.get_slot('state_5')),
+                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8'))]
             
             state = [1 if state[i] >= feat_means[i] else 0 for i in range(7)] # make binary
             state = np.take(np.array(state), feat) # take only selected 3 features
@@ -804,9 +800,8 @@ class ActionChoosePersuasionLast(Action):
             
             state = [int(tracker.get_slot('state_1')), int(tracker.get_slot('state_2')), 
                      int(tracker.get_slot('state_3')), int(tracker.get_slot('state_4')),
-                     int(tracker.get_slot('state_5')), int(tracker.get_slot('state_6')),
-                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8')),
-                     int(tracker.get_slot('state_9')), int(tracker.get_slot('state_10'))]
+                     int(tracker.get_slot('state_5')),
+                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8'))]
             
             state = [1 if state[i] >= feat_means[i] else 0 for i in range(7)] # make binary
             state = np.take(np.array(state), feat) # take only selected 3 features
@@ -832,9 +827,8 @@ class ActionChoosePersuasionLast(Action):
             
             state = [int(tracker.get_slot('state_1')), int(tracker.get_slot('state_2')), 
                      int(tracker.get_slot('state_3')), int(tracker.get_slot('state_4')),
-                     int(tracker.get_slot('state_5')), int(tracker.get_slot('state_6')),
-                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8')),
-                     int(tracker.get_slot('state_9')), int(tracker.get_slot('state_10'))]
+                     int(tracker.get_slot('state_5')),
+                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8'))]
             
             state = [1 if state[i] >= feat_means[i] else 0 for i in range(7)] # make binary
             state = np.take(np.array(state), feat) # take only selected features

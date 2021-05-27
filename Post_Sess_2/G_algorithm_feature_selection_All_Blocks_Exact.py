@@ -16,13 +16,13 @@ import random
 
 # load data. Data has <s, s', a, r> samples.
 feat_to_select = [0, 1, 2, 3, 4, 6, 7]
-data  = pd.read_csv('data_samples_post_sess_2.csv', converters={'s0': eval, 's1': eval})
+data  = pd.read_csv('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_27_1401_data_samples_post_sess_2.csv', converters={'s0': eval, 's1': eval})
 data = data.values.tolist()
 
 # All effort responses
 list_of_efforts = list(np.array(data)[:, 3].astype(int))
 # Mean value of effort responses
-with open("Post_Sess_2_Effort_Mean", "rb") as f:
+with open("W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_27_1401_Post_Sess_2_Effort_Mean", "rb") as f:
     effort_mean = pickle.load(f)
 # Map effort responses to rewards from -1 to 1, with the mean mapped to 0.
 map_to_rewards = util.get_map_effort_reward(effort_mean, output_lower_bound = -1, 
@@ -188,9 +188,9 @@ for j in range(num_feat_to_select - 1):
     print("Criterion:", feat_sel_criteria[-1])
 
 # Store selected features
-with open('Level_3_G_algorithm_chosen_features', 'wb') as f:
+with open('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/Level_3_G_algorithm_chosen_features', 'wb') as f:
     pickle.dump(feat_sel, f)
-with open("Level_3_G_algorithm_chosen_features_criteria", 'wb') as f:
+with open("W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/Level_3_G_algorithm_chosen_features_criteria", 'wb') as f:
     pickle.dump(feat_sel_criteria, f)
 
 '''    
@@ -249,5 +249,5 @@ q_values_exact, _ = util.get_Q_values_opt_policy(discount_factor, trans_func, re
                                                  reward_dep_next_state = True)
 opt_policy = [[[[a for a in range(num_act) if q_values_exact[abstract_states.index([i, j, k])][a] == max(q_values_exact[abstract_states.index([i, j, k])])] for k in range(2)] for j in range(2)] for i in range(2)]
 
-with open('Level_3_Optimal_Policy', 'wb') as f:
+with open('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/Level_3_Optimal_Policy', 'wb') as f:
     pickle.dump(opt_policy, f)

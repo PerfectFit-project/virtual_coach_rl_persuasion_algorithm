@@ -9,12 +9,12 @@ import pandas as pd
 import pickle
 
 feat_to_select = [0, 1, 2, 3, 4, 6, 7] # candidate features we consider 
-database_path = "W:/staff-umbrella/perfectfit/Exp0/Pilot2/2021_04_21_Pilot2_chatbot.db"
+database_path = "W:/staff-umbrella/perfectfit/Exp0/2021_05_27_1401_Final_chatbot_Train_Algorithms.db"
 
 # People who gave clearly nonsensical planning/reflection answers in session 2 or 1
 # We do not want to include their data
-session2_nonsens_answers_p_ids = pd.read_csv("W:/staff-umbrella/perfectfit/Exp0/Extract_Data/session2_nonsensical_answers.csv")["Prolific_ID"].tolist()
-session1_nonsens_answers_p_ids = pd.read_csv("W:/staff-umbrella/perfectfit/Exp0/Extract_Data/session1_nonsensical_answers.csv")["Prolific_ID"].tolist()
+session2_nonsens_answers_p_ids = pd.read_csv("W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_27_1401_session2_nonsensical_answers.csv")["Prolific_ID"].tolist()
+session1_nonsens_answers_p_ids = pd.read_csv("W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_27_1401_session1_nonsensical_answers.csv")["Prolific_ID"].tolist()
 excluded_ids = [session1_nonsens_answers_p_ids, session2_nonsens_answers_p_ids]
 
 data, feat_means, user_ids, effort_mean = util.gather_data_post_sess_2(database_path, 
