@@ -280,8 +280,6 @@ def check_attention_checks_session(database_path, session_num):
     user_ids_failed = []
     user_ids_error = [] # users where something went wrong, i.e. some data but not all attention check data was saved
     
-    session_error = False # whether something went wrong in a session, i.e. some data but not all attention check data was saved
-    
     session_index = session_num - 1
     
     print("... Checking attention checks for session ", session_num)
@@ -289,6 +287,8 @@ def check_attention_checks_session(database_path, session_num):
     # for each user
     for row in range(num_rows):
         
+        session_error = False # whether something went wrong in a session, i.e. some data but not all attention check data was saved
+    
         # Test data that is still in the database and that does not have
         # info for attention checks
         if data_db[row][16] is None or data_db[row][17] is None or data_db[row][16] == ' ':
@@ -318,7 +318,7 @@ def check_attention_checks_session(database_path, session_num):
                 user_ids_failed.append(data_db[row][0]) 
             else:
                 user_ids_error.append(data_db[row][0])
-    
+        
     return user_ids_passed, user_ids_failed, user_ids_error
 
 def gather_data_post_sess_5(database_path, 
