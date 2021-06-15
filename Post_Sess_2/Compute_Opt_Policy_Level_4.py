@@ -40,8 +40,8 @@ with open('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_27_1401_ID
 # Get group assignments 
 # TODO: adapt path in the end
 df_group_ass = pd.read_csv("W:/staff-umbrella/perfectfit/Exp0/assignment.csv", dtype={'ID':'string'})
-# TODO: use only group 4 (i.e. index-value of 3) in the end
-df_group_ass_group_4 = df_group_ass[df_group_ass["Group"].isin(["3"])]
+# Only consider people assigned to group 4 (index 3)
+df_group_ass_group_4 = df_group_ass[df_group_ass["Group"].isin([3])]
 user_ids_assigned = df_group_ass_group_4['ID'].tolist()
 num_assigned = len(df_group_ass_group_4) # number of people for whom we need to calculate policies
 
@@ -55,8 +55,9 @@ q_num_iter = 100000 * num_samples # num_samples = num people after session 2
 discount_factor = 0.85
 alpha = 0.01
 
-# TODO: add correct file path
-traits = pd.read_csv("W:/staff-umbrella/perfectfit/Exp0/Extract_Data/pers_PA-TTM_gender_MergedAll_1846.csv")
+# Load similarity variables for all people
+# TODO: use correct file path
+traits = pd.read_csv("W:/staff-umbrella/perfectfit/Exp0/Extract_Data/pers_PA-TTM_gender_MergedAll_1859.csv")
 traits_ids = traits['PROLIFIC_PID'].tolist()
 traits = traits[['PA-TTM', 'Extraversion', 'Agreeableness', 'Conscientiousness', 'ES', 'OE']]
 traits = traits.to_numpy()
@@ -90,8 +91,6 @@ for p1 in range(num_assigned):
         
         d_E[p2] = np.linalg.norm(traits[trait_index_p1] - traits[trait_index_p2])
         
-    sum_E = sum(d_E) # sum of Euclidean distances
-    
     # Intermediate weights of samples based on Euclidean distances
     # So if Euclidean distance is 0, then now the weight is 1.
     # If the Euclidean distance is higher than 0, then now the weight is less than 1.
