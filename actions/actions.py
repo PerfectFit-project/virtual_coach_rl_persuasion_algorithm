@@ -1135,7 +1135,7 @@ class ActionSaveSessionEffort(Action):
                 reward_list.append(tracker.get_slot('reward'))
                 reward_list = '|'.join(reward_list)
                 data_tuple = (mood_list, reward_list, user_id)
-                sqlite_query = """UPDATE users SET mood_list = ?, reward_list = ?, WHERE id = ?"""
+                sqlite_query = """UPDATE users SET mood_list = ?, reward_list = ? WHERE id = ?"""
                 
             # we are in session 5, i.e. the last session
             elif data[0][1] == 4:
