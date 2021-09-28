@@ -15,6 +15,56 @@ from sklearn.preprocessing import MinMaxScaler
 import Utils as util
 
 
+def approx_dynamics(data_p, abstract_states, num_feat, num_act):
+    """Compute the optimal policy for level 4 of algorithm complexity.
+
+    Args:
+        data_p (list): <s0, s1, a, r>-samples.
+        abstract_states (list): Abstract states.
+        num_feat: Number of features used.
+        num_act: Number of actions.
+
+    Returns:
+        np-array: reward function.
+        np-array: transition function.
+
+    """
+    
+    num_samples_p = len(data_p)
+    
+    # Compute approximate transition function and reward function
+    trans_func = np.zeros((int(2 ** num_feat), num_act, int(2 ** num_feat)))
+    reward_func = np.zeros((int(2 ** num_feat), num_act, int(2 ** num_feat)))
+    reward_func_count = np.zeros((int(2 ** num_feat), num_act, int(2 ** num_feat)))
+    
+    for s_ind, s in enumerate(abstract_states):
+        for data_index in range(num_samples_p):  # for each data sample
+            if list(np.take(np.array(data_p[data_index][0]), feat_sel)) == s:
+                
+                a = data_p[data_index][2]  # action
+                r = data_p[data_index][3]
+                next_state_index = abstract_states.index(list(np.take(data_p[data_index][1], feat_sel)))
+                
+                trans_func[s_ind, a, next_state_index] += 1
+                reward_func[s_ind, a, next_state_index] += r
+                reward_func_count[s_ind, a, next_state_index] += 1
+       
+        # Normalize reward and transition functions
+        for a in range(num_act):
+            summed = sum(trans_func[s_ind, a])
+            if summed > 0:
+                trans_func[s_ind, a] /= summed
+            # If we have no data on a state-action combination, 
+            # we assume equal probability of transitioning to each other state
+            else:
+                trans_func[s_ind, a] = np.ones(int(2 ** num_feat)) / (2 ** num_feat)
+            
+            for s_prime_ind in range(len(abstract_states)):
+                if reward_func_count[s_ind, a, s_prime_ind] > 0:
+                    reward_func[s_ind, a, s_prime_ind] /= reward_func_count[s_ind, a, s_prime_ind]
+        
+    return reward_func, trans_func
+
 def compute_opt_policy_level_4(data, effort_mean, feat_sel, user_ids,
                                user_ids_assigned_group_4, traits,
                                traits_ids, num_act=5):
@@ -31,7 +81,7 @@ def compute_opt_policy_level_4(data, effort_mean, feat_sel, user_ids,
         num_act (int): Number of possible actions.
 
     Returns:
-        list: Optimal actions.
+        dict: Optimal policy for each person in group 4.
 
     """
     
@@ -107,48 +157,20 @@ def compute_opt_policy_level_4(data, effort_mean, feat_sel, user_ids,
             for w in range(weight - 1):
                 data_p.append(data[p2])
             
-        num_samples_p = len(data_p)
         
-        abstract_states = [list(i) for i in itertools.product([0, 1], repeat = 3)]
+        abstract_states = [list(i) for i in itertools.product([0, 1], repeat = num_feat)]
     
-        # Compute approximate transition function and reward function
-        trans_func = np.zeros((int(2 ** num_feat), num_act, int(2 ** num_feat)))
-        reward_func = np.zeros((int(2 ** num_feat), num_act, int(2 ** num_feat)))
-        reward_func_count = np.zeros((int(2 ** num_feat), num_act, int(2 ** num_feat)))
-        
-        for s_ind, s in enumerate(abstract_states):
-            for data_index in range(num_samples_p): # for each data sample
-                if list(np.take(np.array(data_p[data_index][0]), feat_sel)) == s:
-                    
-                    a = data_p[data_index][2] # action
-                    r = data_p[data_index][3]
-                    next_state_index = abstract_states.index(list(np.take(data_p[data_index][1], feat_sel)))
-                    
-                    trans_func[s_ind, a, next_state_index] += 1
-                    reward_func[s_ind, a, next_state_index] += r
-                    reward_func_count[s_ind, a, next_state_index] += 1
-           
-            # Normalize reward and transition functions
-            for a in range(num_act):
-                summed = sum(trans_func[s_ind, a])
-                if summed > 0:
-                    trans_func[s_ind, a] /= summed
-                # if we have no data on a state-action combination, we assume equal probability of transitioning to each other state
-                else:
-                    trans_func[s_ind, a] = np.ones(int(2 ** num_feat)) / (2 ** num_feat)
-                
-                for s_prime_ind in range(len(abstract_states)):
-                    if reward_func_count[s_ind, a, s_prime_ind] > 0:
-                        reward_func[s_ind, a, s_prime_ind] /= reward_func_count[s_ind, a, s_prime_ind]
-        
+        # Approximate reward and transition functions
+        reward_func, trans_func = approx_dynamics(data_p, abstract_states,
+                                                  num_feat, num_act)
         
         # Value iteration; reward depends also on next state
         q_values_exact, _ = util.get_Q_values_opt_policy(discount_factor, trans_func,
                                                          reward_func, 
                                                          reward_dep_next_state = True)
+        
         # Optimal policy, can give multiple best actions in a state
         opt_policy = [[[[a for a in range(num_act) if q_values_exact[abstract_states.index([i, j, k])][a] == max(q_values_exact[abstract_states.index([i, j, k])])] for k in range(2)] for j in range(2)] for i in range(2)]
-        
         
         # Save computed policy for this person
         opt_policies[user_ids_assigned_group_4[p1]] = opt_policy
@@ -159,7 +181,8 @@ def compute_opt_policy_level_4(data, effort_mean, feat_sel, user_ids,
 if __name__ == "__main__":
     
     # load data. Data has <s, s', a, r> samples.
-    data  = pd.read_csv('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_27_1401_data_samples_post_sess_2.csv', converters={'s0': eval, 's1': eval})
+    data  = pd.read_csv('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_27_1401_data_samples_post_sess_2.csv', 
+                        converters={'s0': eval, 's1': eval})
     data = data.values.tolist()
     
     # Mean value of effort responses
@@ -175,7 +198,8 @@ if __name__ == "__main__":
         user_ids = pickle.load(f)
         
     # Get group assignments 
-    df_group_ass = pd.read_csv("W:/staff-umbrella/perfectfit/Exp0/assignment.csv", dtype={'ID':'string'})
+    df_group_ass = pd.read_csv("W:/staff-umbrella/perfectfit/Exp0/assignment.csv", 
+                               dtype={'ID':'string'})
     # Only consider people assigned to group 4 (index 3)
     df_group_ass_group_4 = df_group_ass[df_group_ass["Group"].isin([3])]
     user_ids_assigned_group_4 = df_group_ass_group_4['ID'].tolist()
