@@ -19,6 +19,20 @@ import Utils as util
 def select_features_level_2(data, effort_mean, feat_to_select, 
                             num_feat_to_select = 3, 
                             num_act = 5):
+    """Select features for level 2 of algorithm complexity.
+
+    Args:
+        data (list): List with samples of the form <s0, s1, a, r>.
+        effort_mean (float): Mean of effort responses.
+        feat_to_select (list): Candidate features.
+        num_feat_to_select (int): Number of features to select.
+        num_act (int): Number of possible actions.
+
+    Returns:
+        list: Selected features.
+        list: Criteria for selected features.
+
+    """
 
     # All effort responses
     list_of_efforts = list(np.array(data)[:, 3].astype(int))
