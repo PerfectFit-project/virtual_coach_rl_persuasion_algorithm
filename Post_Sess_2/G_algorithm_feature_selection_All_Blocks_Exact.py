@@ -18,7 +18,7 @@ import Utils as util
 
 
 def approx_dynamics_blocks(data, num_blocks_plus_1, num_act, blocks, 
-                           blocks_plus_1):
+                           blocks_plus_1, f, feat_sel):
     """Approximate reward and transition functions for blocks.
 
     Args:
@@ -27,6 +27,8 @@ def approx_dynamics_blocks(data, num_blocks_plus_1, num_act, blocks,
         num_act (int): Number of actions.
         blocks (list): Abstract states based on so far selected features.
         blocks_plus_1 (list): Abstract states based on selecting one more feature.
+        f (int): Candidate feature
+        feat_sel (list): Already selected features
         
     Returns:
         np-array: reward function
@@ -79,12 +81,13 @@ def approx_dynamics_blocks(data, num_blocks_plus_1, num_act, blocks,
     return reward_func, trans_func
 
 
-def approx_dynamics_single_feature(data, num_act):
+def approx_dynamics_single_feature(data, num_act, f):
     """Approximate reward and transition functions based on single features.
 
     Args:
         data (list): List with samples of the form <s0, s1, a, r>.
         num_act (int): Number of actions.
+        f (int): feature
         
     Returns:
         np-array: reward function
@@ -165,7 +168,8 @@ def feature_selection_level_3(data, effort_mean, feat_to_select,
     for f in range(num_feat):
     
         # Compute transition function and reward function for feature
-        reward_func, trans_func = approx_dynamics_single_feature(data, num_act)
+        reward_func, trans_func = approx_dynamics_single_feature(data, 
+                                                                 num_act, f)
     
         # Value iteration for current feature    
         q_values[f], _ = util.get_Q_values_opt_policy(discount_factor, 
@@ -204,9 +208,11 @@ def feature_selection_level_3(data, effort_mean, feat_to_select,
         for f_ind, f in enumerate(feat_not_sel):  # for each not yet selected feature
             
             # Approximate reward and transition function
-            reward_func, trans_func = approx_dynamics_blocks(data, num_blocks_plus_1, 
+            reward_func, trans_func = approx_dynamics_blocks(data, 
+                                                             num_blocks_plus_1, 
                                                              num_act, blocks, 
-                                                             blocks_plus_1)
+                                                             blocks_plus_1, f,
+                                                             feat_sel)
         
             # Now we need to compute the Q-values
             # Value iteration for current feature    
