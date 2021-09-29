@@ -208,7 +208,7 @@ def compute_opt_policy_level_2(data, feat_sel, num_act = 5):
 if __name__ == "__main__":
     
     # Load data samples. Data has <s, s', a, r>-samples.
-    feat_to_select = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  # [0, 1, 2, 3, 4, 6, 7] in experiment
+    feat_to_select = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  # [0, 1, 2, 3, 4, 5, 6] in experiment for features [0, 1, 2, 3, 4, 6, 7]
     data  = pd.read_csv('W:/staff-umbrella/perfectfit/Exp0/Analysis/All_Data/rl_samples_list_binary.csv', 
                         converters={'s0': eval, 's1': eval})
     data = data.values.tolist()
