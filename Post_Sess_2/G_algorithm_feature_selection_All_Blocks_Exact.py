@@ -6,6 +6,8 @@ We also compute Q-values exactly based on approximated reward and transition fun
 The reward function depends also on the next state.
 '''
 
+
+from copy import deepcopy
 import itertools
 import math
 import numpy as np
@@ -127,13 +129,13 @@ def approx_dynamics_single_feature(data, num_act, f):
     return reward_func, trans_func
 
 
-def feature_selection_level_3(data, effort_mean, feat_to_select, 
+def feature_selection_level_3(data_in, effort_mean, feat_to_select, 
                               num_feat_to_select = 3, num_act = 5,
                               discount_factor = 0.85):
     """Select features for level 3 of algorithm complexity.
 
     Args:
-        data (list): List with samples of the form <s0, s1, a, r>.
+        data_in (list): List with samples of the form <s0, s1, a, r>.
         effort_mean (float): Mean of effort responses.
         feat_to_select (list): Candidate features.
         num_feat_to_select (int): Number of features to select.
@@ -145,12 +147,15 @@ def feature_selection_level_3(data, effort_mean, feat_to_select,
         list: Criteria for selected features.
 
     """
+    
+    data = deepcopy(data_in)
 
     # All effort responses
     list_of_efforts = list(np.array(data)[:, 3].astype(int))
     
     # Map effort responses to rewards from -1 to 1, with the mean mapped to 0.
-    map_to_rewards = util.get_map_effort_reward(effort_mean, output_lower_bound = -1, 
+    map_to_rewards = util.get_map_effort_reward(effort_mean, 
+                                                output_lower_bound = -1, 
                                                 output_upper_bound = 1, 
                                                 input_lower_bound = 0, 
                                                 input_upper_bound = 10)
@@ -249,12 +254,13 @@ def feature_selection_level_3(data, effort_mean, feat_to_select,
     return feat_sel, feat_sel_criteria
     
 
-def compute_opt_policy_level_3(data, feat_sel, num_act = 5, 
+def compute_opt_policy_level_3(data_in, effort_mean, feat_sel, num_act = 5, 
                                discount_factor = 0.85):
     """Compute the optimal policy for level 3 of algorithm complexity.
 
     Args:
-        data (list): List with samples of the form <s0, s1, a, r>.
+        data_in (list): List with samples of the form <s0, s1, a, r>.
+        effort_mean(float): Mean effort response to use for reward signal.
         feat_sel (list): Features to consider for policy computation.
         num_act (int): Number of possible actions.
         discount_factor (float): Discount factor for Q-value computation.
@@ -263,6 +269,22 @@ def compute_opt_policy_level_3(data, feat_sel, num_act = 5,
         list: Optimal actions in each state.
 
     """
+    
+    data = deepcopy(data_in)
+    
+    # All effort responses
+    list_of_efforts = list(np.array(data)[:, 3].astype(int))
+    
+    # Map effort responses to rewards from -1 to 1, with the mean mapped to 0.
+    map_to_rewards = util.get_map_effort_reward(effort_mean, 
+                                                output_lower_bound = -1, 
+                                                output_upper_bound = 1, 
+                                                input_lower_bound = 0, 
+                                                input_upper_bound = 10)
+    reward_list = util.map_efforts_to_rewards(list_of_efforts, map_to_rewards)
+    # now write these obtained reward values into "data" in place of the original rewards
+    for i in range(len(reward_list)):
+        data[i][3] = reward_list[i]
     
     num_samples = len(data)
     num_feat_selected = len(feat_sel)
@@ -298,8 +320,10 @@ def compute_opt_policy_level_3(data, feat_sel, num_act = 5,
                     reward_func[s_ind, a, s_prime_ind] /= reward_func_count[s_ind, a, s_prime_ind]
     
     # Value iteration        
-    q_values_exact, _ = util.get_Q_values_opt_policy(discount_factor, trans_func, reward_func, 
+    q_values_exact, _ = util.get_Q_values_opt_policy(discount_factor, trans_func, 
+                                                     reward_func, 
                                                      reward_dep_next_state = True)
+    
     opt_policy = [[[[a for a in range(num_act) if q_values_exact[abstract_states.index([i, j, k])][a] == max(q_values_exact[abstract_states.index([i, j, k])])] for k in range(2)] for j in range(2)] for i in range(2)]
     
     return opt_policy
@@ -309,10 +333,11 @@ if __name__ == "__main__":
     
     DISCOUNT_FACTOR = 0.85  # for computation of Q-values
     NUM_FEAT_TO_SELECT = 3  # number of features to select
+    NUM_ACTIONS = 5  # Number of persuasion types
     
     # Load data. Data has <s, s', a, r>-samples.
-    feat_to_select = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ] # [0, 1, 2, 3, 4, 5, 6] in experiment for features [0, 1, 2, 3, 4, 6, 7]
-    data  = pd.read_csv('W:/staff-umbrella/perfectfit/Exp0/Analysis/All_Data/rl_samples_list_binary_exp.csv', 
+    feat_to_select = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] # [0, 1, 2, 3, 4, 5, 6] in experiment for features [0, 1, 2, 3, 4, 6, 7]
+    data  = pd.read_csv("W:/staff-umbrella/perfectfit/Exp0/Analysis/All_Data/rl_samples_list_binary.csv", 
                         converters={'s0': eval, 's1': eval})
     data = data.values.tolist()
     
@@ -323,19 +348,20 @@ if __name__ == "__main__":
     # Select features
     feat_sel, feat_sel_criteria = feature_selection_level_3(data, effort_mean, 
                                                             feat_to_select,
-                                                            num_act = 5, 
+                                                            num_act = NUM_ACTIONS, 
                                                             num_feat_to_select = NUM_FEAT_TO_SELECT,
                                                             discount_factor = DISCOUNT_FACTOR)
-     
+    
     # Store selected features
     with open('W:/staff-umbrella/perfectfit/Exp0/Analysis/All_Data/Level_3_G_algorithm_chosen_features', 'wb') as f:
         pickle.dump(feat_sel, f)
     with open("W:/staff-umbrella/perfectfit/Exp0/Analysis/All_Data/Level_3_G_algorithm_chosen_features_criteria", 'wb') as f:
         pickle.dump(feat_sel_criteria, f)
-    
         
     # Compute optimal policy
-    opt_policy = compute_opt_policy_level_3(data, feat_sel, num_act = 5, 
+    opt_policy = compute_opt_policy_level_3(data, effort_mean, 
+                                            feat_sel, 
+                                            num_act = NUM_ACTIONS, 
                                             discount_factor = DISCOUNT_FACTOR)
     
     with open('W:/staff-umbrella/perfectfit/Exp0/Analysis/All_Data/Level_3_Optimal_Policy', 'wb') as f:
