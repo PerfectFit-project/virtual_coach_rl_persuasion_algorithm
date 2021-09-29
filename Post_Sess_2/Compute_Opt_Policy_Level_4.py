@@ -66,13 +66,13 @@ def approx_dynamics(data_p, abstract_states, num_feat, num_act):
     return reward_func, trans_func
 
 
-def compute_opt_policy_level_4(data, effort_mean, feat_sel, user_ids,
+def compute_opt_policy_level_4(data_in, effort_mean, feat_sel, user_ids,
                                user_ids_assigned_group_4, traits,
-                               traits_ids, num_act=5):
+                               traits_ids, num_act=5, discount_factor = 0.85):
     """Compute the optimal policy for level 4 of algorithm complexity.
 
     Args:
-        data (list): List with samples of the form <s0, s1, a, r>.
+        data_in (list): List with samples of the form <s0, s1, a, r>.
         effort_mean (float): Mean value of effort responses.
         feat_sel (list): Selected features.
         user_ids (list): IDs of users corresponding to samples in data.
@@ -80,18 +80,18 @@ def compute_opt_policy_level_4(data, effort_mean, feat_sel, user_ids,
         traits (np-array): Traits for each person to use as basis for similarity.
         traits_ids (list): IDs corresponding to traits.
         num_act (int): Number of possible actions.
+        discount_factor (float): Discount factor for Q-value computation
 
     Returns:
         dict: Optimal policy for each person in group 4.
 
     """
     
+    data = copy.deepcopy(data_in)
+    
     num_assigned = len(user_ids_assigned_group_4)  # number of people for whom we need to calculate policies
     num_feat = len(feat_sel)  # number of selected features that we now consider
     num_samples = len(data)
-    
-    # Settings for calculation of Q-values
-    discount_factor = 0.85
     
     # All effort responses
     list_of_efforts = list(np.array(data)[:, 3].astype(int))
@@ -181,6 +181,9 @@ def compute_opt_policy_level_4(data, effort_mean, feat_sel, user_ids,
     
 if __name__ == "__main__":
     
+    DISCOUNT_FACTOR  = 0.85  # For computation of Q-values
+    NUM_ACTIONS = 5  # We have 5 persuasion types
+    
     # load data. Data has <s, s', a, r> samples.
     data  = pd.read_csv('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_27_1401_data_samples_post_sess_2.csv', 
                         converters={'s0': eval, 's1': eval})
@@ -218,7 +221,8 @@ if __name__ == "__main__":
                                               user_ids_assigned_group_4, 
                                               traits, 
                                               traits_ids, 
-                                              num_act = 5)
+                                              num_act = NUM_ACTIONS,
+                                              discount_factor = DISCOUNT_FACTOR)
     
     with open('Level_4_Optimal_Policy', 'wb') as f:
         pickle.dump(opt_policies, f)
