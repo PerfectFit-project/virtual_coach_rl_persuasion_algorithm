@@ -6,6 +6,7 @@ This time we comopute the t-test based on all blocks at once.
 '''
 
 
+from copy import deepcopy
 import itertools
 import numpy as np
 import pandas as pd
@@ -16,13 +17,13 @@ from scipy import stats
 import Utils as util
 
 
-def select_features_level_2(data, effort_mean, feat_to_select, 
+def select_features_level_2(data_in, effort_mean, feat_to_select, 
                             num_feat_to_select = 3, 
                             num_act = 5):
     """Select features for level 2 of algorithm complexity.
 
     Args:
-        data (list): List with samples of the form <s0, s1, a, r>.
+        data_in (list): List with samples of the form <s0, s1, a, r>.
         effort_mean (float): Mean of effort responses.
         feat_to_select (list): Candidate features.
         num_feat_to_select (int): Number of features to select.
@@ -33,6 +34,8 @@ def select_features_level_2(data, effort_mean, feat_to_select,
         list: Criteria for selected features.
 
     """
+    
+    data = deepcopy(data_in)
 
     # All effort responses
     list_of_efforts = list(np.array(data)[:, 3].astype(int))
@@ -168,11 +171,12 @@ def select_features_level_2(data, effort_mean, feat_to_select,
     return feat_sel, feat_sel_criteria
     
 
-def compute_opt_policy_level_2(data, feat_sel, num_act = 5):
+def compute_opt_policy_level_2(data_in, effort_mean, feat_sel, num_act = 5):
     """Compute the optimal policy for level 2 of algorithm complexity.
 
     Args:
-        data (list): List with samples of the form <s0, s1, a, r>.
+        data_in (list): List with samples of the form <s0, s1, a, r>.
+        effort_mean (float): mean effort response.
         feat_sel (list): Features to consider for policy computation.
         num_act (int): Number of possible actions.
 
@@ -180,6 +184,21 @@ def compute_opt_policy_level_2(data, feat_sel, num_act = 5):
         list: Optimal actions in each state.
 
     """
+    
+    data = deepcopy(data_in)
+    
+    # All effort responses
+    list_of_efforts = list(np.array(data)[:, 3].astype(int))
+
+    # Map effort responses to rewards from 0 to 1, with the mean mapped to 0.5.
+    map_to_rewards = util.get_map_effort_reward(effort_mean, output_lower_bound = 0, 
+                                                output_upper_bound = 1, 
+                                                input_lower_bound = 0, 
+                                                input_upper_bound = 10)
+    reward_list = util.map_efforts_to_rewards(list_of_efforts, map_to_rewards)
+    # now write these obtained reward values into "data"
+    for i in range(len(reward_list)):
+        data[i][3] = reward_list[i]
     
     num_samples = len(data)
         
@@ -230,7 +249,8 @@ if __name__ == "__main__":
         pickle.dump(feat_sel_criteria, f)
      
     # Compute optimal policy based on selected features
-    optimal_policy = compute_opt_policy_level_2(data, feat_sel, num_act = 5)
+    optimal_policy = compute_opt_policy_level_2(data, effort_mean, feat_sel, 
+                                                num_act = 5)
     
     with open('W:/staff-umbrella/perfectfit/Exp0/Analysis/All_Data/Level_2_Optimal_Policy', 'wb') as f:
         pickle.dump(optimal_policy, f)
