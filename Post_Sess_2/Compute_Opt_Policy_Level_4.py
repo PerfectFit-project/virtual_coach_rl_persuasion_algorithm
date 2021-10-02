@@ -164,7 +164,7 @@ def compute_opt_policy_level_4(data_in, effort_mean, feat_sel, user_ids,
     
         # Approximate reward and transition functions
         reward_func, trans_func = approx_dynamics(data_p, abstract_states,
-                                                  num_feat, num_act)
+                                                  num_feat, num_act, feat_sel)
         
         # Value iteration; reward depends also on next state
         q_values_exact, _ = util.get_Q_values_opt_policy(discount_factor, trans_func,
