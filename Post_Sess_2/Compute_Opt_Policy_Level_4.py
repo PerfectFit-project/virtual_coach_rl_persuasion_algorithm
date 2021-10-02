@@ -15,14 +15,15 @@ from sklearn.preprocessing import MinMaxScaler
 import Utils as util
 
 
-def approx_dynamics(data_p, abstract_states, num_feat, num_act):
+def approx_dynamics(data_p, abstract_states, num_feat, num_act, feat_sel):
     """Compute the optimal policy for level 4 of algorithm complexity.
 
     Args:
         data_p (list): <s0, s1, a, r>-samples.
         abstract_states (list): Abstract states.
-        num_feat: Number of features used.
-        num_act: Number of actions.
+        num_feat (int): Number of features used.
+        num_act (int): Number of actions.
+        feat_sel (list): Selected features
 
     Returns:
         np-array: reward function.
