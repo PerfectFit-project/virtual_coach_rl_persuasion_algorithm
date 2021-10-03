@@ -117,8 +117,6 @@ def compute_opt_policy_level_4(data_in, effort_mean, feat_sel, user_ids,
     # change throughout the experiment.
     for p1 in range(num_assigned):
         
-        print("Person index from Group 4 in assignment.csv:", p1)
-        
         # Get index of traits for this person
         trait_index_p1 = traits_ids.index(user_ids_assigned_group_4[p1])
         
