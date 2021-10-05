@@ -25,7 +25,7 @@ def compute_opt_policy_level_1(data, effort_mean, num_act):
     num_samples = len(data)
 
     # All effort responses
-    list_of_efforts = list(np.array(data)[:, 3].astype(int))
+    list_of_efforts = list(np.array(data, dtype=object)[:, 3].astype(int))
 
     # Map effort responses to effort scores from 0 to 1, with the mean mapped to 0.5.
     map_to_rewards = util.get_map_effort_reward(effort_mean, 
