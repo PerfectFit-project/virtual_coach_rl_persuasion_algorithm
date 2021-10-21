@@ -7,9 +7,6 @@ from typing import Any, Text, Dict, List
 from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.events import SlotSet
-from rasa_sdk.events import ConversationResumed
-from rasa_sdk.events import UserUtteranceReverted
-from rasa_sdk.events import FollowupAction
 import pickle
 import sqlite3
 import pandas as pd
@@ -54,8 +51,11 @@ for m in [14, 15, 16, 17, 18]: # Planning
 # Persuasive messages and reminder questions
 df_mess = pd.read_csv("all_messages.csv")
 df_rem = pd.read_csv("all_reminders.csv")
-num_mess_per_type = [6, 4, 4, 5]
-NUM_PERS_TYPES = 4
+
+# number of messages per persuasion type in which we send messages
+num_mess_per_type = [6, 4, 4, 5] 
+# number of persuasion types in which we send a persuasive message
+NUM_PERS_TYPES = len(num_mess_per_type)
 
 # Moods, sorted by quadrant w.r.t. valence and arousal
 moods_ha_lv = ["afraid", "alarmed", "annoyed", "distressed", "angry", 
@@ -147,16 +147,16 @@ class ActionChooseActivity(Action):
             
         # get eligible activities (not done before and not excluded)
         remaining_indices = [ i for i in range(num_act) if not i in curr_act_ind_list and not str(i) in excluded]
-            
+        
         # Check if prerequisites for remaining activities are met
         for i in remaining_indices:
-            preq = [j for j in df_act.loc[i, 'Prerequisite'] if not str(j) in curr_act_ind_list]
+            preq = [j for j in df_act.loc[i, 'Prerequisite'] if not int('0' + j) in curr_act_ind_list and not len(j) == 0]
             if len(preq) > 0:
-                excluded.append(i)
+                excluded.append(str(i))
             
         # get activities that also meet the prerequisites
         remaining_indices = [i for i in remaining_indices if not str(i) in excluded]
-        
+       
         if num_s == num_pa:
             # Choose randomly whether to do a smoking or a PA activity
             type_choice = random.choice([0, 1])
@@ -214,9 +214,9 @@ class ActionChooseActivityLast(Action):
             
         # Check if prerequisites for remaining activities are met
         for i in remaining_indices:
-            preq = [j for j in df_act.loc[i, 'Prerequisite'] if not str(j) in curr_act_ind_list]
+            preq = [j for j in df_act.loc[i, 'Prerequisite'] if not int('0'+ j) in curr_act_ind_list and not len(j) == 0]
             if len(preq) > 0:
-                excluded.append(i)
+                excluded.append(str(i))
             
         # get activities that also meet the prerequisites
         remaining_indices = [i for i in remaining_indices if not str(i) in excluded]
@@ -253,7 +253,7 @@ class ActionChooseActivityLast(Action):
         return [SlotSet("activity_formulation", df_act.loc[act_index, 'Formulation Chat']), 
                 SlotSet("activity_formulation_email", df_act.loc[act_index, 'Formulation Email']),
                 SlotSet("activity_index_list", curr_act_ind_list),
-                SlotSet("activity_verb", df_act.loc[act_index, "VerbYouShort"])]
+                SlotSet("activity_verb", df_act.loc[act_index, "VerbYou"])]
 
 # Set slot about whether the user completed the assigned activity    
 class ActionSetSlotReward(Action):
@@ -263,10 +263,15 @@ class ActionSetSlotReward(Action):
 
     async def run(self, dispatcher, tracker, domain):
 
-        reward = tracker.get_slot('reward')
-        success = True
-        if reward == "0":
-            success = False
+        reward = int(tracker.get_slot('reward'))
+        success = 1 # answers 4-6 on the scale, i.e. medium effort
+        # Scale goes from 0 (nothing) to 10 (extremely strong).
+        # For now, we somewhat arbitrarily set the ranges. After the pilot,
+        # we might adapt what we consider "success" and what a failure.
+        if reward < 4:
+            success = 0 # answers 0-3 on scale, i.e. low effort
+        elif reward > 6:
+            success = 2 # answers 7-10 on scale, i.e. high effort
         
         return [SlotSet("action_success", success)]
     
@@ -373,7 +378,6 @@ class ActionSetSession(Action):
         try:
             sqlite_connection = sqlite3.connect(DATABASE_PATH)
             cursor = sqlite_connection.cursor()
-            #print("Connection created for user ", user_id)
             sqlite_select_query = """SELECT * from users WHERE id = ?"""
             cursor.execute(sqlite_select_query, (user_id,))
             data = cursor.fetchall()
@@ -385,7 +389,6 @@ class ActionSetSession(Action):
         finally:
             if (sqlite_connection):
                 sqlite_connection.close()
-                #print("Connection closed for user ", user_id)
         
         activity_verb_prev = ""
         activity_index_list = []
@@ -395,13 +398,21 @@ class ActionSetSession(Action):
         try:
             # load data from previous sessions about activities and actions
             activity_index_list = [int(i) for i in data[0][18].split('|')]
-            activity_verb_prev = df_act.loc[activity_index_list[-1], "VerbYou"]
+            activity_verb_prev = df_act.loc[activity_index_list[-1], "Components"]
             action_index_list = [int (i) for i in data[0][19].split('|')]
             action_type_index_list = [int (i) for i in data[0][25].split('|')]
             
         except NameError:
             session_loaded = False
             print("NameError in action_set_session.")
+        
+        except IndexError:
+            session_loaded = False
+            print("IndexError in action_set_session.")
+        
+        except Exception:
+            session_loaded = False
+            print("Some exception in action_set_session.")
         
         return [SlotSet("activity_index_list", activity_index_list), 
                 SlotSet("action_index_list", action_index_list),
@@ -430,8 +441,6 @@ class ActionSendEmail(Action):
             email = f.read()
         user_email = user_id + "@email.prolific.co"
         
-        with open('reminder_template.txt', 'r', encoding='utf-8') as template_file:
-            message_template = Template(template_file.read())
         context = ssl.create_default_context()
     
         # set up the SMTP server
@@ -440,10 +449,23 @@ class ActionSendEmail(Action):
         
             msg = MIMEMultipart() # create a message
             
-            # add in the actual person name to the message template
-            message = message_template.substitute(PERSON_NAME ="Study Participant",
-                                                  ACTIVITY= tracker.get_slot('activity_formulation_email'),
-                                                  PERSUASION = tracker.get_slot('reminder_formulation'))
+            # our persuasion type is not to send no persuasive message
+            if not tracker.get_slot('pers_type_four'):
+                with open('reminder_template.txt', 'r', encoding='utf-8') as template_file:
+                    message_template = Template(template_file.read())
+            
+                # add in the actual info to the message template
+                message = message_template.substitute(PERSON_NAME ="Study Participant",
+                                                      ACTIVITY= tracker.get_slot('activity_formulation_email'),
+                                                      PERSUASION = tracker.get_slot('reminder_formulation'))
+                
+            else:
+                with open('reminder_template_noPers.txt', 'r', encoding='utf-8') as template_file:
+                    message_template = Template(template_file.read())
+            
+                # add in the actual info to the message template
+                message = message_template.substitute(PERSON_NAME ="Study Participant",
+                                                      ACTIVITY= tracker.get_slot('activity_formulation_email'))
         
             # setup the parameters of the message
             msg['From'] = email
@@ -479,8 +501,6 @@ class ActionSendEmailLast(Action):
             email = f.read()
         user_email = user_id + "@email.prolific.co"
         
-        with open('reminder_template_last_session.txt', 'r', encoding='utf-8') as template_file:
-            message_template = Template(template_file.read())
         context = ssl.create_default_context()
         
         # set up the SMTP server
@@ -489,11 +509,23 @@ class ActionSendEmailLast(Action):
         
             msg = MIMEMultipart() # create a message
             
-            # add in the actual person name to the message template
-            message = message_template.substitute(PERSON_NAME="Study Participant",
+            # Our persuasion type is not to send no persuasive message
+            if not tracker.get_slot('pers_type_four'):
+                with open('reminder_template_last_session.txt', 'r', encoding='utf-8') as template_file:
+                    message_template = Template(template_file.read())
+            
+                # add in the actual information to the message template
+                message = message_template.substitute(PERSON_NAME="Study Participant",
                                                   ACTIVITY= tracker.get_slot('activity_formulation_email'),
                                                   PERSUASION = tracker.get_slot('reminder_formulation'))
-        
+            else:
+                with open('reminder_template_last_session_noPers.txt', 'r', encoding='utf-8') as template_file:
+                    message_template = Template(template_file.read())
+            
+                # add in the actual information to the message template
+                message = message_template.substitute(PERSON_NAME="Study Participant",
+                                                  ACTIVITY= tracker.get_slot('activity_formulation_email'))
+                
             # setup the parameters of the message
             msg['From'] = email
             msg['To']=  user_email
@@ -551,9 +583,8 @@ class ActionChoosePersuasion(Action):
         if len(group) > 0:
             group = int(group)
         
+        # We send the best persuasion type overall
         if group == 0:
-            
-            #print("Persuasion level 1")
         
             # Load pre-computed list with best actions
             with open('Post_Sess_2/Level_1_Optimal_Policy', 'rb') as f:
@@ -561,10 +592,9 @@ class ActionChoosePersuasion(Action):
             
             # Select a persuasion type randomly (there could be multiple best ones)
             pers_type = random.choice(p)
-            
+           
+        # we send the most successful persuasion type in the current user's state
         elif group == 1:
-            
-            #print("Persuasion level 2")
             
             with open('Post_Sess_2/Level_2_Optimal_Policy', 'rb') as f:
                 p = pickle.load(f)
@@ -578,9 +608,8 @@ class ActionChoosePersuasion(Action):
             
             state = [int(tracker.get_slot('state_1')), int(tracker.get_slot('state_2')), 
                      int(tracker.get_slot('state_3')), int(tracker.get_slot('state_4')),
-                     int(tracker.get_slot('state_5')), int(tracker.get_slot('state_6')),
-                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8')),
-                     int(tracker.get_slot('state_9')), int(tracker.get_slot('state_10'))]
+                     int(tracker.get_slot('state_5')),
+                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8'))]
             
             state = [1 if state[i] >= feat_means[i] else 0 for i in range(7)] # make binary
             state = np.take(np.array(state), feat) # take only selected 3 features
@@ -589,8 +618,6 @@ class ActionChoosePersuasion(Action):
             pers_type = random.choice(p[state[0]][state[1]][state[2]])
             
         elif group == 2:
-            
-            #print("Persuasion level 3")
             
             with open('Post_Sess_2/Level_3_Optimal_Policy', 'rb') as f:
                 p = pickle.load(f)
@@ -603,9 +630,8 @@ class ActionChoosePersuasion(Action):
             
             state = [int(tracker.get_slot('state_1')), int(tracker.get_slot('state_2')), 
                      int(tracker.get_slot('state_3')), int(tracker.get_slot('state_4')),
-                     int(tracker.get_slot('state_5')), int(tracker.get_slot('state_6')),
-                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8')),
-                     int(tracker.get_slot('state_9')), int(tracker.get_slot('state_10'))]
+                     int(tracker.get_slot('state_5')),
+                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8'))]
             
             state = [1 if state[i] >= feat_means[i] else 0 for i in range(7)] # make binary
             state = np.take(np.array(state), feat) # take only selected 3 features
@@ -614,8 +640,6 @@ class ActionChoosePersuasion(Action):
             pers_type = random.choice(p[state[0]][state[1]][state[2]])
             
         elif group == 3:
-            
-            #print("Persuasion level 4")
              
             # get user ID
             metadata = extract_metadata_from_tracker(tracker)
@@ -632,9 +656,8 @@ class ActionChoosePersuasion(Action):
             
             state = [int(tracker.get_slot('state_1')), int(tracker.get_slot('state_2')), 
                      int(tracker.get_slot('state_3')), int(tracker.get_slot('state_4')),
-                     int(tracker.get_slot('state_5')), int(tracker.get_slot('state_6')),
-                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8')),
-                     int(tracker.get_slot('state_9')), int(tracker.get_slot('state_10'))]
+                     int(tracker.get_slot('state_5')), 
+                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8'))]
             
             state = [1 if state[i] >= feat_means[i] else 0 for i in range(7)] # make binary
             state = np.take(np.array(state), feat) # take only selected features
@@ -642,18 +665,17 @@ class ActionChoosePersuasion(Action):
             # Sample randomly from best persuasion types
             pers_type = random.choice(p[user_id][state[0]][state[1]][state[2]])
          
-        # Sessions 1 and 2: random 
+        # Random persuasion type (e.g. in session 1 and session 2) 
         else:
-            
-            #print("Random persuasion")
             
             if curr_action_ind_list is None:
                 curr_action_ind_list = []
             if curr_action_type_ind_list is None:
                 curr_action_type_ind_list = []
             
-            # Choose persuasion type randomly
-            pers_type = random.choice([i for i in range(NUM_PERS_TYPES)])
+            # Choose persuasion type randomly, including the option
+            # not to send a persuasive message
+            pers_type = random.choice([i for i in range(NUM_PERS_TYPES + 1)])
             
         curr_action_type_ind_list.append(pers_type)
         
@@ -665,29 +687,42 @@ class ActionChoosePersuasion(Action):
         if pers_type == 3:
             require_input = True
         
-        # Choose message randomly among messages selected the lowest number of times 
-        # for this persuasion type
-        counts = [curr_action_ind_list.count(i) for i in range(sum(num_mess_per_type[0:pers_type]), sum(num_mess_per_type[0:pers_type + 1]))]
-        min_messages = [i for i in range(num_mess_per_type[pers_type]) if counts[i] == min(counts)]
-        message_ind = random.choice(min_messages) + sum(num_mess_per_type[0:pers_type])
-        curr_action_ind_list.append(message_ind)
+        # Not for persuasion type 4, which is to not send any persuasive message.
+        if not pers_type == 4:
+            
+            pers_type_four = False
         
-        # Determine reflective question (only for persuasion types 0-2)
-        ref_type = ref_dict[message_ind]
-        ref_question = ""
-        if ref_type >= 0:
-            # Always pick smoking-related reflective question
-            ref_question = df_ref.loc[ref_type, 'QuestionS']
-           
-        # Determine message and reminder
-        message = df_mess.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Message']
-        reminder = df_rem.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Question']
+            # Choose message randomly among messages selected the lowest number of times 
+            # for this persuasion type
+            counts = [curr_action_ind_list.count(i) for i in range(sum(num_mess_per_type[0:pers_type]), sum(num_mess_per_type[0:pers_type + 1]))]
+            min_messages = [i for i in range(num_mess_per_type[pers_type]) if counts[i] == min(counts)]
+            message_ind = random.choice(min_messages) + sum(num_mess_per_type[0:pers_type])
+            curr_action_ind_list.append(message_ind)
+            
+            # Determine reflective question (only for persuasion types 0-2)
+            ref_type = ref_dict[message_ind]
+            ref_question = ""
+            if ref_type >= 0:
+                # Always pick smoking-related reflective question
+                ref_question = df_ref.loc[ref_type, 'QuestionS']
+               
+            # Determine message and reminder (to be sent in email)
+            message = df_mess.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Message']
+            reminder = df_rem.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Question']
+        
+        else:
+            message = ""
+            reminder = ""
+            ref_question = ""
+            pers_type_four = True
+            curr_action_ind_list.append(-1) # we send no message, so append a -1.
         
         return [SlotSet("message_formulation", message), 
                 SlotSet("reminder_formulation", reminder),
                 SlotSet("action_index_list", curr_action_ind_list),
                 SlotSet("action_type_index_list", curr_action_type_ind_list),
                 SlotSet("pers_input", require_input),
+                SlotSet("pers_type_four", pers_type_four),
                 SlotSet("reflective_question", ref_question)]
     
 # Return best (based on group) or random persuasion
@@ -742,9 +777,8 @@ class ActionChoosePersuasionLast(Action):
             
             state = [int(tracker.get_slot('state_1')), int(tracker.get_slot('state_2')), 
                      int(tracker.get_slot('state_3')), int(tracker.get_slot('state_4')),
-                     int(tracker.get_slot('state_5')), int(tracker.get_slot('state_6')),
-                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8')),
-                     int(tracker.get_slot('state_9')), int(tracker.get_slot('state_10'))]
+                     int(tracker.get_slot('state_5')),
+                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8'))]
             
             state = [1 if state[i] >= feat_means[i] else 0 for i in range(7)] # make binary
             state = np.take(np.array(state), feat) # take only selected 3 features
@@ -752,9 +786,8 @@ class ActionChoosePersuasionLast(Action):
             # Sample randomly from best persuasion types in state
             pers_type = random.choice(p[state[0]][state[1]][state[2]])
             
+        
         elif group == 2:
-            
-            #print("Persuasion level 3")
             
             with open('Post_Sess_2/Level_3_Optimal_Policy', 'rb') as f:
                 p = pickle.load(f)
@@ -767,9 +800,8 @@ class ActionChoosePersuasionLast(Action):
             
             state = [int(tracker.get_slot('state_1')), int(tracker.get_slot('state_2')), 
                      int(tracker.get_slot('state_3')), int(tracker.get_slot('state_4')),
-                     int(tracker.get_slot('state_5')), int(tracker.get_slot('state_6')),
-                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8')),
-                     int(tracker.get_slot('state_9')), int(tracker.get_slot('state_10'))]
+                     int(tracker.get_slot('state_5')),
+                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8'))]
             
             state = [1 if state[i] >= feat_means[i] else 0 for i in range(7)] # make binary
             state = np.take(np.array(state), feat) # take only selected 3 features
@@ -777,9 +809,8 @@ class ActionChoosePersuasionLast(Action):
             # Sample randomly from best persuasion types
             pers_type = random.choice(p[state[0]][state[1]][state[2]])
             
+        # Persuasion level 4, i.e. highest weighted Q-value
         elif group == 3:
-            
-            #print("Persuasion level 4")
              
             # get user ID
             metadata = extract_metadata_from_tracker(tracker)
@@ -796,9 +827,8 @@ class ActionChoosePersuasionLast(Action):
             
             state = [int(tracker.get_slot('state_1')), int(tracker.get_slot('state_2')), 
                      int(tracker.get_slot('state_3')), int(tracker.get_slot('state_4')),
-                     int(tracker.get_slot('state_5')), int(tracker.get_slot('state_6')),
-                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8')),
-                     int(tracker.get_slot('state_9')), int(tracker.get_slot('state_10'))]
+                     int(tracker.get_slot('state_5')),
+                     int(tracker.get_slot('state_7')), int(tracker.get_slot('state_8'))]
             
             state = [1 if state[i] >= feat_means[i] else 0 for i in range(7)] # make binary
             state = np.take(np.array(state), feat) # take only selected features
@@ -806,15 +836,16 @@ class ActionChoosePersuasionLast(Action):
             # Sample randomly from best persuasion types
             pers_type = random.choice(p[user_id][state[0]][state[1]][state[2]])
          
-        # Sessions 1 and 2: random 
+        # Sessions 1 and 2: random  persuasion
         else:
             if curr_action_ind_list is None:
                 curr_action_ind_list = []
             if curr_action_type_ind_list is None:
                 curr_action_type_ind_list = []
             
-            # Choose persuasion type randomly
-            pers_type = random.choice([i for i in range(NUM_PERS_TYPES)])
+            # Choose persuasion type randomly, including the option
+            # not to send a persuasive message
+            pers_type = random.choice([i for i in range(NUM_PERS_TYPES + 1)])
             
         curr_action_type_ind_list.append(pers_type)
         
@@ -825,38 +856,53 @@ class ActionChoosePersuasionLast(Action):
         require_input = False
         if pers_type == 3:
             require_input = True
+            
+        # For persuastion type number 4, we do not send any persuasive message
+        if not pers_type == 4:
+            
+            # our persuastion type is not number 4
+            pers_type_four = False
         
-        # Choose message randomly among messages selected the lowest number of times 
-        # for this persuasion type
-        counts = [curr_action_ind_list.count(i) for i in range(sum(num_mess_per_type[0:pers_type]), sum(num_mess_per_type[0:pers_type + 1]))]
-        min_messages = [i for i in range(num_mess_per_type[pers_type]) if counts[i] == min(counts)]
-        message_ind = random.choice(min_messages) + sum(num_mess_per_type[0:pers_type])
-        curr_action_ind_list.append(message_ind)
+            # Choose message randomly among messages selected the lowest number of times 
+            # for this persuasion type
+            counts = [curr_action_ind_list.count(i) for i in range(sum(num_mess_per_type[0:pers_type]), sum(num_mess_per_type[0:pers_type + 1]))]
+            min_messages = [i for i in range(num_mess_per_type[pers_type]) if counts[i] == min(counts)]
+            message_ind = random.choice(min_messages) + sum(num_mess_per_type[0:pers_type])
+            curr_action_ind_list.append(message_ind)
+            
+            # Determine reflective question (only for persuasion types 0-2)
+            ref_type = ref_dict[message_ind]
+            ref_question = ""
+            if ref_type >= 0:
+                # Always pick smoking-related reflective question
+                ref_question = df_ref.loc[ref_type, 'QuestionS']
+               
+            # Determine message and reminder
+            message = df_mess.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Message']
+            reminder = df_rem.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Question']
+            
+            # There is no next session after session 5, so need to adapt action planning messages
+            if pers_type == 3:
+                message = message.replace("before the next session?", "after this session?")
+                message = message.replace("and before the next session", "session")
+                reminder = reminder.replace("before the next session?", "after this session?")
         
-        # Determine reflective question (only for persuasion types 0-2)
-        ref_type = ref_dict[message_ind]
-        ref_question = ""
-        if ref_type >= 0:
-            # Always pick smoking-related reflective question
-            ref_question = df_ref.loc[ref_type, 'QuestionS']
-           
-        # Determine message and reminder
-        message = df_mess.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Message']
-        reminder = df_rem.loc[int(curr_activity * num_mess_per_activ + message_ind), 'Question']
-        
-        # There is no next session after session 5, so need to adapt action planning messages
-        if pers_type == 3:
-            message = message.replace("before the next session?", "after this session?")
-            message = message.replace("and before the next session", "session")
-            reminder = reminder.replace("before the next session?", "after this session?")
+        # For persuasion type number 4, we do not send any persuasive message
+        else:
+            message = ""
+            reminder = ""
+            ref_question = ""
+            pers_type_four = True
+            curr_action_ind_list.append(-1) # we send no message, so append a -1.
         
         return [SlotSet("message_formulation", message), 
+                SlotSet("pers_type_four", pers_type_four),
                 SlotSet("reminder_formulation", reminder),
                 SlotSet("action_index_list", curr_action_ind_list),
                 SlotSet("action_type_index_list", curr_action_type_ind_list),
                 SlotSet("pers_input", require_input),
                 SlotSet("reflective_question", ref_question)]
-    
+     
 class ActionSaveSession(Action):
     def name(self):
         return "action_save_session"
@@ -873,7 +919,6 @@ class ActionSaveSession(Action):
         session_saved = True
         
         # Load slot values
-        mood = tracker.get_slot('mood')
         attention_check = tracker.get_slot('attention_check')
         attention_check_2 = tracker.get_slot('attention_check_2')
         activity_index_list  = '|'.join([str(i) for i in tracker.get_slot('activity_index_list')])
@@ -889,7 +934,6 @@ class ActionSaveSession(Action):
         try:
             sqliteConnection = sqlite3.connect(DATABASE_PATH)
             cursor = sqliteConnection.cursor()
-            #print("Successfully connected to SQLite")
             sqlite_select_query = """SELECT * from users WHERE id = ?"""
             cursor.execute(sqlite_select_query, (user_id,))
             data = cursor.fetchall()
@@ -897,9 +941,12 @@ class ActionSaveSession(Action):
             sessions_done = 0
             link = ""
             
-            # save data after first session
+            # Save data after first session.
+            # we still need to save the mood, since we have not saved anything
+            # yet in this conversation.
             if not data:
                 sessions_done = 1
+                mood = tracker.get_slot('mood') # already saved earlier in all other sessions
                 action_planning_answer = tracker.get_slot('action_planning_answer')
                 reflection_answer = tracker.get_slot('reflection_answer')
                 data_tuple = (user_id, sessions_done, mood, action_planning_answer, 
@@ -908,13 +955,14 @@ class ActionSaveSession(Action):
                               reflection_answer)
                 sqlite_query = """INSERT INTO users (id, sessions_done, mood_list, action_planning_answer0, attention_check_list, attention_check_2_list, activity_index_list, action_index_list, state_0, action_type_index_list, reflection_answer0) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
                 link = "https://app.prolific.co/submissions/complete?cc=6C5C40DA"
-                
+            
             # save data after second session
+            # do not need to save the reward and mood anymore.
+            # These have already been saved earlier in the conversation.
             elif data[0][1] == 1:
                 sessions_done = 2
                 action_planning_answer = tracker.get_slot('action_planning_answer')
                 reflection_answer = tracker.get_slot('reflection_answer')
-                mood_list = '|'.join([data[0][2], mood])
                 attention_check_list = data[0][16].split('|')
                 attention_check_list.append(attention_check)
                 attention_check_list = '|'.join(attention_check_list)
@@ -923,26 +971,23 @@ class ActionSaveSession(Action):
                 attention_check_2_list = '|'.join(attention_check_2_list)
                 activity_experience = tracker.get_slot('activity_experience')
                 activity_experience_mod = tracker.get_slot('activity_experience_mod')
-                reward = tracker.get_slot('reward')
-                data_tuple = (sessions_done, mood_list, action_planning_answer, 
-                              attention_check_list, attention_check_2_list, activity_index_list,
+                data_tuple = (sessions_done, action_planning_answer, 
+                              attention_check_list, attention_check_2_list, 
+                              activity_index_list,
                               action_index_list, state, activity_experience, 
-                              activity_experience_mod, reward, action_type_index_list, 
+                              activity_experience_mod, action_type_index_list, 
                               reflection_answer, user_id)
                 
-                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer1 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_1 = ?, activity_experience1 = ?, activity_experience_mod1 = ?, reward_list = ?, action_type_index_list = ?, reflection_answer1 = ? WHERE id = ?"""
+                sqlite_query = """UPDATE users SET sessions_done = ?, action_planning_answer1 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_1 = ?, activity_experience1 = ?, activity_experience_mod1 = ?, action_type_index_list = ?, reflection_answer1 = ? WHERE id = ?"""
                 link = "https://app.prolific.co/submissions/complete?cc=5AC5F859"
                 
-                
+            # do not need to save the reward, mood, and satisfaction anymore.
+            # These have already been saved earlier.
             elif data[0][1] == 2:
                 sessions_done = 3
                 action_planning_answer = tracker.get_slot('action_planning_answer')
                 reflection_answer = tracker.get_slot('reflection_answer')
-                satisf = tracker.get_slot('user_satisfaction')
                 group = int(tracker.get_slot('study_group'))
-                mood_list = data[0][2].split('|')
-                mood_list.append(mood)
-                mood_list = '|'.join(mood_list)
                 attention_check_list = data[0][16].split('|')
                 attention_check_list.append(attention_check)
                 attention_check_list = '|'.join(attention_check_list)
@@ -951,25 +996,22 @@ class ActionSaveSession(Action):
                 attention_check_2_list = '|'.join(attention_check_2_list)
                 activity_experience = tracker.get_slot('activity_experience')
                 activity_experience_mod = tracker.get_slot('activity_experience_mod')
-                reward_list = '|'.join([data[0][7], tracker.get_slot('reward')])
-                data_tuple = (sessions_done, mood_list, action_planning_answer, 
+                data_tuple = (sessions_done, action_planning_answer, 
                               attention_check_list, attention_check_2_list, activity_index_list,
                               action_index_list, state, activity_experience, 
-                              activity_experience_mod, reward_list, 
-                              action_type_index_list, group, satisf, 
+                              activity_experience_mod, 
+                              action_type_index_list, group, 
                               reflection_answer, user_id)
                 
-                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer2 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_2 = ?, activity_experience2 = ?, activity_experience_mod2 = ?, reward_list = ?, action_type_index_list = ?, study_group = ?, user_satisfaction2 = ?, reflection_answer2 = ? WHERE id = ?"""
+                sqlite_query = """UPDATE users SET sessions_done = ?, action_planning_answer2 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_2 = ?, activity_experience2 = ?, activity_experience_mod2 = ?, action_type_index_list = ?, study_group = ?, reflection_answer2 = ? WHERE id = ?"""
                 link = "https://app.prolific.co/submissions/complete?cc=5C9794E1"
                
-            
+            # do not need to save the reward and mood anymore.
+            # These have already been saved earlier in the conversation.
             elif data[0][1] == 3:
                 sessions_done = 4
                 action_planning_answer = tracker.get_slot('action_planning_answer')
                 reflection_answer = tracker.get_slot('reflection_answer')
-                mood_list = data[0][2].split('|')
-                mood_list.append(mood)
-                mood_list = '|'.join(mood_list)
                 attention_check_list = data[0][16].split('|')
                 attention_check_list.append(attention_check)
                 attention_check_list = '|'.join(attention_check_list)
@@ -978,27 +1020,22 @@ class ActionSaveSession(Action):
                 attention_check_2_list = '|'.join(attention_check_2_list)
                 activity_experience = tracker.get_slot('activity_experience')
                 activity_experience_mod = tracker.get_slot('activity_experience_mod')
-                reward_list = data[0][7].split('|')
-                reward_list.append(tracker.get_slot('reward'))
-                reward_list = '|'.join(reward_list)
-                data_tuple = (sessions_done, mood_list, action_planning_answer, 
+                data_tuple = (sessions_done, action_planning_answer, 
                               attention_check_list, attention_check_2_list, activity_index_list,
                               action_index_list, state, activity_experience, 
-                              activity_experience_mod, reward_list, 
+                              activity_experience_mod,
                               action_type_index_list, 
                               reflection_answer, user_id)
-                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, action_planning_answer3 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_3 = ?, activity_experience3 = ?, activity_experience_mod3 = ?, reward_list = ?, action_type_index_list = ?, reflection_answer3 = ? WHERE id = ?"""
+                sqlite_query = """UPDATE users SET sessions_done = ?, action_planning_answer3 = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_3 = ?, activity_experience3 = ?, activity_experience_mod3 = ?, action_type_index_list = ?, reflection_answer3 = ? WHERE id = ?"""
                 link = "https://app.prolific.co/submissions/complete?cc=4DB200E7"
                 
             # save data after last session
+            # do not need to save the reward, mood, and satisfaction anymore.
+            # These have already been saved earlier.
             elif data[0][1] == 4:
                 sessions_done = 5
                 action_planning_answer = tracker.get_slot('action_planning_answer')
                 reflection_answer = tracker.get_slot('reflection_answer')
-                satisf = tracker.get_slot('user_satisfaction')
-                mood_list = data[0][2].split('|')
-                mood_list.append(mood)
-                mood_list = '|'.join(mood_list)
                 attention_check_list = data[0][16].split('|')
                 attention_check_list.append(attention_check)
                 attention_check_list = '|'.join(attention_check_list)
@@ -1007,16 +1044,13 @@ class ActionSaveSession(Action):
                 attention_check_2_list = '|'.join(attention_check_2_list)
                 activity_experience = tracker.get_slot('activity_experience')
                 activity_experience_mod = tracker.get_slot('activity_experience_mod')
-                reward_list = data[0][7].split('|')
-                reward_list.append(tracker.get_slot('reward'))
-                reward_list = '|'.join(reward_list)
-                data_tuple = (sessions_done, mood_list,
+                data_tuple = (sessions_done,
                               attention_check_list, attention_check_2_list, activity_index_list,
                               action_index_list, state, activity_experience, 
-                              activity_experience_mod, reward_list, 
-                              action_type_index_list, satisf, action_planning_answer, 
+                              activity_experience_mod,
+                              action_type_index_list, action_planning_answer, 
                               reflection_answer, user_id)
-                sqlite_query = """UPDATE users SET sessions_done = ?, mood_list = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_4 = ?, activity_experience4 = ?, activity_experience_mod4 = ?, reward_list = ?, action_type_index_list = ?, user_satisfaction4 = ?, action_planning_answer4 = ?, reflection_answer4 = ? WHERE id = ?"""
+                sqlite_query = """UPDATE users SET sessions_done = ?, attention_check_list = ?, attention_check_2_list = ?, activity_index_list = ?, action_index_list = ?, state_4 = ?, activity_experience4 = ?, activity_experience_mod4 = ?, action_type_index_list = ?, action_planning_answer4 = ?, reflection_answer4 = ? WHERE id = ?"""
                 link = "https://app.prolific.co/submissions/complete?cc=3B91AA04"
                 
            
@@ -1039,7 +1073,92 @@ class ActionSaveSession(Action):
             if (sqliteConnection):
                 sqliteConnection.close()
                 print("The SQLite connection is closed")
+                
         # connection closed
         
         return [SlotSet("session_saved", session_saved),
                 SlotSet("prolific_link", link)]
+
+# To save data gathered until the effort response
+# This means the mood and the effort answer are saved as well
+# as the user satisfaction in sessions 3 and 5.
+# Only for sessions 2-5
+class ActionSaveSessionEffort(Action):
+    def name(self):
+        return "action_save_session_effort"
+
+    async def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+        # get user ID
+        metadata = extract_metadata_from_tracker(tracker)
+        user_id = metadata['userid']
+        
+        # Load slot values
+        mood = tracker.get_slot('mood')
+        
+        # create db connection
+        try:
+            sqliteConnection = sqlite3.connect(DATABASE_PATH)
+            cursor = sqliteConnection.cursor()
+            sqlite_select_query = """SELECT * from users WHERE id = ?"""
+            cursor.execute(sqlite_select_query, (user_id,))
+            data = cursor.fetchall()
+            
+            # we are in session 2
+            if data[0][1] == 1:
+                
+                mood_list = '|'.join([data[0][2], mood])
+                reward = tracker.get_slot('reward')
+                data_tuple = (mood_list, reward, user_id)
+                
+                sqlite_query = """UPDATE users SET mood_list = ?, reward_list = ? WHERE id = ?"""
+            
+            # we are in session 3
+            elif data[0][1] == 2:
+                mood_list = data[0][2].split('|')
+                mood_list.append(mood)
+                mood_list = '|'.join(mood_list)
+                reward_list = '|'.join([data[0][7], tracker.get_slot('reward')])
+                satisf = tracker.get_slot('user_satisfaction')
+                data_tuple = (mood_list, reward_list, satisf, user_id)
+                
+                sqlite_query = """UPDATE users SET mood_list = ?, reward_list = ?, user_satisfaction2 = ? WHERE id = ?"""
+            
+            # we are in session 4
+            elif data[0][1] == 3:
+                mood_list = data[0][2].split('|')
+                mood_list.append(mood)
+                mood_list = '|'.join(mood_list)
+                reward_list = data[0][7].split('|')
+                reward_list.append(tracker.get_slot('reward'))
+                reward_list = '|'.join(reward_list)
+                data_tuple = (mood_list, reward_list, user_id)
+                sqlite_query = """UPDATE users SET mood_list = ?, reward_list = ? WHERE id = ?"""
+                
+            # we are in session 5, i.e. the last session
+            elif data[0][1] == 4:
+                satisf = tracker.get_slot('user_satisfaction')
+                mood_list = data[0][2].split('|')
+                mood_list.append(mood)
+                mood_list = '|'.join(mood_list)
+                reward_list = data[0][7].split('|')
+                reward_list.append(tracker.get_slot('reward'))
+                reward_list = '|'.join(reward_list)
+                data_tuple = (mood_list, reward_list, satisf, user_id)
+                sqlite_query = """UPDATE users SET mood_list = ?, reward_list = ?, user_satisfaction4 = ? WHERE id = ?"""
+            
+            cursor.execute(sqlite_query, data_tuple)
+            sqliteConnection.commit()
+            cursor.close()
+
+        except sqlite3.Error as error:
+            print("Error while connecting to sqlite when saving after effort response", error)
+        finally:
+            if (sqliteConnection):
+                sqliteConnection.close()
+                print("The SQLite connection is closed")
+                
+        # connection closed
+        return []

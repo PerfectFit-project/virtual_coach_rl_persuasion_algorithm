@@ -14,7 +14,7 @@ This is the code for a conversational agent that suggests preparatory activities
 
 The figure below visualizes the structure of the 5 conversational sessions.
 
-<img src = "Images/Dialog_Flow.PNG" width = "400" title="Dialog Flow">
+<img src = "Images/Dialog_Flow.jpg" width = "400" title="Dialog Flow">
 
 ## System Architecture
 
@@ -25,7 +25,6 @@ It is expected that the user ID is provided as a URL-parameter, e.g. http://<IP_
 
 Files:
 - index.html: html-page if the conversational agent runs locally.
-- index_c.html: html-page if the conversational agent runs locally with a different styling. The styling is described in the file "style.css."
 - Frontend: contains the html-pages for the 5 sessions if the conversational agent runs on a server. The frontends are run within Docker containers. This folder also contains the necessary Dockerfile. After building a Docker image for a frontend, a Docker container can be run via `docker run -d -p <port, e.g. 5005>:80 <imageName>`.
 - connectors: contains the file "socketChannel.py." This file is needed to connect the frontend to the backend.
 
@@ -38,6 +37,14 @@ Please note that the database is destroyed if one stops the custom action contai
 
 ### Backend
 
+The main component is a conversational agent trained in Rasa 2.0.2.
+
+Files:
+- actions: custom actions, e.g. to read from a database.
+- config.yml: configuration for the training of the agent.
+- data: contains files to specify e.g. the training stories on which the agent is trained.
+- domain.yml: utterances, slots, etc.
+
 ## Other Components
 
 ### Preparatory Activities
@@ -49,7 +56,7 @@ The preparatory activities are provided in the files "Activities.csv"/"Activitie
 There are multiple components to persuading people to do their suggested preparatory activities:
 - In each session, a persuasive message is sent. Persuasive messages differ based on the persuasion type (Commitment, Consensus, Authority, Action Planning) as well as the preparatory activity they are used for. Moreover, there are multiple different messages for each combination of persuasion type and preparatory activity. All persuasive messages are in the file "all_messages.csv."
 - In the case of the Commitment, Consensus and Authority persuasion types, a person is subsequently asked a reflective question. These reflective questions are given in the file "reflective_questions.csv."
-- After each session, people receive a reminder message in Prolific. This message contains the formulation of the assigned activity, as well as a reminder question that depends on the persuasion type. All reminder questions can be found in the file "all_reminders.csv." The templates for the reminder messages for the first 4 and the last session are in the files "reminder_template.txt" and "reminder_template_last_session.csv," respectively.
+- After each session, people receive a reminder message in Prolific. This message contains the formulation of the assigned activity, as well as a reminder question that depends on the persuasion type. All reminder questions can be found in the file "all_reminders.csv." The templates for the reminder messages for the first 4 and the last session are in the files "reminder_template.txt" and "reminder_template_last_session.csv," respectively. There are also templates for these messages in case no persuasion is given.
 
 ## License
 
