@@ -1,6 +1,6 @@
 # ca_support_quit_smoking
 
-This is the code for a conversational agent that suggests preparatory activities for smoking cessation and becoming more physically active in 5 separate sessions.
+This is the code for a conversational agent that suggests preparatory activities for smoking cessation and becoming more physically active in 5 separate sessions. This conversational agent was used in a longitudinal study with more than 500 participants with the goal of testing a personalized reinforcement learning-based persuasion algorithm.
 
 ## Experiment Flow
 
@@ -41,9 +41,11 @@ The main component is a conversational agent trained in Rasa 2.0.2.
 
 Files:
 - actions: custom actions, e.g. to read from a database.
+- models: contains trained models.
 - config.yml: configuration for the training of the agent.
 - data: contains files to specify e.g. the training stories on which the agent is trained.
 - domain.yml: utterances, slots, etc.
+- endpoints.yml: defines the endpoints of the conversational agent. 
 
 ## Other Components
 
@@ -57,6 +59,10 @@ There are multiple components to persuading people to do their suggested prepara
 - In each session, a persuasive message is sent. Persuasive messages differ based on the persuasion type (Commitment, Consensus, Authority, Action Planning) as well as the preparatory activity they are used for. Moreover, there are multiple different messages for each combination of persuasion type and preparatory activity. All persuasive messages are in the file "all_messages.csv."
 - In the case of the Commitment, Consensus and Authority persuasion types, a person is subsequently asked a reflective question. These reflective questions are given in the file "reflective_questions.csv."
 - After each session, people receive a reminder message in Prolific. This message contains the formulation of the assigned activity, as well as a reminder question that depends on the persuasion type. All reminder questions can be found in the file "all_reminders.csv." The templates for the reminder messages for the first 4 and the last session are in the files "reminder_template.txt" and "reminder_template_last_session.csv," respectively. There are also templates for these messages in case no persuasion is given.
+
+### Running the Agent on a Server with Rasa X and Docker
+
+In our experiment, we hosted the conversational agent on a Google compute instance with Rasa X and Docker containers. As the required setup differs slightly from running the agent locally, the corresponding files are provided in the "server_stuff"-folder. This includes, for example, a Dockerfile for running the custom action code.
 
 ## License
 
