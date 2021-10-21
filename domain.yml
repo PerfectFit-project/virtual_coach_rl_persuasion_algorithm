@@ -71,10 +71,6 @@ slots:
   message_formulation:
     type: text
     influence_conversation: false
-  # Persuasive reminder question in message sent to Prolific after session
-  reminder_formulation:
-    type: text
-    influence_conversation: false
   mood:
     type: text
     initial_value: ''
@@ -82,11 +78,11 @@ slots:
   pers_input:
     type: bool
     influence_conversation: true
-  plan_correct:
-    type: bool
-    influence_conversation: true
   # Persuasion type number 4 is to send no persuasive message
   pers_type_four:
+    type: bool
+    influence_conversation: true
+  plan_correct:
     type: bool
     influence_conversation: true
   prolific_link:
@@ -103,6 +99,10 @@ slots:
   reflective_question:
     type: text
     initial_value: ''
+    influence_conversation: false
+  # Persuasive reminder question in message sent to Prolific after session
+  reminder_formulation:
+    type: text
     influence_conversation: false
   reward:
     type: text
@@ -1323,16 +1323,16 @@ actions:
 - action_choose_persuasion
 - action_choose_persuasion_last
 - action_freetext
-- action_save_session
-- action_save_session_effort
 - action_freetext_activity_comp
 - action_freetext_activity_mod
-- action_set_slot_reward
 - action_get_group
-- action_set_session
+- action_get_reflection
 - action_get_satisfaction
+- action_pause_five
+- action_save_session
+- action_save_session_effort
 - action_send_email
 - action_send_email_last
-- action_get_reflection
-- action_pause_five
-- action_pause_two
+- action_set_session
+- action_set_slot_reward
+

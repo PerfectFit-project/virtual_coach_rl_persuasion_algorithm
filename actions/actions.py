@@ -3,21 +3,21 @@
 #
 # See this guide on how to implement these action:
 # https://rasa.com/docs/rasa/custom-actions
-from typing import Any, Text, Dict, List
-from rasa_sdk import Action, Tracker
-from rasa_sdk.executor import CollectingDispatcher
-from rasa_sdk.events import SlotSet
-import pickle
-import sqlite3
-import pandas as pd
-import random
-import numpy as np
 from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import numpy as np
+import pandas as pd
+import pickle
+import random
+from rasa_sdk import Action, Tracker
+from rasa_sdk.executor import CollectingDispatcher
+from rasa_sdk.events import SlotSet
 import smtplib, ssl
+import sqlite3
 from string import Template
 import time
+from typing import Any, Text, Dict, List
 
 DATABASE_PATH = 'db_scripts/chatbot.db'
 
@@ -66,7 +66,7 @@ moods_la_hv = ["content", "serene", "calm", "relaxed", "tranquil"]
 moods_ha_hv = ["satisfied", "pleased", "delighted", "happy", "glad", 
                "astonished", "aroused", "excited"]
 
-# function to extract custom data from rasa webchat (in my case only the prolific id)
+# Function to extract custom data from rasa webchat (in my case only the prolific id)
 def extract_metadata_from_tracker(tracker: Tracker):
     events = tracker.current_state()['events']
     user_events = []
@@ -76,7 +76,7 @@ def extract_metadata_from_tracker(tracker: Tracker):
 
     return user_events[-1]['metadata']
 
-# answer based on mood
+# Answer based on mood
 class ActionAnswerMood(Action):
     def name(self):
         return "action_answer_mood"
@@ -106,16 +106,6 @@ class ActionPauseFive(Action):
     async def run(self, dispatcher, tracker, domain):
         
         time.sleep(5)
-        
-        return []
-    
-class ActionPauseTwo(Action):
-    def name(self):
-        return "action_pause_two"
-
-    async def run(self, dispatcher, tracker, domain):
-        
-        time.sleep(2)
         
         return []
     
@@ -275,6 +265,7 @@ class ActionSetSlotReward(Action):
         
         return [SlotSet("action_success", success)]
     
+# Set slot about experience with activity
 class ActionGetFreetextActivityComp(Action):
 
     def name(self):
@@ -298,7 +289,7 @@ class ActionGetFreetextActivityMod(Action):
         
         return [SlotSet("activity_experience_mod", activity_experience_mod)]
     
-# Read free text response for user's implementation intention
+# Read free text response for user's implementation intention/ action planning
 class ActionGetFreetext(Action):
 
     def name(self):
@@ -482,6 +473,7 @@ class ActionSendEmail(Action):
             
         return []
             
+# Send reminder email/message in last session
 class ActionSendEmailLast(Action):
     def name(self):
         return "action_send_email_last"
@@ -548,7 +540,7 @@ class ActionGetGroup(Action):
 
     async def run(self, dispatcher, tracker, domain):
         
-        # Group assignment # TODO: use right link
+        # Group assignment
         df_group_ass = pd.read_csv("assignment.csv", dtype={'ID':'string'})
 
         # get user ID

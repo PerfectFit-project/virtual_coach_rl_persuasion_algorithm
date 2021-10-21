@@ -1,6 +1,8 @@
 version: "2.0"
 
 nlu:
+# We do not really have intents, so this is our catch-all intent in case we
+# do not care about the intent but still need free-text responses from users.
 - intent: anything
   examples: |
     - I

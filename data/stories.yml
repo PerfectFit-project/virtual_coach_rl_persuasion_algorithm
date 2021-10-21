@@ -2,50 +2,6 @@ version: "2.0"
 
 stories:
 
-#- story: test_True_True_True
-#  steps:
-#  - intent: start_test
-#  - action: action_set_session
-#  - slot_was_set:
-#    - session_loaded: True
-#  - action: action_get_group
-#  - action: utter_test
-#  - action: utter_ask_for_mood
-#  - intent: mood_curr
-#  - action: utter_test
-#  - action: action_answer_mood
-#  - action: action_choose_activity
-#  - action: utter_test
-#  - action: action_choose_persuasion
-#  - slot_was_set:
-#    - pers_input: True
-#  - action: action_save_session
-#  - slot_was_set:
-#    - session_saved: True
-#  - action: action_send_email
-  
-#- story: test_True_True_False
-#  steps:
-#  - intent: start_test
-#  - action: action_set_session
-#  - slot_was_set:
-#    - session_loaded: True
-#  - action: action_get_group
-#  - action: utter_test
-#  - action: utter_ask_for_mood
-#  - intent: mood_curr
-#  - action: utter_test
-#  - action: action_answer_mood
-#  - action: action_choose_activity
-#  - action: utter_test
-#  - action: action_choose_persuasion
-#  - slot_was_set:
-#    - pers_input: True
-#  - action: action_save_session
-#  - slot_was_set:
-#    - session_saved: False
-#  - action: action_send_email
-
 # Session 1
 - story: start_session_1
   steps:
