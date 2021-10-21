@@ -72,10 +72,11 @@ There are multiple components to persuading people to do their suggested prepara
 	- Compute_Opt_Policy_Level_1.py: Compute the optimal policy for the first algorithm level, which means to choose a persuasion type with the highest overall average effort score.
 	- Compute_Opt_Policy_Level_2.py: Compute the optimal policy for the second algorithm level, which means to select a persuasion type with the highest effort score in a person's state. 3 features are chosen to define a person's state.
 	- Compute_Opt_Policy_Level_4.py: Compute the optimal policy for the fourth algorithm level, which means to select a persuasion type with the highest similarity-weighted Q-value in a person's state. 3 features define a person's state.
-	- extract_data_post_sess_2.py: Extract the data from the database needed to train the algorithm levels.
+	- extract_data_post_sess_2.py: Extract the data from the database needed to train the algorithm levels. We used data gathered in sessions 1 and 2 as training data.
 	- extract_data_rasa_attention_checks_passing_sessions.py: Determines for each session if people have failed too many attention checks, so that those people are not invited to the next session.
 	- G_algorithm_feature_selection_All_Blocks_Exact.py: Feature selection and optimal policy computation for the third algorithm level, which means to choose a persuasion type with the highest Q-value in a person's state.
     - Utils.py: Some utility functions.
+	
 	
 ### Preparatory Activities
 

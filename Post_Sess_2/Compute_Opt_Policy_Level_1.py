@@ -56,16 +56,16 @@ def compute_opt_policy_level_1(data, effort_mean, num_act):
 if __name__ == "__main__":
 
     # Load data extracted from database
-    data = pd.read_csv('W:/staff-umbrella/perfectfit/Exp0/Analysis/All_Data/rl_samples_list_binary_exp.csv', converters={'s0': eval, 's1': eval})
+    data = pd.read_csv('data_samples_post_sess_2.csv', converters={'s0': eval, 's1': eval})
     data = data.values.tolist()
 
     # Mean value of effort responses
-    with open("W:/staff-umbrella/perfectfit/Exp0/Analysis/All_Data/all_data_effort_mean", "rb") as f:
+    with open("Post_Sess_2_Effort_Mean", "rb") as f:
         effort_mean = pickle.load(f)
 
     # Compute the optimal policy
     # We have 5 actions: 4 persuasion types and the option to not persuade
     opt_policy = compute_opt_policy_level_1(data, effort_mean, num_act = 5)
 
-    with open('W:/staff-umbrella/perfectfit/Exp0/Analysis/All_Data/Level_1_Optimal_Policy', 'wb') as f:
+    with open('Level_1_Optimal_Policy', 'wb') as f:
         pickle.dump(opt_policy, f)

@@ -1,5 +1,5 @@
 '''
-Final version of feature selection based on G-algorithm for experiment.
+Final version of feature selection based on G-algorithm for experimental condition 3.
 To be run after session 2
 This time we compute one-sample t-tests across all blocks.
 We also compute Q-values exactly based on approximated reward and transition functions.
@@ -337,12 +337,12 @@ if __name__ == "__main__":
     
     # Load data. Data has <s, s', a, r>-samples.
     feat_to_select = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] # [0, 1, 2, 3, 4, 5, 6] in experiment for features [0, 1, 2, 3, 4, 6, 7]
-    data  = pd.read_csv("W:/staff-umbrella/perfectfit/Exp0/Analysis/All_Data/rl_samples_list_binary.csv", 
+    data  = pd.read_csv("data_samples_post_sess_2.csv", 
                         converters={'s0': eval, 's1': eval})
     data = data.values.tolist()
     
     # Mean value of effort responses
-    with open("W:/staff-umbrella/perfectfit/Exp0/Analysis/All_Data/all_data_effort_mean", "rb") as f:
+    with open("Post_Sess_2_Effort_Mean", "rb") as f:
         effort_mean = pickle.load(f)
         
     # Select features
@@ -353,9 +353,9 @@ if __name__ == "__main__":
                                                             discount_factor = DISCOUNT_FACTOR)
     
     # Store selected features
-    with open('W:/staff-umbrella/perfectfit/Exp0/Analysis/All_Data/Level_3_G_algorithm_chosen_features', 'wb') as f:
+    with open('Level_3_G_algorithm_chosen_features', 'wb') as f:
         pickle.dump(feat_sel, f)
-    with open("W:/staff-umbrella/perfectfit/Exp0/Analysis/All_Data/Level_3_G_algorithm_chosen_features_criteria", 'wb') as f:
+    with open("Level_3_G_algorithm_chosen_features_criteria", 'wb') as f:
         pickle.dump(feat_sel_criteria, f)
         
     # Compute optimal policy
@@ -364,6 +364,6 @@ if __name__ == "__main__":
                                             num_act = NUM_ACTIONS, 
                                             discount_factor = DISCOUNT_FACTOR)
     
-    with open('W:/staff-umbrella/perfectfit/Exp0/Analysis/All_Data/Level_3_Optimal_Policy', 'wb') as f:
+    with open('Level_3_Optimal_Policy', 'wb') as f:
         pickle.dump(opt_policy, f)
     

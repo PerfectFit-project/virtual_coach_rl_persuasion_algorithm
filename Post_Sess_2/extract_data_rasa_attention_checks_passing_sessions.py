@@ -9,7 +9,7 @@ reject and no further invite such people.
 import Utils as util
 import pandas as pd
 
-database_path = "W:/staff-umbrella/perfectfit/Exp0/Pilot2/2021_04_21_Pilot2_chatbot.db"
+database_path = "W:/staff-umbrella/perfectfit/Exp0/2021_06_28_0814_Final_chatbot.db"
 
 # For sessions 1 through 5 with the conversational agent
 for session_num in range(1, 6):
@@ -25,11 +25,11 @@ for session_num in range(1, 6):
     df_user_ids_error = pd.DataFrame(user_ids_error, columns = ['PROLIFIC_PID'])
     
     # Save dataframes to .csv-files
-    df_user_ids_passed.to_csv("session" + str(session_num) + "_passed_p_ids.csv", 
+    df_user_ids_passed.to_csv("W:/staff-umbrella/perfectfit/Exp0/session" + str(session_num) + "_passed_p_ids.csv", 
                               index = False)
-    df_user_ids_failed.to_csv("session" + str(session_num) + "_failed_p_ids.csv", 
+    df_user_ids_failed.to_csv("W:/staff-umbrella/perfectfit/Exp0/session" + str(session_num) + "_failed_p_ids.csv", 
                               index = False)
-    df_user_ids_error.to_csv("session" + str(session_num) + "_error_p_ids.csv", 
+    df_user_ids_error.to_csv("W:/staff-umbrella/perfectfit/Exp0/session" + str(session_num) + "_error_p_ids.csv", 
                               index = False)
     
     # Get planning/reflection answers for this session
@@ -46,4 +46,4 @@ for session_num in range(1, 6):
     df_answers = pd.DataFrame([user_ids_answers, answers, activities, action_types]).transpose()
     df_answers.columns = ["Prolific_ID", "Answer", "Activity", "Action_Type"]
     
-    df_answers.to_csv("session" + str(session_num) + "_answers_passed_p_ids.csv")
+    df_answers.to_csv("W:/staff-umbrella/perfectfit/Exp0/session" + str(session_num) + "_answers_passed_p_ids.csv")

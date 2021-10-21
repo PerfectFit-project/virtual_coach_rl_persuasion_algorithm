@@ -1,14 +1,16 @@
 '''
 Common functions.
 '''
+from copy import deepcopy
 import numpy as np
 import sqlite3
-from copy import deepcopy
+
 
 ATTENTION_CHECK_1_TRUE = [3, 4] # "agree" or "agree strongly"
 ATTENTION_CHECK_2_TRUE = [0, 1] # "disagree" or "disagree strongly"
 
 AW_LIKERT_SCALE = ['0', '1', '2', '3', '4'] # answer options for questions with 5-point Likert scale
+
 
 def get_map_effort_reward(effort_mean, output_lower_bound, 
                           output_upper_bound = 1, input_lower_bound = 0, 
@@ -64,6 +66,7 @@ def get_map_effort_reward(effort_mean, output_lower_bound,
     # to mean_output on the output scale.
     return map_to_rew
 
+
 def map_efforts_to_rewards(list_of_efforts, map_to_rewards):
     """
     Maps effort responses to rewards.
@@ -81,6 +84,7 @@ def map_efforts_to_rewards(list_of_efforts, map_to_rewards):
     
     return rewards
     
+	
 def pass_attention_checks(answer1, answer2):
     """
     Computes whether at least 1/2 attention checks were passed for a session.
@@ -93,6 +97,7 @@ def pass_attention_checks(answer1, answer2):
         bool: whether at least 1 of 2 attention checks were passed.
     """
     return answer1 in ATTENTION_CHECK_1_TRUE or answer2 in ATTENTION_CHECK_2_TRUE
+
 
 def gather_data_post_sess_2(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7],
                             excluded_ids = [[], []]):
@@ -240,6 +245,7 @@ def gather_data_post_sess_2(database_path, feat_to_select = [0, 1, 2, 3, 4, 6, 7
     
     return data, feat_means, user_ids, reward_mean
 
+
 def check_attention_checks_session(database_path, session_num):
     """
     Returns IDs of users who have passed/failed a session based on 
@@ -321,141 +327,6 @@ def check_attention_checks_session(database_path, session_num):
         
     return user_ids_passed, user_ids_failed, user_ids_error
 
-def gather_data_post_sess_5(database_path, 
-                            feat_to_select = [0, 1, 2, 3, 4, 6, 7],
-                            excluded_ids = [[], [], [], [], []]):
-    """
-    Gathers data from sqlite database after session 5.
-    Also considers whether 2/2 attention checks have been failed in a session
-    and removes such samples.
-    
-    Args:
-        database_path (str): path to database
-        feat_to_select (list of int): which of the state features to consider
-        excluded_ids (list of list of str): list of IDs of people whose data we should 
-                                            not use for each of the 5 sessions.
-                                            
-    Returns:
-        list: (s, s_prime, a, r)-samples
-        list: mean value for each feature in feat_to_select
-        list: user ID for (s, s_prime, a, r)-sample
-        float: mean value of the effort responses
-    """
-    num_select = len(feat_to_select)
-    
-    # create db connection
-    try:
-        sqlite_connection = sqlite3.connect(database_path)
-        cursor = sqlite_connection.cursor()
-        print("Connection created")
-        sqlite_select_query = """SELECT * from users WHERE state_0 IS NOT NULL"""
-        cursor.execute(sqlite_select_query)
-        data_db = cursor.fetchall()
-        cursor.close()
-
-    except sqlite3.Error as error:
-        print("Error while connecting to sqlite", error)
-    finally:
-        if (sqlite_connection):
-            sqlite_connection.close()
-            print("Connection closed")
- 
-    num_rows = len(data_db)
-    all_states = []
-    
-    data = []
-    user_ids = [] # user ID for each sample
-    
-    for row in range(num_rows): # for each person with at least 1 session
-    
-        user_id_curr = data_db[row][0] # ID of current person
-        
-        for state_ind, state in enumerate([20, 21, 22, 23]): # for session 1-4
-        
-            if not data_db[row][state] == None: # ensure current state is not None
-            
-                try:
-            
-                    s0_arr = np.array([int(i) for i in data_db[row][state].split('|')])[feat_to_select]
-                    s0 = list(s0_arr)
-                
-                    # Attention check question answers for first state of transition
-                    check_state_1 = [i for i in data_db[row][16].split('|')][state_ind]
-                    check_state_2 = [i for i in data_db[row][17].split('|')][state_ind]
-                    
-                    # only if the user's ID is not in the list of users whose data we
-                    # should not use for this session
-                    if user_id_curr in excluded_ids[state_ind]:
-                        passed_check_state = False
-                    # make sure that there is actual data for the attention checks, i.e. not 
-                    # that the data saved in the database for this attention check is ''
-                    elif check_state_1 in AW_LIKERT_SCALE and check_state_2 in AW_LIKERT_SCALE:
-                        passed_check_state = pass_attention_checks(int(check_state_1), int(check_state_2))
-                    # something went wrong, i.e. some attention check data was not saved.
-                    else:
-                        passed_check_state = False
-                    
-                    # needed to later compute the mean values per feature
-                    # Make sure to add each state only once
-                    if state_ind == 0 and passed_check_state:
-                        all_states.append(s0_arr)
-                
-                    if not data_db[row][state + 1] == None: # ensure next state is not None
-                    
-                        s1_arr = np.array([int(i) for i in data_db[row][state + 1].split('|')])[feat_to_select]
-                        s1 = list(s1_arr)
-                    
-                        # Attention check question answers for second state of transition
-                        check_next_1 = [i for i in data_db[row][16].split('|')][state_ind + 1]
-                        check_next_2 = [i for i in data_db[row][17].split('|')][state_ind + 1]
-                        
-                        # only if the user's ID is not in the list of users whose data we
-                        # should not use for this session
-                        if user_id_curr in excluded_ids[state_ind + 1]:
-                            passed_check_next_state = False
-                        # make sure that there is actual data for the attention checks, i.e. not 
-                        # that the data saved in the database for this attention check is ''
-                        if check_next_1 in AW_LIKERT_SCALE and check_next_2 in AW_LIKERT_SCALE:
-                            passed_check_next_state = pass_attention_checks(int(check_next_1), int(check_next_2))
-                        # something went wrong, i.e. some attention check data was not saved.
-                        else:
-                            passed_check_next_state = False
-                        
-                        # need to pass at least 1 out of 2 attention checks in each of the two sessions
-                        passed_attention_checks = passed_check_state and passed_check_next_state
-                        
-                        # the transition is not used if the attention check criteria are not met
-                        if passed_attention_checks:
-                            
-                            # get action and reward
-                            a = [int(i) for i in data_db[row][25].split('|')][state_ind]
-                            r = [int(i) for i in data_db[row][7].split('|')][state_ind]
-                        
-                            data.append([s0, s1, a, r]) # save transition
-                            user_ids.append(user_id_curr) # save corresponding user ID
-                            
-                        # needed to later compute the mean values per feature
-                        if passed_check_next_state:
-                            all_states.append(s1_arr)
-                    
-                except Exception:
-                    
-                    print("Incomplete data for user " + user_id_curr + ", state " + str(state_ind) + ".")
-                    
-    all_states = np.array(all_states)
-        
-    # compute the mean value for each feature
-    feat_means = np.mean(all_states, axis = 0)
-    
-    # convert features to binary features based on mean values
-    for row in range(len(data)):
-        data[row][0] = [1 if data[row][0][i] >= feat_means[i] else 0 for i in range(num_select)]
-        data[row][1] = [1 if data[row][1][i] >= feat_means[i] else 0 for i in range(num_select)]
-        
-    # Compute the mean of the effort responses
-    reward_mean = np.mean(np.array(data)[:, 3])
-    
-    return data, feat_means, user_ids, reward_mean
 
 def policy_evaluation(observation_space_size, discount_factor, trans_func,
                       reward_func, policy, q_vals, 
@@ -500,6 +371,7 @@ def policy_evaluation(observation_space_size, discount_factor, trans_func,
         
     return q_vals_new
 
+
 def get_Q_values_opt_policy(discount_factor, trans_func, reward_func,
                             reward_dep_next_state = False):
     """
@@ -529,6 +401,7 @@ def get_Q_values_opt_policy(discount_factor, trans_func, reward_func,
         it += 1
     
     return q_vals, policy_new
+
 
 def get_planning_reflection_answers(database_path, session_num):
     """

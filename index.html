@@ -28,10 +28,9 @@
       const queryString = window.location.search;
       const urlParams = new URLSearchParams(queryString);
       const userid = urlParams.get('userid');
-      // const userid = "111"
 	  WebChat.default.init({
 		selector: "#webchat",
-		initPayload: "/start_session1",
+		initPayload: "/start_session1",  // This means that this frontend is for starting session 1. Set to "/start_session2" to start session 2, etc.
 		customData: {"language":"en", "userid": userid}, // arbitrary custom data. Stay minimal as this will be added to the socket
 		socketUrl: "http://localhost:5005",
 		socketPath: "/socket.io/",
@@ -40,12 +39,6 @@
 		title: "Sam",
 		subtitle: "",
 		params: {"storage": "session"} // can be set to "local"  or "session". details in storage section.
-		//customMessageDelay: (message) => { // remember to add commma above if uncommenting this
-    //let delay = message.length * 45;
-    //if (delay > 5 * 1000) delay = 5 * 1000;
-    //if (delay < 800) delay = 800;
-    //return delay;
- // }
 })
 </script>
 

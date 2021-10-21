@@ -184,24 +184,24 @@ if __name__ == "__main__":
     NUM_ACTIONS = 5  # We have 5 persuasion types
     
     # load data. Data has <s, s', a, r> samples.
-    data  = pd.read_csv('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_27_1401_data_samples_post_sess_2.csv', 
+    data  = pd.read_csv('data_samples_post_sess_2.csv', 
                         converters={'s0': eval, 's1': eval})
     data = data.values.tolist()
     
     # Mean value of effort responses
-    with open("W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_27_1401_Post_Sess_2_Effort_Mean", "rb") as f:
+    with open("Post_Sess_2_Effort_Mean", "rb") as f:
         effort_mean = pickle.load(f)
         
     # features chosen for level 3
-    with open('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/Level_3_G_algorithm_chosen_features', 'rb') as f:
+    with open('Level_3_G_algorithm_chosen_features', 'rb') as f:
         feat_sel = pickle.load(f)
     
     # IDs of users correponding to data samples
-    with open('W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_27_1401_IDs', 'rb') as f:
+    with open('IDs', 'rb') as f:
         user_ids = pickle.load(f)
         
     # Get group assignments 
-    df_group_ass = pd.read_csv("W:/staff-umbrella/perfectfit/Exp0/assignment.csv", 
+    df_group_ass = pd.read_csv("assignment.csv", 
                                dtype={'ID':'string'})
     # Only consider people assigned to group 4 (index 3)
     df_group_ass_group_4 = df_group_ass[df_group_ass["Group"].isin([3])]

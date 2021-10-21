@@ -230,12 +230,12 @@ if __name__ == "__main__":
     
     # Load data samples. Data has <s, s', a, r>-samples.
     feat_to_select = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  # [0, 1, 2, 3, 4, 5, 6] in experiment for features [0, 1, 2, 3, 4, 6, 7]
-    data  = pd.read_csv('W:/staff-umbrella/perfectfit/Exp0/Analysis/All_Data/rl_samples_list_binary.csv', 
+    data  = pd.read_csv('data_samples_post_sess_2.csv', 
                         converters={'s0': eval, 's1': eval})
     data = data.values.tolist()
     
     # Mean value of effort responses
-    with open("W:/staff-umbrella/perfectfit/Exp0/Analysis/All_Data/all_data_effort_mean", "rb") as f:
+    with open("Post_Sess_2_Effort_Mean", "rb") as f:
         effort_mean = pickle.load(f)
         
     # Select features
@@ -245,15 +245,15 @@ if __name__ == "__main__":
                                                           num_act = NUM_ACTIONS)
         
     # Store selected features
-    with open('W:/staff-umbrella/perfectfit/Exp0/Analysis/All_Data/Level_2_G_algorithm_chosen_features', 'wb') as f:
+    with open('Level_2_G_algorithm_chosen_features', 'wb') as f:
         pickle.dump(feat_sel, f)
-    with open("W:/staff-umbrella/perfectfit/Exp0/Analysis/All_Data/Level_2_G_algorithm_chosen_features_criteria", 'wb') as f:
+    with open("Level_2_G_algorithm_chosen_features_criteria", 'wb') as f:
         pickle.dump(feat_sel_criteria, f)
     
     # Compute optimal policy based on selected features
     optimal_policy = compute_opt_policy_level_2(data, effort_mean, feat_sel, 
                                                 num_act = NUM_ACTIONS)
     
-    with open('W:/staff-umbrella/perfectfit/Exp0/Analysis/All_Data/Level_2_Optimal_Policy', 'wb') as f:
+    with open('Level_2_Optimal_Policy', 'wb') as f:
         pickle.dump(optimal_policy, f)
     
