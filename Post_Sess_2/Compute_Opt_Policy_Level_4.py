@@ -180,6 +180,7 @@ def compute_opt_policy_level_4(data_in, effort_mean, feat_sel, user_ids,
     
 if __name__ == "__main__":
     
+    
     DISCOUNT_FACTOR  = 0.85  # For computation of Q-values
     NUM_ACTIONS = 5  # We have 5 persuasion types
     
@@ -208,7 +209,7 @@ if __name__ == "__main__":
     user_ids_assigned_group_4 = df_group_ass_group_4['ID'].tolist()
     
     # Load similarity variables for all people
-    traits = pd.read_csv("W:/staff-umbrella/perfectfit/Exp0/Extract_Data/pers_PA-TTM_gender_MergedAll_1859.csv")
+    traits = pd.read_csv("pers_PA-TTM_gender.csv")
     traits_ids = traits['PROLIFIC_PID'].tolist()
     traits = traits[['PA-TTM', 'Extraversion', 'Agreeableness', 'Conscientiousness', 'ES', 'OE']].to_numpy()
     

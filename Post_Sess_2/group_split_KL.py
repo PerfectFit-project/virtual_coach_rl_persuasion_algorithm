@@ -4,10 +4,12 @@ Consider Big-5 personality, gender (gender identity in Prolific)
  and TTM-stage for physical activity, as well as the effort response from Session 2.
 '''
 
+
+import math
 import numpy as np
 import pandas as pd
-import math
 import pickle
+
 
 def gau_kl(pm, pv, qm, qv):
     """
@@ -46,36 +48,40 @@ def gau_kl(pm, pv, qm, qv):
              + np.dot(diff, np.dot(iqv, diff)) # + (\mu_q-\mu_p)^T\Sigma_q^{-1}(\mu_q-\mu_p)
              - len(pm)))                     # - N
 
+
 num_rep = 10000 # number of splits to test, 10,000
 num_groups = 4 # want 4 groups
+
 
 # we might have already assigned some people previously, e.g.
 # when we need to get more people later on because of dropout etc.
 # TODO: adapt if we have already previously assigned people
 previous_assignment = True
-# TODO: adapt path below if needed
 if previous_assignment:
     df_assignment_prev = pd.read_csv("assignment_prev.csv")
 
-# load people who have passed the second session.
+
+# Load people who have passed the second session.
 # Only want to assign those people to groups.
-people_passed_session_2 = pd.read_csv("W:/staff-umbrella/perfectfit/Exp0/2021_05_29_1035_session2_answers_passed_p_ids.csv")
+people_passed_session_2 = pd.read_csv("session2_answers_passed_p_ids.csv")
 # People with nonsensical planning/reflection answers in session 2
-people_nonsens_session_2 = pd.read_csv("W:/staff-umbrella/perfectfit/Exp0/Final_Algorithms/2021_05_29_1035_session2_nonsensical_answers.csv")
+people_nonsens_session_2 = pd.read_csv("session2_nonsensical_answers.csv")
+
 
 # Get data on gender, PA-TTM phase and personality
-traits = pd.read_csv('W:/staff-umbrella/perfectfit/Exp0/Extract_Data/pers_PA-TTM_gender_MergedAll_1759.csv') 
+traits = pd.read_csv('pers_PA-TTM_gender.csv') 
 df_data_orig = traits[['PROLIFIC_PID', 'PA-TTM', 'Gender identity', 'Extraversion', 'Agreeableness', 'Conscientiousness', 'ES', 'OE']] 
 
+
 # We also need to load data about the effort responses that people gave in session 2
-# This data was stored in the 
-# TODO: make sure to use the correct path in the end
-data_database  = pd.read_csv('Final_Algorithms/2021_05_29_1035_data_samples_post_sess_2.csv', converters={'s0': eval, 's1': eval})
+# This data was stored in the database.
+data_database  = pd.read_csv('data_samples_post_sess_2.csv', 
+                             converters={'s0': eval, 's1': eval})
 data_database = data_database.values.tolist()
-# load the corresponding IDs of people
-# TODO: adapt path in the end
-with open("Final_Algorithms/2021_05_29_1035_IDs", "rb") as f:
+# Load the corresponding IDs of people
+with open("IDs", "rb") as f:
     ids_database = pickle.load(f)
+
 
 # only consider people who have passed session 2 and did 
 # not give nonsensical planning/reflection answers in session 2
@@ -83,13 +89,16 @@ df_data_orig = df_data_orig[df_data_orig['PROLIFIC_PID'].isin(people_passed_sess
 df_data_orig = df_data_orig[~df_data_orig['PROLIFIC_PID'].isin(people_nonsens_session_2['Prolific_ID'].tolist())]
 df_data_orig = df_data_orig.reset_index() # make sure there are consecutive indices
 
+
 if previous_assignment:
     df_data_orig_incl_prev = df_data_orig.copy(deep = True) # including the people we have previously assigned to groups already
     # remove previously assigned people from this dataframe
     df_data_orig = df_data_orig[~df_data_orig['PROLIFIC_PID'].isin(df_assignment_prev['ID'].tolist())]
     df_data_orig = df_data_orig.reset_index() # make sure there are consecutive indices
 
+
 num_people = len(df_data_orig)
+
 
 # Now we need to add people's effort response in session 2 to the dataframe
 # For that we first need to also scale the effort responses to [0, 1]
@@ -100,6 +109,7 @@ list_of_efforts = np.array(data_database)[:, 3].astype(int)/10.0
 df_data_orig["Effort_Session2"] = [[list_of_efforts[i] for i in range(len(list_of_efforts)) if ids_database[i] == df_data_orig.loc[j, "PROLIFIC_PID"]][0] for j in range(num_people)]
 if previous_assignment:
     df_data_orig_incl_prev["Effort_Session2"] = [[list_of_efforts[i] for i in range(len(list_of_efforts)) if ids_database[i] == df_data_orig_incl_prev.loc[j, "PROLIFIC_PID"]][0] for j in range(len(df_data_orig_incl_prev))]
+
 
 # Create random assignments to groups
 assignments = []
@@ -196,6 +206,7 @@ for rep in range(num_rep): # for each repetition
     assignments_means.append(means)
     assignments_covs.append(covs)
 
+
 # Compute symmetric measure based on KL-divergence
 # i.e. we compute Jeffrey's distance = the sum of both directions
 all_kl = []  
@@ -210,6 +221,7 @@ for rep in range(num_rep):
             kl_rep.append(kl1 + kl2) # we do not take the mean; this is Jeffrey's distance, i.e. sum of both directions
     all_kl.append(kl_rep)
 
+
 # Compute mean KL-divergences for each repetition
 kl_means = [np.mean(all_kl[i]) for i in range(num_rep)]
 # Convert nan to infinity so that nan-assignments are not seen as those with lowest 
@@ -217,24 +229,30 @@ kl_means = [np.mean(all_kl[i]) for i in range(num_rep)]
 # We can get nan-values if all participants in one group have the same value for one feature.
 kl_means = [i if not math.isnan(i) else np.inf for i in kl_means]
 
+
 # Find repetition with lowest mean KL-divergence
 best_rep = np.argmin(kl_means)
-print("Chosen assignment:", best_rep, "with avg. KL-div.", np.round(np.min(kl_means), 3))
+print("Chosen assignment:", best_rep, "with avg. KL-div.", 
+      np.round(np.min(kl_means), 3))
+
 
 # Get corresponding assignments to groups
 indices = assignments[best_rep]
 all_ids = [item for sublist in indices for item in sublist] # all IDs, incl. previously assigned ones
 
+
 # Get chosen group number per person
 groups = [[j for j in range(num_groups) if i in indices[j]] for i in all_ids]
 groups = [j[0] for j in groups]
 
+
 # combine groups and IDs
 data_final = np.transpose([all_ids, groups])
+
 
 # Save chosen group number and ID per person
 # We also save the IDs of previously assigned people again, as we might still
 # need to retrieve them during the experiment, and also need to know them later.
 df_assignment = pd.DataFrame(data_final, columns = ['ID', 'Group']) 
-df_assignment.to_csv("W:/staff-umbrella/perfectfit/Exp0/assignment.csv",
+df_assignment.to_csv("assignment.csv",
                      index = True)
