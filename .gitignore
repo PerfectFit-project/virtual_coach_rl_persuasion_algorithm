@@ -1,5 +1,6 @@
 .spyproject
 actions/__pycache__
+connectors/__pycache__
 Post_Sess_2/__pycache__
 Post_Sess_2/data_samples_post_sess_2.csv
 Post_Sess_2/IDs
