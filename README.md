@@ -17,6 +17,8 @@ This is the code for the conversational agent Sam that suggests preparatory acti
 	  4) a persuasion type with the highest similarity-weighted Q-value in their state.
 - Post-questionnaire
 
+Please refer to our [OSF pre-registration](https://osf.io/k2uac) for more details on our experiment.
+
 
 ## Dialog Flow
 
