@@ -1,6 +1,6 @@
 # Reinforcement Learning-based Persuasion for a Conversational Agent to Support Behavior Change
 
-This is the code for the conversational agent Sam that suggests preparatory activities for smoking cessation and becoming more physically active in 5 separate sessions. This conversational agent was used in a longitudinal study with more than 500 participants with the goal of testing a personalized reinforcement learning (RL)-based persuasion algorithm.
+This is the code for the conversational agent Sam that suggests preparatory activities for smoking cessation and becoming more physically active in 5 separate sessions. This conversational agent was used in a longitudinal study with more than 500 participants with the goal of gathering data for and testing a personalized reinforcement learning (RL)-based persuasion algorithm.
 
 
 ## Experiment Flow
