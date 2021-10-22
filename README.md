@@ -89,7 +89,7 @@ There are multiple components to persuading people to do their suggested prepara
 	
 ### Preparatory Activities
 
-The preparatory activities are provided in the files "Activities.csv"/"Activities.xlsx." These files contain formulations of the activities for different places in the sessions. E.g. there is a different activity formulation for the reminder message that people receive in Prolific and the session itself.
+The preparatory activities are provided in the files "Activities.csv"/"Activities.xlsx." These files contain formulations of the activities for different places in the sessions. E.g. there is a different activity formulation for the reminder message that people receive in Prolific and the session itself. An example of an activity is to think of, write down and rank reasons for quitting smoking.
 
 
 ### Running the Agent on a Server with Rasa X and Docker
