@@ -2,7 +2,7 @@ import sqlite3
 
 sqliteConnection = None
 try:
-    # When running the agent and the database, just use "chatbot.db" as path.
+    # When running the agent and the database locally, just use "chatbot.db" as path.
     sqliteConnection = sqlite3.connect('/tmp/chatbot.db')
 
     sqlite_create_table_query = '''CREATE TABLE IF NOT EXISTS users (
