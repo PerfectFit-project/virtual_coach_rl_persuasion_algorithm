@@ -1,6 +1,6 @@
 # Reinforcement Learning-based Persuasion for a Conversational Agent to Support Behavior Change
 
-This is the code for the conversational agent Sam that suggests preparatory activities for smoking cessation and becoming more physically active in 5 separate sessions. This conversational agent was used in a longitudinal study with more than 500 participants with the goal of gathering data for and testing a personalized reinforcement learning (RL)-based persuasion algorithm.
+This is the code for the conversational agent Sam that suggests preparatory activities for smoking cessation and becoming more physically active in five separate sessions. This conversational agent was used in a longitudinal study with more than 500 participants with the goal of gathering data for and testing a personalized reinforcement learning (RL)-based persuasion algorithm. The study was run on the online platform Prolific.
 
 
 ## Experiment Flow
@@ -8,7 +8,7 @@ This is the code for the conversational agent Sam that suggests preparatory acti
 - Recruitment in Prolific
 - Pre-screening
 - Pre-qeusttionnaire
-- 5 conversational sessions
+- Five conversational sessions
    - Sessions 1-2: People are persuaded based on a randomly chosen persuasion type.
    - Sessions 3-5: After session 2, participants are  assigned to one of four groups or experimental conditions. Based on their group, they are then subsequently persuaded by:
       1) a persuasion type with the highest effort score, 
@@ -22,7 +22,7 @@ Please refer to our [OSF pre-registration](https://osf.io/k2uac) for more detail
 
 ## Dialog Flow
 
-The figure below visualizes the structure of the 5 conversational sessions.
+The figure below visualizes the structure of the five conversational sessions.
 
 <img src = "Images/Dialog_Flow.jpg" width = "400" title="Dialog Flow">
 
@@ -95,6 +95,25 @@ The preparatory activities are provided in the files "Activities.csv"/"Activitie
 ### Running the Agent on a Server with Rasa X and Docker
 
 In our experiment, we hosted the conversational agent on a Google compute instance with Rasa X 0.33.2 and Docker containers. As the required setup differs slightly from running the agent locally, the corresponding files are provided in the "server_stuff"-folder. This includes, for example, a Dockerfile for running the custom action code in a separate Docker container.
+
+
+## Running the Agent
+
+### Locally
+
+To run the conversational agent locally:
+
+1) Install the python package Rasa 2.0.2.
+2) Navigate to the folder this Readme-file is in, and type `rasa run --cors "*"` in a command window.
+3) Create the database by running the file "init_db.py." Make sure to adapt the database path to "chatbot.db" in the "init_db.py"-file before running the database intialization script.
+4) Open a separate command window and type `rasa run actions --actions actions -vv` to start the custom action server.
+5) Open the frontend ("index.html") with specifying a userid in the URL as described in the section on the frontend.
+6) Chat with the conversational agent. By default, the agent will start with session 1. You can proceed to session 2 by changing the starting intent in "index.html." To proceed to session 3, you need to create several files such as the file "assignment.csv" that contains people's assignment to experimental conditions.
+
+
+### On a server
+
+The agent can also be run on a server with Rasa X, as done in our experiment. Necessarily files for this can be found in the folder "server_stuff."
 
 
 ## License
