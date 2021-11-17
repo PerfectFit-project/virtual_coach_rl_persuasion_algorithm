@@ -113,7 +113,7 @@ To run the conversational agent locally:
 
 ### On a server
 
-The agent can also be run on a server with Rasa X, as done in our experiment. Necessarily files for this can be found in the folder "server_stuff."
+The agent can also be run on a server with Rasa X, as done in our experiment. Necessary files for this can be found in the folder "server_stuff."
 
 
 ## License
