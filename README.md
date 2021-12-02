@@ -7,7 +7,7 @@ This is the code for the conversational agent Sam that acts as a virtual coach a
 
 - Recruitment in Prolific
 - Pre-screening
-- Pre-qeusttionnaire
+- Pre-questionnaire
 - Five conversational sessions
    - Sessions 1-2: People are persuaded based on a randomly chosen persuasion type.
    - Sessions 3-5: After session 2, participants are  assigned to one of four groups or experimental conditions. Based on their group, they are then subsequently persuaded by:
