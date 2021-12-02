@@ -111,7 +111,7 @@ To run the conversational agent locally:
 6) Chat with the conversational agent. By default, the agent will start with session 1. You can proceed to session 2 by changing the starting intent in "index.html." To proceed to session 3, you need to create several files such as the file "assignment.csv" that contains people's assignment to experimental conditions.
 
 
-### On a server
+### On a Server
 
 The agent can also be run on a server with Rasa X, as done in our experiment. Necessary files for this can be found in the folder "server_stuff."
 
