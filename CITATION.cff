@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Albers"
+  given-names: "Nele"
+title: "Reinforcement Learning-based Persuasion for a Conversational Agent to Support Behavior Change: Code"
+version: 1.0
+doi: 10.5281/zenodo.6319356
+date-released: 2022
+url: "https://github.com/PerfectFit-project/virtual_coach_rl_persuasion_algorithm/tree/1.0"
